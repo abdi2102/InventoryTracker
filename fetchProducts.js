@@ -1,22 +1,22 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const { mainAmazonUrl, productUrl, config } = require("./appHelpers");
+const { productUrl, config } = require("./appHelpers");
 const {
   quantitySelector1,
   quantitySelector2,
   priceSelector,
   timer,
-  unavailableProduct,
   lowPriceMarkup,
   highPriceMarkup,
 } = require("./appHelpers");
+const Product = require("./product");
 
 async function fetchProducts(productIds) {
   let updates = [];
 
   try {
     const cookies = await fetchMerchantCookies(
-      mainAmazonUrl,
+      productUrl,
       config,
       productIds.length
     );
@@ -25,38 +25,34 @@ async function fetchProducts(productIds) {
       const productId = productIds[i];
 
       if (isvalidProductId(productId) === false) {
-        updates.push(unavailableProduct);
-      } else {
-        const {
-          data: { content },
-        } = await axios.get(
-          `${productUrl}${productId[0].trim()}&cookies=${cookies}`,
-          config
-        );
-
-        let { quantity, price } = selectHtmlElements(content);
-
-        if (quantity < 5 || price == null) {
-          updates.push(unavailableProduct);
-        } else {
-          price = markup(price);
-
-          updates.push({
-            availability: "in stock",
-            quantity,
-            price,
-          });
-        }
-
-        await timer(520 * (1 + Math.random()));
+        updates.push(new Product());
+        continue;
       }
+
+      const sanitizedProductId = productId[0].trim();
+      const content = await fetchMerchantProduct(sanitizedProductId, cookies);
+
+      let { quantity, price } = selectHtmlElements(content);
+
+      if (quantity < 5 || price == null) {
+        updates.push(new Product());
+        continue;
+      }
+
+      price = markup(price);
+
+      let product = new Product((availability = "in stock"), quantity, price);
+      updates.push(product);
+
+      await timer(500 * (1 + Math.random()));
     }
+
     return updates;
   } catch (error) {
     if (updates.length > 0) {
       return updates;
     } else {
-      throw Error(error);
+      throw error;
     }
   }
 }
@@ -81,12 +77,30 @@ function selectHtmlElements(content) {
   return { quantity, price };
 }
 
+async function fetchMerchantProduct(productId, cookies) {
+  let url = `${productUrl}${productId}`;
+
+  if (cookies) {
+    url += `&cookies=${cookies}`;
+  }
+
+  try {
+    const {
+      data: { content },
+    } = await axios.get(url, config);
+
+    return content;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function fetchMerchantCookies(mainAmazonUrl, config, productCount) {
   // cookies to avoid scrape detection
 
   try {
     if (productCount < 5) {
-      return "";
+      return;
     }
 
     const {

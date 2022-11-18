@@ -7,6 +7,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
   }
 
   let data = updates.map((product, idx) => {
+
     return {
       range: `${startColumn}${startRow + idx}:${endColumn}${startRow + idx}`,
       values: [[product.quantity, product.availability, product.price]],

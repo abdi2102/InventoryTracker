@@ -11,8 +11,6 @@ let priceSelector = "div#corePrice_feature_div span.a-offscreen";
 const productUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=https://www.amazon.com/dp/";
 
-
-
 const config = {
   headers: {
     "x-api-key": "aacf5794c3394314915f4932ef412cdd",
@@ -20,20 +18,11 @@ const config = {
   },
 };
 
-const mainAmazonUrl =
-  "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=https://www.amazon.com/";
-
 
 // AMAZON FETCH HELPERS
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
-
-const unavailableProduct = {
-  availability: "out of stock",
-  quantity: 0,
-  price: 0.5,
-};
 
 // google Api
 
@@ -51,13 +40,11 @@ const isValidUrl = (urlString) => {
 };
 
 module.exports = {
-  mainAmazonUrl,
   productUrl,
   config,
   timer,
   lowPriceMarkup,
   highPriceMarkup,
-  unavailableProduct,
   verifyGoogleAccessTokenUrl,
   quantitySelector1,
   quantitySelector2,
