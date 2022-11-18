@@ -1,0 +1,38 @@
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title Update Products
+        style 
+            include index.css
+       
+    body 
+        script
+            include index.js
+        script(src="https://unpkg.com/axios/dist/axios.min.js") 
+        h1.mainHeader Update Products
+        div.mainDiv
+            div.formDiv
+                form#mainForm(action="#" enctype="multipart/form-data" )
+                    div.mainLabelsWrapper 
+                        label#startLabel Start
+                        label#numProductsLabel Number of Products
+                        label#googleSheetNameLabel Spreadsheet Name
+                        label#googleSheetLinkLabel Spreadsheet Link
+                        label#saveGoogleSheetLabel Save Spreadsheet?
+                    div.mainInputsWrapper 
+                        input#startRowInput(type="number")
+                        input#numProductsInput(type="number")
+                        input#googleSheetNameInput(type="text")
+                        input#googleSheetLinkInput(type="text")
+                        input#saveGoogleSheetCheckbox(type="checkbox")
+                    div.mainButtonWrapper 
+                        button#mainFormButton(type="submit" onclick=`submitProductUpdates()`) Update
+                p#serverMsg 
+            table#googleSheetsLinksTable
+                tr
+                    th Name 
+                    th Spreadsheet Link
+
+
