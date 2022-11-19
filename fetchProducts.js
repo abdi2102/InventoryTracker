@@ -6,8 +6,6 @@ const {
   quantitySelector2,
   priceSelector,
   timer,
-  lowPriceMarkup,
-  highPriceMarkup,
 } = require("./appHelpers");
 const Product = require("./product");
 
@@ -39,9 +37,8 @@ async function fetchProducts(productIds) {
         continue;
       }
 
-      price = markup(price);
-
       let product = new Product((availability = "in stock"), quantity, price);
+      product.markup();
       updates.push(product);
 
       await timer(500 * (1 + Math.random()));
@@ -110,21 +107,6 @@ async function fetchMerchantCookies(mainAmazonUrl, config, productCount) {
     return encodeURIComponent(cookies);
   } catch (error) {
     throw Error(error);
-  }
-}
-
-function markup(price) {
-  try {
-    let intPrice = parseFloat(price.slice(1));
-
-    let markup =
-      intPrice < 20
-        ? Math.max(10, (intPrice *= lowPriceMarkup))
-        : intPrice * highPriceMarkup;
-
-    return Math.trunc(markup * 100) / 100;
-  } catch {
-    return undefined;
   }
 }
 

@@ -18,14 +18,11 @@ const config = {
   },
 };
 
-
 // AMAZON FETCH HELPERS
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
-const lowPriceMarkup = 1.9;
-const highPriceMarkup = 1.7;
+
 
 // google Api
-
 const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
 
@@ -34,7 +31,7 @@ const isValidUrl = (urlString) => {
   try {
     new URL(urlString);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -43,8 +40,6 @@ module.exports = {
   productUrl,
   config,
   timer,
-  lowPriceMarkup,
-  highPriceMarkup,
   verifyGoogleAccessTokenUrl,
   quantitySelector1,
   quantitySelector2,
