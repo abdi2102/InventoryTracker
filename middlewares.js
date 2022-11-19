@@ -10,12 +10,12 @@ const isValidUrl = (urlString) => {
 };
 
 function validateForm(req, res, next) {
-  const startRow = parseInt(req.body.startRow);
-  const numProducts = parseInt(req.body.numProducts);
+  let startRow = parseInt(req.body.startRow);
+  let numProducts = parseInt(req.body.numProducts);
   const spreadsheetLink = req.body.spreadsheetLink;
-  const sheetName = req.body.sheetName
+  const sheetName = req.body.sheetName;
 
-  if (isNaN(startRow)) {
+  if (isNaN(startRow) || startRow < 1) {
     res.send({ msg: "please enter a valid start" });
     return;
   }
@@ -34,6 +34,9 @@ function validateForm(req, res, next) {
   spreadsheet.getId();
 
   req.spreadsheet = spreadsheet;
+
+  // limit products that can be updated at once to 50 at once
+  numProducts = Math.min(numProducts, 50);
 
   req.options = { startRow, numProducts };
   next();

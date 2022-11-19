@@ -3,13 +3,11 @@ window.addEventListener("load", () => {
 });
 
 async function submitProductUpdates() {
-
-
   const mainFormButton = document.getElementById("mainFormButton");
   const startRow = document.getElementById("startRowInput").value;
   const numProducts = document.getElementById("numProductsInput").value;
   const sheetName = document.getElementById("googleSheetNameInput").value;
-  const spreadsheetLink = document.getElementById("googleSheetLinkInput").value;
+  const sheetLink = document.getElementById("googleSheetLinkInput").value;
   const warningMsg = document.getElementById("warningMsg");
   const serverMsg = document.getElementById("serverMsg");
   const mainForm = document.getElementById("mainForm");
@@ -36,7 +34,7 @@ async function submitProductUpdates() {
       serverMsg.textContent = response.data.msg;
 
       // // save successful sheets
-      let newGoogleSheet = { sheetName, spreadsheetLink };
+      let newGoogleSheet = { sheetName, sheetLink };
       saveGoogleSheets(newGoogleSheet);
 
       // clear form fields, re-enable button at end
@@ -61,6 +59,13 @@ function saveGoogleSheets(newGoogleSheet) {
   const saveGoogleSheetCheckbox = document.getElementById(
     "saveGoogleSheetCheckbox"
   );
+
+  if (
+    newGoogleSheet.sheetName === undefined ||
+    newGoogleSheet.sheetLink === undefined
+  ) {
+    return;
+  }
 
   if (saveGoogleSheetCheckbox.checked) {
     let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
