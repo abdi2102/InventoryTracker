@@ -3,12 +3,12 @@ window.addEventListener("load", () => {
 });
 
 async function submitProductUpdates() {
-  alert("make sure to grant read/write permission");
+
 
   const mainFormButton = document.getElementById("mainFormButton");
   const startRow = document.getElementById("startRowInput").value;
   const numProducts = document.getElementById("numProductsInput").value;
-  const spreadsheetName = document.getElementById("googleSheetNameInput").value;
+  const sheetName = document.getElementById("googleSheetNameInput").value;
   const spreadsheetLink = document.getElementById("googleSheetLinkInput").value;
   const warningMsg = document.getElementById("warningMsg");
   const serverMsg = document.getElementById("serverMsg");
@@ -23,6 +23,7 @@ async function submitProductUpdates() {
       startRow,
       numProducts,
       spreadsheetLink,
+      sheetName,
     });
 
     if (response === undefined) {
@@ -35,7 +36,7 @@ async function submitProductUpdates() {
       serverMsg.textContent = response.data.msg;
 
       // // save successful sheets
-      let newGoogleSheet = { spreadsheetName, spreadsheetLink };
+      let newGoogleSheet = { sheetName, spreadsheetLink };
       saveGoogleSheets(newGoogleSheet);
 
       // clear form fields, re-enable button at end
@@ -90,17 +91,23 @@ function populateTableWithSavedSheets() {
     sheetNameCell.setAttribute("id", "sheetNameCell");
     sheetLinkCell.setAttribute("id", "sheetLinkCell");
 
-    sheetNameCell.innerHTML = sheet.spreadsheetName;
+    sheetNameCell.innerHTML = sheet.sheetName;
     sheetLinkCell.innerHTML = sheet.spreadsheetLink;
   });
 }
 
-async function sendPostRequest({ startRow, numProducts, spreadsheetLink }) {
+async function sendPostRequest({
+  startRow,
+  numProducts,
+  spreadsheetLink,
+  sheetName,
+}) {
   try {
     return await axios.patch("http://localhost:3000/user/spreadsheet", {
       startRow,
       numProducts,
       spreadsheetLink,
+      sheetName,
     });
   } catch (error) {
     throw error;

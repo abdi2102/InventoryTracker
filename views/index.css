@@ -84,7 +84,6 @@
     width: 35%;
     height: fit-content;
     table-layout: fixed;
-    background-color: orange;
 }
 
 #googleSheetsLinksTable tr {
@@ -100,7 +99,7 @@
 
 @media screen and (max-height: 768px) {
     body {
-        min-height: 768px;
+        height: 768px;
         overflow-y: scroll;
     }
 }
