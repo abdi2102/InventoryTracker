@@ -3,7 +3,7 @@ const fetchProducts = require("./fetchProducts");
 const sendUpdates = require("./sendUpdates");
 const { google } = require("googleapis");
 
-async function publishUpdates(auth, spreadsheet, options) {
+async function publishUpdates(auth, sheet, options) {
   if (auth === undefined) {
     throw Error("not authorized");
   }
@@ -11,12 +11,12 @@ async function publishUpdates(auth, spreadsheet, options) {
   const googleService = google.sheets({ version: "v4", auth });
 
   try {
-    const productIds = await readProducts(googleService, spreadsheet, options);
+    const productIds = await readProducts(googleService, sheet, options);
     const updates = await fetchProducts(productIds);
 
     await sendUpdates(
       googleService,
-      spreadsheet.id,
+      sheet.id,
       updates,
       options.startRow
     );

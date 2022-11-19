@@ -1,4 +1,4 @@
-class Spreadsheet {
+class Sheet {
   constructor(link, sheetName) {
     this.link = link;
     this.name = sheetName;
@@ -10,4 +10,4 @@ class Spreadsheet {
   }
 }
 
-module.exports = Spreadsheet;
+module.exports = Sheet;

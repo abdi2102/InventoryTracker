@@ -19,7 +19,7 @@ app.listen(3000);
 const { authorize, getGmailUserInfo } = require("./auth");
 const publishUpdates = require("./publishUpdates");
 
-const { validateForm } = require("./middlewares");
+const { validateForm } = require("./validateForm");
 
 app.use("/user/spreadsheet", authorize);
 
@@ -32,7 +32,7 @@ app.patch("/user/spreadsheet", validateForm, async (req, res) => {
     // update parameters for publishUpdates
     const msg = await publishUpdates(
       req.oAuth2Client,
-      req.spreadsheet,
+      req.sheet,
       req.options
     );
     res.send({ msg });

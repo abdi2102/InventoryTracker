@@ -1,4 +1,4 @@
-async function readProducts(googleService, spreadsheet, options) {
+async function readProducts(googleService, sheet, options) {
   let asinColumn = "J";
 
   if (isNaN(options.numProducts)) {
@@ -15,12 +15,12 @@ async function readProducts(googleService, spreadsheet, options) {
     const {
       data: { values },
     } = await googleService.spreadsheets.values.get({
-      spreadsheetId: spreadsheet.id,
+      spreadsheetId: sheet.id,
       range: `${asinColumn}${options.startRow}:${end}`,
     });
 
     if (values == undefined) {
-      throw Error(`No product id(s) found for ${spreadsheet.sheetName}`);
+      throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
 
     return values;

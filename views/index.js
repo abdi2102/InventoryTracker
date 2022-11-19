@@ -20,7 +20,7 @@ async function submitProductUpdates() {
     const response = await sendPostRequest({
       startRow,
       numProducts,
-      spreadsheetLink,
+      sheetLink,
       sheetName,
     });
 
@@ -46,7 +46,7 @@ async function submitProductUpdates() {
   }
 }
 
-function populateFormWithSpreadsheet(event) {
+function populateFormWithSheet(event) {
   const tableRowCells = event.target.parentElement.cells;
 
   document.getElementById("googleSheetNameInput").value =
@@ -72,7 +72,7 @@ function saveGoogleSheets(newGoogleSheet) {
     googleSheets.unshift(newGoogleSheet);
 
     if (googleSheets.length > 3) {
-      googleSpreadsheets.slice(0, 2);
+      googleSheets.slice(0, 2);
     }
 
     localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
@@ -80,16 +80,14 @@ function saveGoogleSheets(newGoogleSheet) {
 }
 
 function populateTableWithSavedSheets() {
-  const spreadsheetLinksTable = document.getElementById(
-    "googleSheetsLinksTable"
-  );
+  const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
   let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
   if (googleSheets.length === 0) {
     return;
   }
   googleSheets.forEach((sheet, idx) => {
-    let tableRow = spreadsheetLinksTable.insertRow(idx + 1);
-    tableRow.addEventListener("click", populateFormWithSpreadsheet);
+    let tableRow = sheetLinksTable.insertRow(idx + 1);
+    tableRow.addEventListener("click", populateFormWithSheet);
     let sheetNameCell = tableRow.insertCell(0);
     let sheetLinkCell = tableRow.insertCell(1);
 
@@ -97,21 +95,21 @@ function populateTableWithSavedSheets() {
     sheetLinkCell.setAttribute("id", "sheetLinkCell");
 
     sheetNameCell.innerHTML = sheet.sheetName;
-    sheetLinkCell.innerHTML = sheet.spreadsheetLink;
+    sheetLinkCell.innerHTML = sheet.sheetLink;
   });
 }
 
 async function sendPostRequest({
   startRow,
   numProducts,
-  spreadsheetLink,
+  sheetLink,
   sheetName,
 }) {
   try {
     return await axios.patch("http://localhost:3000/user/spreadsheet", {
       startRow,
       numProducts,
-      spreadsheetLink,
+      sheetLink,
       sheetName,
     });
   } catch (error) {

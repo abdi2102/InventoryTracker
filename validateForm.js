@@ -1,4 +1,4 @@
-const Spreadsheet = require("./classes/spreadsheet");
+const Sheet = require("./classes/sheet");
 
 const isValidUrl = (urlString) => {
   try {
@@ -12,7 +12,7 @@ const isValidUrl = (urlString) => {
 function validateForm(req, res, next) {
   let startRow = parseInt(req.body.startRow);
   let numProducts = parseInt(req.body.numProducts);
-  const spreadsheetLink = req.body.spreadsheetLink;
+  const sheetLink = req.body.sheetLink;
   const sheetName = req.body.sheetName;
 
   if (isNaN(startRow) || startRow < 1) {
@@ -25,15 +25,15 @@ function validateForm(req, res, next) {
     return;
   }
 
-  if (isValidUrl(spreadsheetLink) === false) {
+  if (isValidUrl(sheetLink) === false) {
     res.send({ msg: "please enter a valid url" });
     return;
   }
 
-  let spreadsheet = new Spreadsheet(spreadsheetLink, sheetName);
-  spreadsheet.getId();
+  let sheet = new Sheet(sheetLink, sheetName);
+  sheet.getId();
 
-  req.spreadsheet = spreadsheet;
+  req.sheet = sheet;
 
   // limit products that can be updated at once to 50 at once
   numProducts = Math.min(numProducts, 50);
