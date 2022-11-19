@@ -1,13 +1,13 @@
-async function readProducts(googleService, spreadsheet) {
+async function readProducts(googleService, spreadsheet, options) {
   let asinColumn = "J";
 
-  if (isNaN(spreadsheet.numProducts)) {
+  if (isNaN(options.numProducts)) {
     throw Error("number of products field is not valid");
   }
 
-  let lastRow = spreadsheet.startRow + spreadsheet.numProducts - 1;
+  let lastRow = options.startRow + options.numProducts - 1;
   let end = `${asinColumn}${lastRow}`;
-  if (lastRow < spreadsheet.startRow) {
+  if (lastRow < options.startRow) {
     throw Error("At least one product needs to be updated");
   }
 
@@ -16,7 +16,7 @@ async function readProducts(googleService, spreadsheet) {
       data: { values },
     } = await googleService.spreadsheets.values.get({
       spreadsheetId: spreadsheet.id,
-      range: `${asinColumn}${spreadsheet.startRow}:${end}`,
+      range: `${asinColumn}${options.startRow}:${end}`,
     });
 
     if (values == undefined) {

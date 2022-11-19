@@ -22,7 +22,7 @@ async function fetchProducts(productIds) {
     for (let i = 0; i < productIds.length; i++) {
       const productId = productIds[i];
 
-      if (isvalidProductId(productId) === false) {
+      if (isValidProductId(productId) === false) {
         updates.push(new Product());
         continue;
       }
@@ -38,7 +38,7 @@ async function fetchProducts(productIds) {
       }
 
       let product = new Product((availability = "in stock"), quantity, price);
-      product.markup();
+      product.markupPrice();
       updates.push(product);
 
       await timer(500 * (1 + Math.random()));
@@ -54,7 +54,7 @@ async function fetchProducts(productIds) {
   }
 }
 
-function isvalidProductId(productId) {
+function isValidProductId(productId) {
   if (Array.isArray(productId) === false || productId[0] == undefined) {
     return false;
   }

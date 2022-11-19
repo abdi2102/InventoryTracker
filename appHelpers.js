@@ -1,5 +1,4 @@
 // CHEERIO SELECTORS
-
 // Get Quantity
 let quantitySelector1 = "select#quantity";
 let quantitySelector2 = "select#rcxsubsQuan";
@@ -26,15 +25,7 @@ const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
 
-// form validation
-const isValidUrl = (urlString) => {
-  try {
-    new URL(urlString);
-    return true;
-  } catch {
-    return false;
-  }
-};
+
 
 module.exports = {
   productUrl,
@@ -44,5 +35,4 @@ module.exports = {
   quantitySelector1,
   quantitySelector2,
   priceSelector,
-  isValidUrl,
 };

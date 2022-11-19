@@ -1,11 +1,13 @@
-const { isValidUrl } = require("./appHelpers");
+const Spreadsheet = require("./spreadsheet");
 
-function checkGoogleSheetsAccess(req, res, next) {
-  res.local("spreadsheetLink", req.body.spreadsheetLink);
-
-  // return array of permissions e.g. ["read", "write"]
-  next();
-}
+const isValidUrl = (urlString) => {
+  try {
+    new URL(urlString);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 function validateForm(req, res, next) {
   const startRow = parseInt(req.body.startRow);
@@ -27,12 +29,13 @@ function validateForm(req, res, next) {
     return;
   }
 
-  req.spreadsheet = {
-    startRow,
-    numProducts,
-    id: spreadsheetLink.match("/d/([a-zA-Z0-9-_]+)")[1],
-  };
+  let spreadsheet = new Spreadsheet(spreadsheetLink);
+  spreadsheet.getId();
+
+  req.spreadsheet = spreadsheet;
+
+  req.options = { startRow, numProducts };
   next();
 }
 
-module.exports = { validateForm, checkGoogleSheetsAccess };
+module.exports = { validateForm };

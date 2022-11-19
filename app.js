@@ -29,7 +29,12 @@ app.get("/user/spreadsheet/", (req, res) => {
 
 app.patch("/user/spreadsheet", validateForm, async (req, res) => {
   try {
-    const msg = await publishUpdates(req.oAuth2Client, req.spreadsheet);
+    // update parameters for publishUpdates
+    const msg = await publishUpdates(
+      req.oAuth2Client,
+      req.spreadsheet,
+      req.options
+    );
     res.send({ msg });
   } catch (error) {
     if (error.message) {
@@ -40,9 +45,6 @@ app.patch("/user/spreadsheet", validateForm, async (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.render("home");
-});
 
 app.get("/get/gmail/user", async (req, res) => {
   try {

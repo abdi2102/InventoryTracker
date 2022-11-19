@@ -1,25 +1,28 @@
-const { lowPriceMarkup, highPriceMarkup } = require("./appHelpers");
+const lowPriceMarkup = 1.9;
+const highPriceMarkup = 1.7;
 
 class Product {
   constructor(availability, quantity, price) {
     this.availability = availability || "out of stock";
     this.quantity = quantity || 0;
     this.price = price || 0.5;
+    this.markup;
   }
 
-  markup() {
+  markupPrice() {
     try {
       let intPrice = parseFloat(this.price.slice(1));
 
-      let markup =
+      let higherPrice =
         intPrice < 20
           ? Math.max(10, (intPrice *= lowPriceMarkup))
           : intPrice * highPriceMarkup;
 
-      this.price = Math.trunc(markup * 100) / 100;
+      this.markup = Math.trunc(higherPrice * 100) / 100;
     } catch {
       return undefined;
     }
   }
 }
+
 module.exports = Product;

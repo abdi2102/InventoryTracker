@@ -2,11 +2,9 @@ window.addEventListener("load", () => {
   populateTableWithSavedSheets();
 });
 
-
-
 async function submitProductUpdates() {
   // temp.fix
-  alert("make sure to read/write permission to anyone with the link");
+  alert("make sure to grant read/write permission");
 
   const mainFormButton = document.getElementById("mainFormButton");
   const startRow = document.getElementById("startRowInput").value;
@@ -18,13 +16,19 @@ async function submitProductUpdates() {
 
   mainFormButton.disabled = true;
 
-  const response = await sendPostRequest({
-    startRow,
-    numProducts,
-    spreadsheetLink,
-  });
+  try {
+    const response = await sendPostRequest({
+      startRow,
+      numProducts,
+      spreadsheetLink,
+    });
 
-  if (response !== undefined) {
+    if (response === undefined) {
+      serverMsg.textContent = "server error";
+      mainFormButton.disabled = false;
+      return;
+    }
+
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
 
@@ -35,12 +39,9 @@ async function submitProductUpdates() {
       // clear form fields, re-enable button at end
       mainForm.reset();
       mainFormButton.disabled = false;
-    } else if (response.data.authUrl) {
-      window.location.href = response.data.authUrl;
     }
-  } else {
-    alert("server error...");
-    mainFormButton.disabled = false;
+  } catch {
+    serverMsg.textContent = "server error";
   }
 }
 
@@ -75,34 +76,31 @@ function populateTableWithSavedSheets() {
     "googleSheetsLinksTable"
   );
   let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
-  if (googleSheets.length !== 0) {
-    googleSheets.forEach((sheet, idx) => {
-      let tableRow = spreadsheetLinksTable.insertRow(idx + 1);
-      tableRow.addEventListener("click", populateFormWithSpreadsheet);
-      let sheetNameCell = tableRow.insertCell(0);
-      let sheetLinkCell = tableRow.insertCell(1);
-
-      sheetNameCell.setAttribute("id", "sheetNameCell");
-      sheetLinkCell.setAttribute("id", "sheetLinkCell");
-
-      sheetNameCell.innerHTML = sheet.spreadsheetName;
-      sheetLinkCell.innerHTML = sheet.spreadsheetLink;
-    });
+  if (googleSheets.length === 0) {
+    return;
   }
+  googleSheets.forEach((sheet, idx) => {
+    let tableRow = spreadsheetLinksTable.insertRow(idx + 1);
+    tableRow.addEventListener("click", populateFormWithSpreadsheet);
+    let sheetNameCell = tableRow.insertCell(0);
+    let sheetLinkCell = tableRow.insertCell(1);
+
+    sheetNameCell.setAttribute("id", "sheetNameCell");
+    sheetLinkCell.setAttribute("id", "sheetLinkCell");
+
+    sheetNameCell.innerHTML = sheet.spreadsheetName;
+    sheetLinkCell.innerHTML = sheet.spreadsheetLink;
+  });
 }
 
-async function sendPostRequest(body) {
+async function sendPostRequest({ startRow, numProducts, spreadsheetLink }) {
   try {
-    const response = await axios.patch(
-      "http://localhost:3000/user/spreadsheet",
-      {
-        startRow: body.startRow,
-        numProducts: body.numProducts,
-        spreadsheetLink: body.spreadsheetLink,
-      }
-    );
-    return response;
+    return await axios.patch("http://localhost:3000/user/spreadsheet", {
+      startRow,
+      numProducts,
+      spreadsheetLink,
+    });
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 }
