@@ -1,4 +1,4 @@
-const Spreadsheet = require("./spreadsheet");
+const Spreadsheet = require("./classes/spreadsheet");
 
 const isValidUrl = (urlString) => {
   try {

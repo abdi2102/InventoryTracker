@@ -31,7 +31,7 @@ async function getGmailUserInfo(req, res) {
     const token = await oAuth2Client.getToken(req.query.code);
     res.cookie("token", token.tokens);
   } catch (error) {
-    throw Error(error);
+    throw error;
   }
 }
 

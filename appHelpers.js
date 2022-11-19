@@ -12,7 +12,7 @@ const productUrl =
 
 const config = {
   headers: {
-    "x-api-key": "aacf5794c3394314915f4932ef412cdd",
+    "x-api-key": process.env.SCRAPING_ANT_X_API_KEY,
     useQueryString: true,
   },
 };

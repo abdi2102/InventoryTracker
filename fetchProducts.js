@@ -7,7 +7,7 @@ const {
   priceSelector,
   timer,
 } = require("./appHelpers");
-const Product = require("./product");
+const Product = require("./classes/product");
 
 async function fetchProducts(productIds) {
   let updates = [];
