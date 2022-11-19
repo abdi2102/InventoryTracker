@@ -22,14 +22,15 @@ html(lang="en")
                         label#googleSheetLinkLabel Spreadsheet Link
                         label#saveGoogleSheetLabel Save Spreadsheet?
                     div.mainInputsWrapper 
-                        input#startRowInput(type="number")
-                        input#numProductsInput(type="number")
-                        input#googleSheetNameInput(type="text")
-                        input#googleSheetLinkInput(type="text")
+                        input#startRowInput(type="number" placeholder="start")
+                        input#numProductsInput(type="number" placeholder="number of products")
+                        input#googleSheetNameInput(type="text" placeholder="sheet name")
+                        input#googleSheetLinkInput(type="text" placeholder="sheet link")
                         input#saveGoogleSheetCheckbox(type="checkbox")
                     div.mainButtonWrapper 
                         button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update
                 p#serverMsg 
+                p#warningMsg **grant read/write permission to anyone with link**
             table#googleSheetsLinksTable
                 tr
                     th Name 

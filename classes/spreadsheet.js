@@ -1,17 +1,13 @@
 class Spreadsheet {
-  constructor(link) {
+  constructor(link, sheetName) {
     this.link = link;
+    this.name = sheetName;
     this.id;
   }
 
   getId() {
     this.id = this.link.match("/d/([a-zA-Z0-9-_]+)")[1];
   }
-
-  checkGoogleSheetsAccess(auth) {
-  // return array of permissions e.g. ["read", "write"]
-}
-
 }
 
 module.exports = Spreadsheet;

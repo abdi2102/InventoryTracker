@@ -57,7 +57,7 @@ async function authorize(req, res, next) {
     req.oAuth2Client = oAuth2Client;
     next();
   } catch (error) {
-    if (authUrl !== undefined) {
+    if (authUrl) {
       res.redirect(authUrl);
     } else {
       res.send({ msg: error });

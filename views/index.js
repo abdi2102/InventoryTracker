@@ -3,7 +3,6 @@ window.addEventListener("load", () => {
 });
 
 async function submitProductUpdates() {
-  // temp.fix
   alert("make sure to grant read/write permission");
 
   const mainFormButton = document.getElementById("mainFormButton");
@@ -11,9 +10,12 @@ async function submitProductUpdates() {
   const numProducts = document.getElementById("numProductsInput").value;
   const spreadsheetName = document.getElementById("googleSheetNameInput").value;
   const spreadsheetLink = document.getElementById("googleSheetLinkInput").value;
+  const warningMsg = document.getElementById("warningMsg");
   const serverMsg = document.getElementById("serverMsg");
   const mainForm = document.getElementById("mainForm");
 
+  warningMsg.style.display = "none";
+  serverMsg.style.display = "block";
   mainFormButton.disabled = true;
 
   try {

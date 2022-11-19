@@ -13,6 +13,7 @@ function validateForm(req, res, next) {
   const startRow = parseInt(req.body.startRow);
   const numProducts = parseInt(req.body.numProducts);
   const spreadsheetLink = req.body.spreadsheetLink;
+  const sheetName = req.body.sheetName
 
   if (isNaN(startRow)) {
     res.send({ msg: "please enter a valid start" });
@@ -29,7 +30,7 @@ function validateForm(req, res, next) {
     return;
   }
 
-  let spreadsheet = new Spreadsheet(spreadsheetLink);
+  let spreadsheet = new Spreadsheet(spreadsheetLink, sheetName);
   spreadsheet.getId();
 
   req.spreadsheet = spreadsheet;
