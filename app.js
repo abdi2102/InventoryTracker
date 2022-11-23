@@ -1,10 +1,14 @@
 require("dotenv").config();
+const { authorize, getGmailUserInfo } = require("./auth");
+const publishUpdates = require("./publish-updates");
+const { validateForm } = require("./validate-form");
 const express = require("express");
-const app = express();
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const app = express();
 app.use(cookieParser());
 app.use(express.json());
+app.set("view engine", "pug");
 app.use(
   session({
     resave: true,
@@ -12,14 +16,6 @@ app.use(
     saveUninitialized: true,
   })
 );
-
-app.set("view engine", "pug");
-app.listen(3000);
-
-const { authorize, getGmailUserInfo } = require("./auth");
-const publishUpdates = require("./publishUpdates");
-
-const { validateForm } = require("./validateForm");
 
 app.use("/user/spreadsheet", authorize);
 
@@ -30,21 +26,16 @@ app.get("/user/spreadsheet/", (req, res) => {
 app.patch("/user/spreadsheet", validateForm, async (req, res) => {
   try {
     // update parameters for publishUpdates
-    const msg = await publishUpdates(
-      req.oAuth2Client,
-      req.sheet,
-      req.options
-    );
-    res.send({ msg });
+    const msg = await publishUpdates(req.oAuth2Client, req.sheet, req.options);
+    res.send({ msg }).status(200);
   } catch (error) {
     if (error.message) {
-      res.send({ msg: error.message });
+      res.send({ msg: error.message }).status(500);
     } else {
-      res.send(error);
+      res.send(error).status(200);
     }
   }
 });
-
 
 app.get("/get/gmail/user", async (req, res) => {
   try {
@@ -58,3 +49,5 @@ app.get("/get/gmail/user", async (req, res) => {
     res.send({ msg: error.message });
   }
 });
+
+module.exports = app;

@@ -1,75 +1,54 @@
 .mainHeader {
-    width: 20% ;
-    height: 8% ;
+    width: 15% ;
+    height: 7% ;
     margin: auto;
     text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 24px;
 }
 
 
 .mainDiv {
-    width: 75%;
-    height: 77%;
+    width: 60%;
+    height: 60%;
     margin: auto;
     display: flex;
     background-color:rgb(243, 229, 213);
     padding: 1%;
 }
 
-
 .formDiv {
-    width: 55%;
-    height: 69%;
+    width: 65%;
 }
-
 
 #mainForm {
     width: 100%;
-    height: 85%;
-    display: flex;
-    justify-content: center;
+    height: 60%;
 }
 
-.mainLabelsWrapper, .mainInputsWrapper {
-    width: 43%;
-    height: 75%;
-    margin: auto 0px;
-    display: flex;
-    flex-direction: column;
+.labelInputDiv {
+    width: 100%;
+    height: 10%;
+    padding: 2px 0px;
 }
 
-
-.mainLabelsWrapper label, .mainInputsWrapper input  {
-    width: 60%;
-    height: 12%;
-    font-size: 16px;
-    margin: auto;
-}
-
-
-.mainButtonWrapper {
-    width: 14%;
-    height: 95%;
-    display: flex;
-    align-items: flex-end;
-    
-
+.labelInputDiv label {
+    width:180px;
+    float: left;
+    clear: left;
+    text-align:right;
+    padding-right: 10px;
 }
 
 #mainFormButton {
-    width: 100%;
-    height: 7%;
+    width: 20%;
+    height: 8%;
 
 }
 
 #serverMsg, #warningMsg {
     font-size: 16px;
-    width: 39%;
-    height: 9%;
-    margin: auto;
+    width: 50%;
+    height: 10%;
     
 }
 #serverMsg {
@@ -77,20 +56,16 @@
 }
 #warningMsg {
     color: red;
-
 }
 
 #googleSheetsLinksTable {
-    width: 35%;
+    width: 30%;
     height: fit-content;
-    table-layout: fixed;
 }
 
 #googleSheetsLinksTable tr {
-    border-bottom: 1px;
+    text-align: center;
 }
-
-
 
 #sheetNameCell, #sheetLinkCell {
    font-size: 12px;
@@ -105,28 +80,42 @@
 }
 
 
-@media screen and (max-width: 768px) {
-    body {
-        min-height: 100vh;
-    }
+@media screen and (max-width: 1024px) {
 
     .mainDiv {
         flex-direction: column;
-        width: 90%;
-        height: 90%;
+        width: 75%;
+        height: 75%;
 
     }
+
+
 #googleSheetsLinksTable {
    width: 80%;
 }
 
-.mainLabelsWrapper {
-    display: none;
-}
 
 .formDiv {
     width: 55%;
     height: 78%;
+}
+
+.labelInputDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2px;
+    height: 18%;
+}
+
+.labelInputDiv label {
+    padding-right: 0px;
+}
+
+.labelInputDiv label, .labelInputDiv input {
+    text-align: center;
+    width: 70%;
+    height: 40%;
 }
 
 #mainForm {
@@ -134,29 +123,16 @@
     flex-direction: column;
     
 }
-.mainInputsWrapper {
-    width: 100%;
-}
-.mainInputsWrapper input  {
-    width: 80%;
-    font-size: 12px;
-}
 
-
-.mainButtonWrapper {
-    width: 100%;
-    height: 8%;
-    justify-content: center;
-
-}
 
 #mainFormButton {
-    height: 100%;
-    width: 50%;
+    width: 30%;
+    height: 8%;
+
 }
 
 #warningMsg, #serverMsg {
-    font-size: 12px;
+    font-size: 14px;
     width: 100%;
     height: 14%;
     overflow: hidden;

@@ -1,15 +1,12 @@
 async function readProducts(googleService, sheet, options) {
   let asinColumn = "J";
 
-  if (isNaN(options.numProducts)) {
+  if (isNaN(options.numProducts) || options.numProducts < 1) {
     throw Error("number of products field is not valid");
   }
 
   let lastRow = options.startRow + options.numProducts - 1;
   let end = `${asinColumn}${lastRow}`;
-  if (lastRow < options.startRow) {
-    throw Error("At least one product needs to be updated");
-  }
 
   try {
     const {
@@ -18,10 +15,6 @@ async function readProducts(googleService, sheet, options) {
       spreadsheetId: sheet.id,
       range: `${asinColumn}${options.startRow}:${end}`,
     });
-
-    if (values == undefined) {
-      throw Error(`No product id(s) found for ${sheet.sheetName}`);
-    }
 
     return values;
   } catch (error) {

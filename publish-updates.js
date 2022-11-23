@@ -1,6 +1,6 @@
-const readProducts = require("./readProducts");
-const fetchProducts = require("./fetchProducts");
-const sendUpdates = require("./sendUpdates");
+const readProducts = require("./read-products");
+const fetchProducts = require("./fetch-products");
+const sendUpdates = require("./send-updates");
 const { google } = require("googleapis");
 
 async function publishUpdates(auth, sheet, options) {
@@ -12,14 +12,14 @@ async function publishUpdates(auth, sheet, options) {
 
   try {
     const productIds = await readProducts(googleService, sheet, options);
+
+    if (productIds.length === 0) {
+      throw Error(`No product id(s) found for ${sheet.sheetName}`);
+    }
+
     const updates = await fetchProducts(productIds);
 
-    await sendUpdates(
-      googleService,
-      sheet.id,
-      updates,
-      options.startRow
-    );
+    await sendUpdates(googleService, sheet.id, updates, options.startRow);
 
     if (updates.length < options.numProducts) {
       throw Error("browser got caught. try again later.");
@@ -27,6 +27,7 @@ async function publishUpdates(auth, sheet, options) {
 
     return `updated rows: ${updates.length}`;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }

@@ -15,8 +15,8 @@ async function fetchProducts(productIds) {
   try {
     const cookies = await fetchMerchantCookies(
       productUrl,
-      config,
-      productIds.length
+      productIds.length,
+      config
     );
 
     for (let i = 0; i < productIds.length; i++) {
@@ -28,7 +28,7 @@ async function fetchProducts(productIds) {
       }
 
       const sanitizedProductId = productId[0].trim();
-      const content = await fetchMerchantProduct(sanitizedProductId, cookies);
+      const content = await fetchMerchantProduct(sanitizedProductId, cookies, config);
 
       let { quantity, price } = selectHtmlElements(content);
 
@@ -74,7 +74,7 @@ function selectHtmlElements(content) {
   return { quantity, price };
 }
 
-async function fetchMerchantProduct(productId, cookies) {
+async function fetchMerchantProduct(productId, cookies, config) {
   let url = `${productUrl}${productId}`;
 
   if (cookies) {
@@ -92,7 +92,7 @@ async function fetchMerchantProduct(productId, cookies) {
   }
 }
 
-async function fetchMerchantCookies(mainAmazonUrl, config, productCount) {
+async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
   // cookies to avoid scrape detection
 
   try {

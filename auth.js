@@ -29,7 +29,7 @@ async function getGmailUserInfo(req, res) {
   try {
     const oAuth2Client = getOAuth2Client();
     const token = await oAuth2Client.getToken(req.query.code);
-    res.cookie("token", token.tokens, {httpOnly: true});
+    res.cookie("token", token.tokens, { httpOnly: true });
   } catch (error) {
     throw error;
   }
@@ -60,7 +60,7 @@ async function authorize(req, res, next) {
     if (authUrl) {
       res.redirect(authUrl);
     } else {
-      res.send({ msg: error });
+      res.send({ msg: error }).status(500);
     }
   }
 }
