@@ -1,6 +1,6 @@
 const { validateForm } = require("../validate-form");
 const request = require("supertest");
-const app = require("../app");
+const app = require("../backend/express/app");
 
 const invalidForm = {
   startRow: "0",

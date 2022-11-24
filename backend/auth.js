@@ -1,7 +1,8 @@
 const fs = require("fs");
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 const { google } = require("googleapis");
-const { verifyGoogleAccessTokenUrl } = require("./appHelpers");
+const verifyGoogleAccessTokenUrl =
+  "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
 const axios = require("axios");
 
 function getOAuth2Client() {

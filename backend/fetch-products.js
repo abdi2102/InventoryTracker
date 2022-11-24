@@ -1,12 +1,12 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const { productUrl, config } = require("./appHelpers");
+const { productUrl, config } = require("./fetch-helpers");
 const {
   quantitySelector1,
   quantitySelector2,
   priceSelector,
   timer,
-} = require("./appHelpers");
+} = require("./fetch-helpers");
 const Product = require("./classes/product");
 
 async function fetchProducts(productIds) {
@@ -27,8 +27,7 @@ async function fetchProducts(productIds) {
         continue;
       }
 
-      const sanitizedProductId = productId[0].trim();
-      const content = await fetchMerchantProduct(sanitizedProductId, cookies, config);
+      const content = await fetchMerchantProduct(productId[0], cookies, config);
 
       let { quantity, price } = selectHtmlElements(content);
 
@@ -37,7 +36,7 @@ async function fetchProducts(productIds) {
         continue;
       }
 
-      let product = new Product((availability = "in stock"), quantity, price);
+      const product = new Product((availability = "in stock"), quantity, price);
       product.markupPrice();
       updates.push(product);
 
@@ -55,10 +54,9 @@ async function fetchProducts(productIds) {
 }
 
 function isValidProductId(productId) {
-  if (Array.isArray(productId) === false || productId[0] == undefined) {
-    return false;
-  }
-  return true;
+  Array.isArray(productId) === false || productId[0] == undefined
+    ? false
+    : true;
 }
 
 function selectHtmlElements(content) {

@@ -12,8 +12,8 @@ async function submitProductUpdates() {
   const sheetLink = document.getElementById("googleSheetLinkInput").value;
   const warningMsg = document.getElementById("warningMsg");
   const serverMsg = document.getElementById("serverMsg");
-  const mainForm = document.getElementById("mainForm");
   const errorList = document.getElementById("errorList");
+  errorList.innerHTML = ""
 
   warningMsg.style.display = "none";
   serverMsg.style.display = "inline";
@@ -29,7 +29,6 @@ async function submitProductUpdates() {
 
     if (response === undefined) {
       serverMsg.textContent = "server error";
-      mainFormButton.disabled = false;
       return;
     }
 
@@ -40,14 +39,15 @@ async function submitProductUpdates() {
       let newGoogleSheet = { sheetName, sheetLink };
       saveGoogleSheets(newGoogleSheet);
 
-      mainFormButton.disabled = false;
     } else if (response.data) {
       response.data.forEach((error) => {
         const listItem = document.createElement("li");
         listItem.textContent = error.message;
+        listItem.style.color = "red";
         errorList.appendChild(listItem);
       });
     }
+   mainFormButton.disabled = false; 
   } catch {
     serverMsg.textContent = "server error";
   }

@@ -1,7 +1,7 @@
 require("dotenv").config();
-const { authorize, getGmailUserInfo } = require("./auth");
-const publishUpdates = require("./publish-updates");
-const { validateForm } = require("./validate-form");
+const { authorize, getGmailUserInfo } = require("../auth");
+const publishUpdates = require("../publish-updates");
+const { validateForm } = require("../validate-form");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
@@ -20,7 +20,7 @@ app.use(
 app.use("/user/spreadsheet", authorize);
 
 app.get("/user/spreadsheet/", (req, res) => {
-  res.render("index");
+  res.render("../frontend/views/index");
 });
 
 app.patch("/user/spreadsheet", validateForm, async (req, res) => {

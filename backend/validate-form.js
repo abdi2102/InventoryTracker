@@ -9,7 +9,7 @@ function validateForm(req, res, next) {
     sheetName: req.body.sheetName,
   };
   try {
-    const validatedForm = form.validate(formToValidate, {abortEarly: false});
+    const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
     if (validatedForm.error) {
       throw validatedForm.error.details;

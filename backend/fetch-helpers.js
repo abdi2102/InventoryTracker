@@ -20,18 +20,10 @@ const config = {
 // AMAZON FETCH HELPERS
 const timer = (ms) => new Promise((res) => setTimeout(res, ms));
 
-
-// google Api
-const verifyGoogleAccessTokenUrl =
-  "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
-
-
-
 module.exports = {
   productUrl,
   config,
   timer,
-  verifyGoogleAccessTokenUrl,
   quantitySelector1,
   quantitySelector2,
   priceSelector,

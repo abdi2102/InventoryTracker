@@ -3,7 +3,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
   let endColumn = "E";
 
   if (updates.length === 0) {
-    throw Error("at least one product needs to be sent for updating")
+    throw Error("at least one product needs to be sent for updating");
   }
 
   let data = updates.map((product, idx) => {
@@ -19,10 +19,11 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
     resource: { data },
   };
 
-  // TODO: NEEDS TO RETURN SOMETHING FOR TESTING
-
   try {
-    await googleService.spreadsheets.values.batchUpdate(request);
+    const response = await googleService.spreadsheets.values.batchUpdate(
+      request
+    );
+    return response.data.totalUpdatedRows;
   } catch (error) {
     throw error;
   }
