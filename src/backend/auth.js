@@ -1,23 +1,9 @@
-const fs = require("fs");
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
-const { google } = require("googleapis");
 const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
 const axios = require("axios");
-
-function getOAuth2Client() {
-  try {
-    const content = fs.readFileSync("credentials.json");
-
-    const {
-      web: { client_secret, client_id, redirect_uris },
-    } = JSON.parse(content);
-
-    return new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-  } catch (error) {
-    throw Error(error);
-  }
-}
+// using the actual module is necessary b/c. jest is spying
+const getOAuth2ClientModule = require("./oauth2client");
 
 function requestGoogleAuth(oAuth2Client) {
   return oAuth2Client.generateAuthUrl({
@@ -28,7 +14,7 @@ function requestGoogleAuth(oAuth2Client) {
 
 async function getGmailUserInfo(req, res) {
   try {
-    const oAuth2Client = getOAuth2Client();
+    const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     const token = await oAuth2Client.getToken(req.query.code);
     res.cookie("token", token.tokens, { httpOnly: true });
   } catch (error) {
@@ -41,7 +27,7 @@ async function authorize(req, res, next) {
   req.session.redirectTo = req.originalUrl;
 
   try {
-    const oAuth2Client = getOAuth2Client();
+    const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     authUrl = requestGoogleAuth(oAuth2Client);
     const token = req.cookies["token"];
 
@@ -61,7 +47,7 @@ async function authorize(req, res, next) {
     if (authUrl) {
       res.redirect(authUrl);
     } else {
-      res.send({ msg: error }).status(500);
+      res.status(500).json({ msg: error.message });
     }
   }
 }

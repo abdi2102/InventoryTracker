@@ -1,7 +1,6 @@
 const validateForm = require("../backend/validate-form");
 const Sheet = require("../backend/classes/sheet");
 
-
 var jestRequest = function (startRow, numProducts, sheetLink, sheetName) {
   return {
     body: {
@@ -40,7 +39,12 @@ describe("only valid forms will be used for product updates", function () {
     // expect response body with 4 errors
     // next function should not be called
 
-    const req = jestRequest(invalidForm);
+    const req = jestRequest(
+      invalidForm.startRow,
+      invalidForm.numProducts,
+      invalidForm.sheetLink,
+      invalidForm.sheetName
+    );
 
     const res = jestResponse();
 
