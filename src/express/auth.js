@@ -3,7 +3,7 @@ const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
 const axios = require("axios");
 // using the actual module is necessary b/c. jest is spying
-const getOAuth2ClientModule = require("./oauth2client");
+const getOAuth2ClientModule = require("../backend/oauth2client");
 
 function requestGoogleAuth(oAuth2Client) {
   return oAuth2Client.generateAuthUrl({
@@ -12,13 +12,17 @@ function requestGoogleAuth(oAuth2Client) {
   });
 }
 
-async function getGmailUserInfo(req, res) {
+async function getGmailUserInfoAndRedirect(req, res) {
   try {
     const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     const token = await oAuth2Client.getToken(req.query.code);
     res.cookie("token", token.tokens, { httpOnly: true });
+
+    const redirectTo = req.session.redirectTo || "";
+    delete req.session.redirectTo;
+    res.redirect(redirectTo);
   } catch (error) {
-    throw error;
+    res.send({ msg: error.message });
   }
 }
 
@@ -52,4 +56,4 @@ async function authorize(req, res, next) {
   }
 }
 
-module.exports = { authorize, getGmailUserInfo };
+module.exports = { authorize, getGmailUserInfoAndRedirect };

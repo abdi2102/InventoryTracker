@@ -1,4 +1,4 @@
-const { authorize } = require("../backend/auth");
+const { authorize } = require("../express/auth");
 const axios = require("axios");
 const oAuth2ClientModule = require("../backend/oauth2client");
 

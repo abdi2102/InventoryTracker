@@ -1,7 +1,5 @@
 require("dotenv").config();
-const { authorize, getGmailUserInfo } = require("../backend/auth");
-const publishUpdates = require("../backend/publish-updates");
-const validateForm = require("../backend/validate-form");
+const { getGmailUserInfoAndRedirect } = require("./auth");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
@@ -9,7 +7,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.set("view engine", "pug");
 const session = require("express-session");
-
+const userSpreadsheetsRouter = require("./spreadsheet-router");
 app.use(
   session({
     resave: true,
@@ -18,39 +16,7 @@ app.use(
   })
 );
 
-app.use("/user/spreadsheet", authorize);
-
-app.get("/user/spreadsheet/", (req, res) => {
-  res.render("../views/index");
-});
-
-app.patch("/user/spreadsheet", validateForm, async (req, res) => {
-  try {
-    // update parameters for publishUpdates
-
-    const msg = await publishUpdates(req.oAuth2Client, req.sheet, req.options);
-    res.send({ msg }).status(200);
-  } catch (error) {
-    console.log(error)
-    if (error.message) {
-      res.status(500).send({ msg: error.message });
-    } else {
-      res.send(error).status(200);
-    }
-  }
-});
-
-app.get("/get/gmail/user", async (req, res) => {
-  try {
-    await getGmailUserInfo(req, res);
-
-    const redirectTo = req.session.redirectTo || "";
-    delete req.session.redirectTo;
-
-    res.redirect(redirectTo);
-  } catch (error) {
-    res.send({ msg: error.message });
-  }
-});
+app.use("/user/spreadsheet", userSpreadsheetsRouter);
+app.get("/gmail/user", getGmailUserInfoAndRedirect);
 
 module.exports = app;
