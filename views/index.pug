@@ -1,10 +1,10 @@
-//- "pug -w -o ./ -P" to watch pug files
 html(lang="en")
     head
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Update Products
+        link(rel="icon", href="/Users/abdi/InventoryTracker/images/refresh.png")
         style 
             include index.css
        
@@ -32,14 +32,11 @@ html(lang="en")
                         label#saveGoogleSheetLabel Save Spreadsheet?
                         input#saveGoogleSheetCheckbox(type="checkbox")
                     button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update
-                ul#errorList
-
                 span#serverMsg 
                 span#warningMsg *grant read/write permission to anyone with link*
+                ul#errorList
 
             table#googleSheetsLinksTable
                 tr
                     th Name 
                     th Paste?
-   
-

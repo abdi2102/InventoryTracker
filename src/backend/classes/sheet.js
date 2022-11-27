@@ -1,7 +1,8 @@
 class Sheet {
+
   constructor(link, sheetName) {
     this.link = link;
-    this.name = sheetName;
+    this.sheetName = sheetName;
     this.id;
   }
 
@@ -10,4 +11,5 @@ class Sheet {
   }
 }
 
-module.exports = Sheet;
+module.exports = Sheet
+

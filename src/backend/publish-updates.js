@@ -27,4 +27,5 @@ async function publishUpdates(auth, sheet, options) {
   }
 }
 
-module.exports = publishUpdates;
+
+module.exports = publishUpdates

@@ -2,11 +2,14 @@ const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
 
 class Product {
+
+
+
   constructor(availability, quantity, price) {
     this.availability = availability || "out of stock";
-    this.quantity = quantity || 0;
+    this.quantity = quantity || "0";
     this.price = price;
-    this.markup || 0.5;
+    this.markup = 0.5;
   }
 
   markupPrice() {
@@ -25,4 +28,4 @@ class Product {
   }
 }
 
-module.exports = Product;
+module.exports = Product

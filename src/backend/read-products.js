@@ -1,11 +1,14 @@
+
 async function readProducts(googleService, sheet, options) {
   let asinColumn = "J";
+  let numProducts = parseInt(options.numProducts)
+  let startRow = parseInt(options.startRow)
 
-  if (isNaN(options.numProducts) || options.numProducts < 1) {
+  if (isNaN(numProducts) || numProducts < 1) {
     throw Error("number of products field is not valid");
   }
 
-  let lastRow = options.startRow + options.numProducts - 1;
+  let lastRow = startRow + numProducts - 1;
   let end = `${asinColumn}${lastRow}`;
 
   try {

@@ -1,3 +1,4 @@
+
 async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
   let startColumn = "C";
   let endColumn = "E";

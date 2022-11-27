@@ -1,5 +1,3 @@
-const res = require("express/lib/response");
-
 window.addEventListener("load", () => {
   populateTableWithSavedSheets();
 });
@@ -13,7 +11,7 @@ async function submitProductUpdates() {
   const warningMsg = document.getElementById("warningMsg");
   const serverMsg = document.getElementById("serverMsg");
   const errorList = document.getElementById("errorList");
-  errorList.innerHTML = ""
+  errorList.innerHTML = "";
 
   warningMsg.style.display = "none";
   serverMsg.style.display = "inline";
@@ -38,18 +36,22 @@ async function submitProductUpdates() {
       // // save successful sheets
       let newGoogleSheet = { sheetName, sheetLink };
       saveGoogleSheets(newGoogleSheet);
+    }
 
-    } else if (response.data) {
-      response.data.forEach((error) => {
+    mainFormButton.disabled = false;
+  } catch (error) {
+    if (error.response.data instanceof Array) {
+      error.response.data.forEach((error) => {
         const listItem = document.createElement("li");
         listItem.textContent = error.message;
         listItem.style.color = "red";
         errorList.appendChild(listItem);
       });
+    } else {
+      console.log(error);
+      serverMsg.textContent = "server error";
     }
-   mainFormButton.disabled = false; 
-  } catch {
-    serverMsg.textContent = "server error";
+    mainFormButton.disabled = false;
   }
 }
 
@@ -118,6 +120,7 @@ async function sendPostRequest({
       sheetName,
     });
   } catch (error) {
+    console.log(error)
     throw error;
   }
 }

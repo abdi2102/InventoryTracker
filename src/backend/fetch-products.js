@@ -1,12 +1,12 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
-const { productUrl, config } = require("./fetch-helpers");
+const axios = require("axios")
+const cheerio = require("cheerio")
+const { productUrl, config } = require("./utils/fetch-helpers");
 const {
   quantitySelector1,
   quantitySelector2,
   priceSelector,
   timer,
-} = require("./fetch-helpers");
+} = require("./utils/fetch-helpers");
 const Product = require("./classes/product");
 
 async function fetchProducts(productIds) {
@@ -36,7 +36,7 @@ async function fetchProducts(productIds) {
         continue;
       }
 
-      const product = new Product((availability = "in stock"), quantity, price);
+      const product = new Product("in stock", quantity, price);
       product.markupPrice();
       updates.push(product);
 
@@ -53,8 +53,8 @@ async function fetchProducts(productIds) {
   }
 }
 
-function isValidProductId(productId) {
-  Array.isArray(productId) === false || productId[0] == undefined
+function isValidProductId(productId)  {
+  return Array.isArray(productId) === false || productId[0] == undefined
     ? false
     : true;
 }
@@ -74,7 +74,6 @@ function selectHtmlElements(content) {
 
 async function fetchMerchantProduct(productId, cookies, config) {
   let url = `${productUrl}${productId}`;
-
   if (cookies) {
     url += `&cookies=${cookies}`;
   }
@@ -108,4 +107,5 @@ async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
   }
 }
 
-module.exports = fetchProducts;
+
+module.exports = fetchProducts

@@ -1,14 +1,15 @@
 require("dotenv").config();
-const { authorize, getGmailUserInfo } = require("../auth");
-const publishUpdates = require("../publish-updates");
-const { validateForm } = require("../validate-form");
+const { authorize, getGmailUserInfo } = require("../backend/auth");
+const publishUpdates = require("../backend/publish-updates");
+const validateForm = require("../backend/validate-form");
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const session = require("express-session");
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.set("view engine", "pug");
+const session = require("express-session");
+
 app.use(
   session({
     resave: true,
@@ -20,17 +21,19 @@ app.use(
 app.use("/user/spreadsheet", authorize);
 
 app.get("/user/spreadsheet/", (req, res) => {
-  res.render("../frontend/views/index");
+  res.render("../views/index");
 });
 
 app.patch("/user/spreadsheet", validateForm, async (req, res) => {
   try {
     // update parameters for publishUpdates
+
     const msg = await publishUpdates(req.oAuth2Client, req.sheet, req.options);
     res.send({ msg }).status(200);
   } catch (error) {
+    console.log(error)
     if (error.message) {
-      res.send({ msg: error.message }).status(500);
+      res.status(500).send({ msg: error.message });
     } else {
       res.send(error).status(200);
     }

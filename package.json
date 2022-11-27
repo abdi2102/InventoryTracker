@@ -1,11 +1,10 @@
 {
   "name": "inventorytracker",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "src/express/server.js",
   "scripts": {
-    "test": "jest --watchAll",
-    "start": "nodemon backend/express/server.js"
+    "test": "jest --watchAll --verbose ./src",
+    "start": "nodemon src/express/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +13,7 @@
     "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
-    "express": "^4.18.1",
+    "express": "^4.18.2",
     "express-session": "^1.17.3",
     "googleapis": "^105.0.0",
     "joi": "^17.7.0",
@@ -24,5 +23,15 @@
     "jest": "^29.3.1",
     "nodemon": "^2.0.20",
     "supertest": "^6.3.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdi2102/InventoryTracker.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/abdi2102/InventoryTracker/issues"
+  },
+  "homepage": "https://github.com/abdi2102/InventoryTracker#readme",
+  "description": ""
 }
