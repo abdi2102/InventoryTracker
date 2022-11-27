@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { getGmailUserInfoAndRedirect } = require("./auth");
+const { getGmailUserInfoAndRedirect } = require("../auth/google");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
@@ -7,7 +7,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.set("view engine", "pug");
 const session = require("express-session");
-const userSpreadsheetsRouter = require("./spreadsheet-router");
+const userSpreadsheetsRouter = require("../update-products/express/router");
 app.use(
   session({
     resave: true,

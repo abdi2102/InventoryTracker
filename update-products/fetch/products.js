@@ -1,13 +1,13 @@
 const axios = require("axios")
 const cheerio = require("cheerio")
-const { productUrl, config } = require("./utils/fetch-helpers");
+const { productUrl, config } = require("./helpers");
 const {
   quantitySelector1,
   quantitySelector2,
   priceSelector,
   timer,
-} = require("./utils/fetch-helpers");
-const Product = require("./classes/product");
+} = require("./helpers");
+const Product = require("../../product/class");
 
 async function fetchProducts(productIds) {
   let updates = [];

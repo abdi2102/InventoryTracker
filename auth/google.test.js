@@ -1,6 +1,6 @@
-const { authorize } = require("../express/auth");
+const { authorize } = require("./google");
 const axios = require("axios");
-const oAuth2ClientModule = require("../backend/oauth2client");
+const oAuth2ClientModule = require("./google-client");
 
 jest.mock("axios");
 
@@ -28,7 +28,7 @@ describe("authorize users with valid token", () => {
 
     const spy = jest.mock().spyOn(oAuth2ClientModule, "getOAuth2Client");
 
-    spy.mockReturnValue(undefined)
+    spy.mockReturnValue(undefined);
 
     const req = mockRequest("goodToken");
     const res = mockResponse();
@@ -37,8 +37,7 @@ describe("authorize users with valid token", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalled();
 
-    spy.mockRestore()
-
+    spy.mockRestore();
   });
 
   test("should set session redirect url", async () => {

@@ -1,6 +1,6 @@
-const readProducts = require("./read-products");
-const fetchProducts = require("./fetch-products");
-const sendUpdates = require("./send-updates");
+const readProducts = require("./read/products");
+const fetchProducts = require("./fetch/products");
+const sendUpdates = require("./send/updates");
 const { google } = require("googleapis");
 
 async function publishUpdates(auth, sheet, options) {
@@ -27,5 +27,4 @@ async function publishUpdates(auth, sheet, options) {
   }
 }
 
-
-module.exports = publishUpdates
+module.exports = publishUpdates;

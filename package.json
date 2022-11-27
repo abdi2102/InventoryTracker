@@ -1,10 +1,10 @@
 {
   "name": "inventorytracker",
   "version": "1.0.0",
-  "main": "src/express/server.js",
+  "main": "express/index.js",
   "scripts": {
-    "test": "jest --watchAll --verbose ./src",
-    "start": "nodemon src/express/server.js"
+    "test": "jest --watchAll --verbose ",
+    "start": "nodemon express/index.js"
   },
   "author": "",
   "license": "ISC",

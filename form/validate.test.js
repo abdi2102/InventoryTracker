@@ -1,5 +1,5 @@
-const validateForm = require("../backend/validate-form");
-const Sheet = require("../backend/classes/sheet");
+const validateForm = require("./validate");
+const Sheet = require("../sheet/class");
 
 var jestRequest = function (startRow, numProducts, sheetLink, sheetName) {
   return {
