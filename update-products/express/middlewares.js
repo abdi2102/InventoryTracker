@@ -1,9 +1,7 @@
 const publishUpdates = require("../wrapper");
 const path = require("path");
-
-
 function renderUserSpreadsheet(req, res) {
-  res.render(path.join(__dirname, "../views/index"));
+  res.render(path.join(__dirname, "../public/index.pug"));
 }
 
 async function submitUpdates(req, res) {
@@ -19,4 +17,4 @@ async function submitUpdates(req, res) {
   }
 }
 
-module.exports = {renderUserSpreadsheet, submitUpdates};
+module.exports = { renderUserSpreadsheet, submitUpdates };

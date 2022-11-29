@@ -1,7 +1,7 @@
 const { authorize } = require("./google");
 const axios = require("axios");
-const oAuth2ClientModule = require("./google-client");
-
+// const oAuth2ClientModule = require("./google-client");
+const oAuth2ClientModule = require("../auth/google-client");
 jest.mock("axios");
 
 const mockRequest = (token) => {
@@ -23,8 +23,8 @@ const mockResponse = () => {
 const mockNext = jest.fn();
 
 describe("authorize users with valid token", () => {
-  test("should return error w. status 500 if authUrl cannot be set  ", async () => {
-    //   TODO: https://stackoverflow.com/questions/51269431/jest-mock-inner-function
+  test("should return error w. status 500 if authUrl cannot be set", async () => {
+//  https://stackoverflow.com/questions/51269431/jest-mock-inner-function
 
     const spy = jest.mock().spyOn(oAuth2ClientModule, "getOAuth2Client");
 

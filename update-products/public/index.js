@@ -3,14 +3,6 @@ window.addEventListener("load", () => {
 });
 
 async function submitProductUpdates() {
-  const mainFormButton = document.getElementById("mainFormButton");
-  const startRow = document.getElementById("startRowInput").value;
-  const numProducts = document.getElementById("numProductsInput").value;
-  const sheetName = document.getElementById("googleSheetNameInput").value;
-  const sheetLink = document.getElementById("googleSheetLinkInput").value;
-  const warningMsg = document.getElementById("warningMsg");
-  const serverMsg = document.getElementById("serverMsg");
-  const errorList = document.getElementById("errorList");
   errorList.innerHTML = "";
 
   warningMsg.style.display = "none";
@@ -19,10 +11,10 @@ async function submitProductUpdates() {
 
   try {
     const response = await sendPostRequest({
-      startRow,
-      numProducts,
-      sheetLink,
-      sheetName,
+      startRow: startRow.value,
+      numProducts: numProducts.value,
+      sheetLink: sheetLinkInput.value,
+      sheetName: sheetNameInput.value,
     });
 
     if (response === undefined) {
@@ -40,6 +32,13 @@ async function submitProductUpdates() {
 
     mainFormButton.disabled = false;
   } catch (error) {
+    if (error.response === undefined) {
+      console.log(error);
+      serverMsg.textContent = "server error";
+      mainFormButton.disabled = false;
+      return;
+    }
+
     if (error.response.data instanceof Array) {
       error.response.data.forEach((error) => {
         const listItem = document.createElement("li");
@@ -49,22 +48,17 @@ async function submitProductUpdates() {
       });
     } else {
       console.log(error);
-      serverMsg.textContent = "server error";
     }
     mainFormButton.disabled = false;
   }
 }
 
 function populateFormWithSheet(sheet) {
-  document.getElementById("googleSheetNameInput").value = sheet.sheetName;
-  document.getElementById("googleSheetLinkInput").value = sheet.sheetLink;
+  sheetNameInput.value = sheet.sheetName;
+  sheetLinkInput.value = sheet.sheetLink;
 }
 
 function saveGoogleSheets(newGoogleSheet) {
-  const saveGoogleSheetCheckbox = document.getElementById(
-    "saveGoogleSheetCheckbox"
-  );
-
   if (
     newGoogleSheet.sheetName === undefined ||
     newGoogleSheet.sheetLink === undefined
@@ -85,13 +79,11 @@ function saveGoogleSheets(newGoogleSheet) {
 }
 
 function populateTableWithSavedSheets() {
-  const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
   let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
   if (googleSheets.length === 0) {
     return;
   }
   googleSheets.forEach((sheet, idx) => {
-    const button = document.createElement("button");
     button.innerHTML = "Click Here";
     button.addEventListener("click", () => populateFormWithSheet(sheet));
     const tableRow = sheetLinksTable.insertRow(idx + 1);
@@ -120,7 +112,6 @@ async function sendPostRequest({
       sheetName,
     });
   } catch (error) {
-    console.log(error)
     throw error;
   }
 }

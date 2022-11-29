@@ -7,6 +7,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.set("view engine", "pug");
 const session = require("express-session");
+const path = require("path");
 const userSpreadsheetsRouter = require("../update-products/express/router");
 app.use(
   session({

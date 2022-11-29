@@ -1,9 +1,10 @@
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
-const axios = require("axios");
 // using the actual module is necessary b/c. jest is spying
+// const getOAuth2ClientModule = require("./google-client");
 const getOAuth2ClientModule = require("./google-client");
+const axios = require("axios");
 
 function requestGoogleAuth(oAuth2Client) {
   return oAuth2Client.generateAuthUrl({

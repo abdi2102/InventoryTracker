@@ -1,7 +1,7 @@
 const validateForm = require("./validate");
 const Sheet = require("../sheet/class");
 
-var jestRequest = function (startRow, numProducts, sheetLink, sheetName) {
+const jestRequest = function (startRow, numProducts, sheetLink, sheetName) {
   return {
     body: {
       startRow,
@@ -12,22 +12,22 @@ var jestRequest = function (startRow, numProducts, sheetLink, sheetName) {
   };
 };
 
-var jestResponse = function () {
+const jestResponse = function () {
   var res = {};
   res.json = jest.fn().mockReturnValue(res);
   res.status = jest.fn().mockReturnValue(res);
   return res;
 };
 
-var mockNext = jest.fn();
+const mockNext = jest.fn();
 
-var invalidForm = {
+const invalidForm = {
   startRow: "0",
   numProducts: "0",
   sheetLink: "//www.example.com",
   sheetName: "",
 };
-var validForm = {
+const validForm = {
   startRow: "2",
   numProducts: "5",
   sheetLink: "https://docs.google.com/spreadsheets/d/practiceId/",

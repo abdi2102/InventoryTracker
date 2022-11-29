@@ -1,10 +1,11 @@
+const minProductsError = require("./send-errors");
 
 async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
   let startColumn = "C";
   let endColumn = "E";
 
   if (updates.length === 0) {
-    throw Error("at least one product needs to be sent for updating");
+    throw Error(minProductsError);
   }
 
   let data = updates.map((product, idx) => {

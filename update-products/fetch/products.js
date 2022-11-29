@@ -1,12 +1,7 @@
-const axios = require("axios")
-const cheerio = require("cheerio")
-const { productUrl, config } = require("./helpers");
-const {
-  quantitySelector1,
-  quantitySelector2,
-  priceSelector,
-  timer,
-} = require("./helpers");
+const axios =require("axios");
+const { load } = require("cheerio");
+const { productUrl, config } = require("./helpers")
+const { quantitySelector1, quantitySelector2, priceSelector, timer } = require("./helpers");
 const Product = require("../../product/class");
 
 async function fetchProducts(productIds) {
@@ -60,7 +55,7 @@ function isValidProductId(productId)  {
 }
 
 function selectHtmlElements(content) {
-  const $ = cheerio.load(content);
+  const $ = load(content);
 
   let quantity =
     $(quantitySelector1).length != 0

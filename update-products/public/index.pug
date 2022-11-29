@@ -8,10 +8,7 @@ html(lang="en")
         style 
             include index.css
        
-    body 
-        script
-            include index.js
-        script(src="https://unpkg.com/axios/dist/axios.min.js") 
+    body  
         h1.mainHeader Update Products
         div.mainDiv
             div.formDiv
@@ -24,10 +21,10 @@ html(lang="en")
                         input#numProductsInput(type="number" placeholder="number of products" )
                     div.labelInputDiv
                          label#googleSheetNameLabel Spreadsheet Name
-                         input#googleSheetNameInput(type="text" placeholder="sheet name" )
+                         input#sheetNameInput(type="text" placeholder="sheet name" )
                     div.labelInputDiv
-                        label#googleSheetLinkLabel Spreadsheet Link
-                        input#googleSheetLinkInput(type="text" placeholder="sheet link" )
+                        label#sheetLinkLabel Spreadsheet Link
+                        input#sheetLinkInput(type="text" placeholder="sheet link" )
                     div.labelInputDiv
                         label#saveGoogleSheetLabel Save Spreadsheet?
                         input#saveGoogleSheetCheckbox(type="checkbox")
@@ -40,3 +37,9 @@ html(lang="en")
                 tr
                     th Name 
                     th Paste?
+        //- script needs to be at end so dom elements can load??/
+        script
+            include index.js
+        script
+            include dom.js
+        script(src="https://unpkg.com/axios/dist/axios.min.js")

@@ -1,9 +1,9 @@
-const fs = require("fs");
+const { readFileSync } = require("fs");
 const { google } = require("googleapis");
 
 function getOAuth2Client() {
   try {
-    const content = fs.readFileSync("credentials.json");
+    const content = readFileSync("credentials.json");
 
     const {
       web: { client_secret, client_id, redirect_uris },

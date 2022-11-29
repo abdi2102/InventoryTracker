@@ -2,9 +2,6 @@ const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
 
 class Product {
-
-
-
   constructor(availability, quantity, price) {
     this.availability = availability || "out of stock";
     this.quantity = quantity || "0";
