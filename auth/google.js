@@ -31,6 +31,7 @@ async function authorize(req, res, next) {
   let authUrl;
   req.session.redirectTo = req.originalUrl;
 
+
   try {
     const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     authUrl = requestGoogleAuth(oAuth2Client);

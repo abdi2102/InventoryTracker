@@ -3,7 +3,6 @@ const form = require("./schema");
 
 function validateForm(req, res, next) {
   try {
-    
     const formToValidate = {
       startRow: req.body.startRow,
       numProducts: req.body.numProducts,

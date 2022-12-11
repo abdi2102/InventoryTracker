@@ -25,16 +25,19 @@ async function submitProductUpdates() {
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
 
-      // // save successful sheets
-      let newGoogleSheet = { sheetName, sheetLink };
-      saveGoogleSheets(newGoogleSheet);
+      // save successful sheets
+      let googleSheet = {
+        sheetName: sheetNameInput.value,
+        sheetLink: sheetLinkInput.value,
+      };
+      saveGoogleSheets(googleSheet);
     }
 
     mainFormButton.disabled = false;
   } catch (error) {
     if (error.response === undefined) {
       console.log(error);
-      serverMsg.textContent = "server error";
+      serverMsg.textContent = "client side error";
       mainFormButton.disabled = false;
       return;
     }
@@ -58,20 +61,22 @@ function populateFormWithSheet(sheet) {
   sheetLinkInput.value = sheet.sheetLink;
 }
 
-function saveGoogleSheets(newGoogleSheet) {
+function saveGoogleSheets(googleSheet) {
   if (
-    newGoogleSheet.sheetName === undefined ||
-    newGoogleSheet.sheetLink === undefined
+    googleSheet.sheetName === undefined ||
+    googleSheet.sheetLink === undefined
   ) {
     return;
   }
 
   if (saveGoogleSheetCheckbox.checked) {
     let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
-    googleSheets.unshift(newGoogleSheet);
+
+    googleSheets.push(googleSheet);
 
     if (googleSheets.length > 3) {
-      googleSheets.slice(0, 2);
+      googleSheets = googleSheets.slice(1, 4);
+      console.log(googleSheets);
     }
 
     localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
@@ -80,10 +85,14 @@ function saveGoogleSheets(newGoogleSheet) {
 
 function populateTableWithSavedSheets() {
   let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
-  if (googleSheets.length === 0) {
+
+  if (googleSheets.length === 0 || googleSheets instanceof Array === false) {
+    console.log(googleSheets.length, typeof googleSheets);
     return;
   }
+
   googleSheets.forEach((sheet, idx) => {
+    const button = document.createElement("button");
     button.innerHTML = "Click Here";
     button.addEventListener("click", () => populateFormWithSheet(sheet));
     const tableRow = sheetLinksTable.insertRow(idx + 1);

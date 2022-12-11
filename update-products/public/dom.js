@@ -10,4 +10,4 @@ const saveGoogleSheetCheckbox = document.getElementById(
   "saveGoogleSheetCheckbox"
 );
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
-const button = document.createElement("button");
+
