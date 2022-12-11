@@ -1,13 +1,20 @@
 const validateForm = require("./validate");
-const Sheet = require("../sheet/class");
+const Sheet = require("../../sheet/class");
 
-const jestRequest = function (startRow, numProducts, sheetLink, sheetName) {
+const jestRequest = function (
+  startRow,
+  numProducts,
+  sheetLink,
+  sheetName,
+  retries
+) {
   return {
     body: {
       startRow,
       numProducts,
       sheetLink,
       sheetName,
+      retries,
     },
   };
 };
@@ -26,12 +33,14 @@ const invalidForm = {
   numProducts: "0",
   sheetLink: "//www.example.com",
   sheetName: "",
+  retries: "fkjadfh",
 };
 const validForm = {
   startRow: "2",
   numProducts: "5",
   sheetLink: "https://docs.google.com/spreadsheets/d/practiceId/",
   sheetName: "validForm",
+  retries: true,
 };
 describe("only valid forms will be used for product updates", function () {
   test("form containing invalid values is rejected", function () {
@@ -43,14 +52,15 @@ describe("only valid forms will be used for product updates", function () {
       invalidForm.startRow,
       invalidForm.numProducts,
       invalidForm.sheetLink,
-      invalidForm.sheetName
+      invalidForm.sheetName,
+      invalidForm.retries
     );
 
     const res = jestResponse();
 
     validateForm(req, res, mockNext);
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json.mock.lastCall[0].length).toBe(4);
+    expect(res.json.mock.lastCall[0].length).toBe(5);
     expect(mockNext).not.toHaveBeenCalled();
   });
   test("valid form is accepted", function () {
@@ -61,7 +71,8 @@ describe("only valid forms will be used for product updates", function () {
       validForm.startRow,
       validForm.numProducts,
       validForm.sheetLink,
-      validForm.sheetName
+      validForm.sheetName,
+      validForm.retries
     );
 
     const res = jestResponse();
@@ -74,6 +85,7 @@ describe("only valid forms will be used for product updates", function () {
     expect(req.options).toEqual({
       startRow: parseInt(validForm.startRow),
       numProducts: parseInt(validForm.numProducts),
+      retries: validForm.retries,
     });
 
     let sheet = new Sheet(validForm.sheetLink, validForm.sheetName);

@@ -1,4 +1,3 @@
-const minProductsError = require("./send-errors");
 const fs = require("fs");
 const path = require("path");
 const existingUpdatesFile = path.join(__dirname, "../unpublished-updates.json");
@@ -7,11 +6,9 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
   let startColumn = "C";
   let endColumn = "E";
 
-  if (updates.length === 0) {
-    throw Error(minProductsError);
-  }
-
   let existingUpdates = [];
+
+  // TODO: check if updates are  NULL OR INVALID TYPE
 
   if (fs.existsSync(existingUpdatesFile) === true) {
     let content = fs.readFileSync(existingUpdatesFile, "utf8");
@@ -20,7 +17,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
       existingUpdates = JSON.parse(content);
     }
   }
-
+  
   let newUpdates = updates.map((product, idx) => {
     return {
       range: `${startColumn}${startRow + idx}:${endColumn}${startRow + idx}`,
@@ -28,10 +25,11 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
     };
   });
 
+  const totalUpdates = existingUpdates.concat(newUpdates);
   const request = {
     spreadsheetId,
     valueInputOption: "USER_ENTERED",
-    resource: { data: existingUpdates.concat(newUpdates) },
+    resource: { data: totalUpdates },
   };
 
   try {
@@ -53,7 +51,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
       if (data.length === 0) {
         existingUpdates = [].concat(newUpdates);
       } else {
-        existingUpdates = JSON.parse(data).concat(newUpdates);
+        existingUpdates = totalUpdates;
       }
 
       fs.writeFile(

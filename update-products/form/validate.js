@@ -1,4 +1,4 @@
-const Sheet = require("../sheet/class");
+const Sheet = require("../../sheet/class");
 const form = require("./schema");
 
 function validateForm(req, res, next) {
@@ -8,8 +8,8 @@ function validateForm(req, res, next) {
       numProducts: req.body.numProducts,
       sheetLink: req.body.sheetLink,
       sheetName: req.body.sheetName,
+      retries: req.body.retries,
     };
-
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
     if (validatedForm.error) {
@@ -26,6 +26,7 @@ function validateForm(req, res, next) {
     req.options = {
       startRow: validatedForm.value.startRow,
       numProducts: validatedForm.value.numProducts,
+      retries: validatedForm.value.retries,
     };
     next();
   } catch (error) {

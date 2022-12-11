@@ -9,8 +9,10 @@ const {
 } = require("./helpers");
 const Product = require("../../product/class");
 
-async function fetchProducts(productIds) {
+async function fetchProducts(productIds, retries) {
   let updates = [];
+  let retryIndices = [];
+  let productIdsLength = productIds.length;
 
   try {
     const cookies = await fetchMerchantCookies(
@@ -19,11 +21,18 @@ async function fetchProducts(productIds) {
       config
     );
 
-    for (let i = 0; i < productIds.length; i++) {
-      const productId = productIds[i];
+    for (let i = 0; i < productIdsLength; i++) {
+      let idx = i;
+
+      // if productIdsLength is bigger than the productId argument
+      if (productIds[idx] === undefined) {
+        idx = retryIndices[idx - productIds.length];
+      }
+
+      const productId = productIds[idx];
 
       if (isValidProductId(productId) === false) {
-        updates.push(new Product());
+        updates[idx] = new Product();
         continue;
       }
 
@@ -31,18 +40,35 @@ async function fetchProducts(productIds) {
 
       let { quantity, price } = selectHtmlElements(content);
 
-      if (quantity < 5 || price == null) {
-        updates.push(new Product());
+      if (retries) {
+        if (quantity < 1 && price == null) {
+          // then try fetching this product again
+          console.log(`retry index: ${idx}`);
+          updates[idx] = new Product();
+
+          if (retryIndices.includes(idx) === false) {
+            retryIndices.push(idx);
+            productIdsLength += 1;
+            console.log(`retry: ${idx}`);
+          }
+
+          continue;
+        }
+      }
+
+      if (quantity < 5 || quantity === null) {
+        // product is likely out of stock
+        updates[idx] = new Product();
         continue;
       }
 
       const product = new Product("in stock", quantity, price);
       product.markupPrice();
-      updates.push(product);
+      updates[idx] = product;
 
-      await timer(470 * (1 + Math.random()));
+      await timer(425 * (1 + Math.random()));
     }
-
+    console.log(`retried (products): ${retryIndices.length}`);
     return updates;
   } catch (error) {
     console.log(error);

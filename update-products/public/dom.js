@@ -9,5 +9,7 @@ const errorList = document.getElementById("errorList");
 const saveGoogleSheetCheckbox = document.getElementById(
   "saveGoogleSheetCheckbox"
 );
+const retryFailedRequestsCheckbox = document.getElementById(
+  "retryFailedRequestsCheckbox"
+);
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
-

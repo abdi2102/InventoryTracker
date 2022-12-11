@@ -4,17 +4,18 @@ window.addEventListener("load", () => {
 
 async function submitProductUpdates() {
   errorList.innerHTML = "";
+  serverMsg.textContent = "";
 
   warningMsg.style.display = "none";
   serverMsg.style.display = "inline";
   mainFormButton.disabled = true;
-
   try {
     const response = await sendPostRequest({
       startRow: startRow.value,
       numProducts: numProducts.value,
       sheetLink: sheetLinkInput.value,
       sheetName: sheetNameInput.value,
+      retries: retryFailedRequestsCheckbox.checked
     });
 
     if (response === undefined) {
@@ -112,6 +113,7 @@ async function sendPostRequest({
   numProducts,
   sheetLink,
   sheetName,
+  retries,
 }) {
   try {
     return await axios.patch("http://localhost:3000/user/spreadsheet", {
@@ -119,6 +121,7 @@ async function sendPostRequest({
       numProducts,
       sheetLink,
       sheetName,
+      retries,
     });
   } catch (error) {
     throw error;

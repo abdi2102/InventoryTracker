@@ -28,9 +28,12 @@ html(lang="en")
                     div.labelInputDiv
                         label#saveGoogleSheetLabel Save Spreadsheet?
                         input#saveGoogleSheetCheckbox(type="checkbox")
+                    div.labelInputDiv
+                        label#retryFailedRequestsLabel allow retries?
+                        input#retryFailedRequestsCheckbox(type="checkbox")
                     button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update
-                span#serverMsg 
-                span#warningMsg *grant read/write permission to anyone with link*
+                h4#serverMsg 
+                h4#warningMsg *grant read/write permission to anyone with link*
                 ul#errorList
 
             table#googleSheetsLinksTable

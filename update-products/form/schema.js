@@ -6,6 +6,7 @@ const form = Joi.object({
   numProducts: Joi.number().required().min(1).max(50),
   sheetName: Joi.string().required(),
   sheetLink: Joi.string().required().uri(),
+  retries: Joi.bool().required()
 });
 
 module.exports = form;
