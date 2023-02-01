@@ -1,7 +1,7 @@
 const { google } = require("googleapis");
-const readProducts = require("../read/products")
-const fetchProducts = require("../fetch/products")
-const sendUpdates = require("../send/updates")
+const readProducts = require("../read/products");
+const fetchProducts = require("../fetch/products");
+const sendUpdates = require("../send/updates");
 const path = require("path");
 
 function renderUserSpreadsheet(req, res) {
@@ -21,10 +21,6 @@ async function submitUpdates(req, res) {
     }
 
     const updates = await fetchProducts(productIds, options.retries);
-
-    if (updates.length < options.numProducts) {
-      throw Error("browser got caught. try again later.");
-    }
 
     const updatedRows = await sendUpdates(
       googleService,

@@ -24,9 +24,10 @@ async function fetchProducts(productIds, retries) {
     for (let i = 0; i < productIdsLength; i++) {
       let idx = i;
 
-      // if productIdsLength is bigger than the productId argument
+      // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];
+        console.log(`retry index: ${idx}`);
       }
 
       const productId = productIds[idx];
@@ -41,15 +42,13 @@ async function fetchProducts(productIds, retries) {
       let { quantity, price } = selectHtmlElements(content);
 
       if (retries) {
+        // failed fetch
         if (quantity < 1 && price == null) {
-          // then try fetching this product again
-          console.log(`retry index: ${idx}`);
           updates[idx] = new Product();
 
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
             productIdsLength += 1;
-            console.log(`retry: ${idx}`);
           }
 
           continue;
@@ -66,8 +65,9 @@ async function fetchProducts(productIds, retries) {
       product.markupPrice();
       updates[idx] = product;
 
-      await timer(425 * (1 + Math.random()));
+      await timer(375 * (1 + Math.random()));
     }
+
     console.log(`retried (products): ${retryIndices.length}`);
     return updates;
   } catch (error) {
@@ -75,7 +75,7 @@ async function fetchProducts(productIds, retries) {
     if (updates.length > 0) {
       return updates;
     } else {
-      throw error;
+      throw Error("could not fetch products. try again later.");
     }
   }
 }

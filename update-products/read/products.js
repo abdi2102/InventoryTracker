@@ -2,8 +2,9 @@ const numProductsNotValid = require("./read-errors");
 
 async function readProducts(googleService, sheet, options) {
   let asinColumn = "J";
-  let numProducts = parseInt(options.numProducts);
-  let startRow = parseInt(options.startRow);
+
+  let numProducts = options.numProducts;
+  let startRow = options.startRow;
 
   if (isNaN(numProducts) || numProducts < 1) {
     throw Error(numProductsNotValid);
