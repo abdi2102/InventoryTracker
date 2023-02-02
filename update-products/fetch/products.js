@@ -66,7 +66,7 @@ async function fetchProducts(productIds, retries) {
       product.markupPrice();
       updates[idx] = product;
 
-      await timer(375 * (1 + Math.random()));
+      await timer(360 * (1 + Math.random()));
     }
 
     console.log(`retried (products): ${retryIndices.length}`);
