@@ -8,6 +8,7 @@ const {
   timer,
 } = require("./helpers");
 const Product = require("../../product/class");
+const { type } = require("express/lib/response");
 
 async function fetchProducts(productIds, retries) {
   let updates = [];
@@ -112,8 +113,19 @@ async function fetchMerchantProduct(productId, cookies, config) {
 
     return content;
   } catch (error) {
-    console.log(`could not fetch ${productId}`);
-    return undefined;
+    if (error.response) {
+      const status = error.response.status;
+      const statusText = error.response.statusText;
+
+      if (status === 423 || status === 403) {
+        // requests after are doomed to fail with these statuses
+        throw Error(statusText);
+      }
+
+      return undefined;
+    } else {
+      throw Error(error);
+    }
   }
 }
 

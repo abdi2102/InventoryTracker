@@ -8,12 +8,14 @@ const priceSelector = "div#corePrice_feature_div span.a-offscreen";
 const productUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=https://www.amazon.com/dp/";
 
+
   const config = {
   headers: {
     "x-api-key": process.env.SCRAPING_ANT_X_API_KEY,
     useQueryString: true,
   },
 };
+
 // AMAZON FETCH HELPERS
 const timer = function (ms) {
   return new Promise(function (res) {
