@@ -27,7 +27,7 @@ async function fetchProducts(productIds, retries) {
       // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];
-        console.log(`retry index: ${idx}`);
+        console.log(`retry product: ${idx}`);
       }
 
       const productId = productIds[idx];
@@ -87,7 +87,7 @@ function isValidProductId(productId) {
 }
 
 function selectHtmlElements(content) {
-  const $ = load(content);
+  const $ = load(content || "");
 
   let quantity =
     $(quantitySelector1).length != 0
@@ -112,7 +112,8 @@ async function fetchMerchantProduct(productId, cookies, config) {
 
     return content;
   } catch (error) {
-    throw error;
+    console.log(`could not fetch ${productId}`);
+    return undefined;
   }
 }
 

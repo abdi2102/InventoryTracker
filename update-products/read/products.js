@@ -21,7 +21,7 @@ async function readProducts(googleService, sheet, options) {
       range: `${asinColumn}${options.startRow}:${end}`,
     });
 
-    return values;
+    return values || [];
   } catch (error) {
     throw error;
   }
