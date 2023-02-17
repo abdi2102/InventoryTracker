@@ -65,7 +65,7 @@ async function fetchProducts(productIds, options) {
       product.markupPrice();
       updates[idx] = product;
 
-      if (options.updateAll) {
+      if (productIds.length > 50) {
         await timer(500 * (1 + Math.random()));
       } else {
         await timer(375 * (1 + Math.random()));
