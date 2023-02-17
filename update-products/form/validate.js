@@ -4,16 +4,24 @@ const form = require("./schema");
 function validateForm(req, res, next) {
   try {
     const formToValidate = {
-      startRow: req.body.startRow,
-      numProducts: req.body.numProducts,
+      startRow: req.body.startRow || 2,
+      numProducts: req.body.numProducts || 0,
       sheetLink: req.body.sheetLink,
-      sheetName: req.body.sheetName,
+      sheetName: req.body.sheetName || undefined,
       retries: req.body.retries,
+      updateAll: req.body.updateAll,
     };
+
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
     if (validatedForm.error) {
       return res.status(400).json(validatedForm.error.details);
+    }
+
+    if (formToValidate.numProducts <= 0 && formToValidate.updateAll === false) {
+      return res.status(400).json({
+        msg: "At least one update required",
+      });
     }
 
     const sheet = new Sheet(
@@ -27,6 +35,7 @@ function validateForm(req, res, next) {
       startRow: validatedForm.value.startRow,
       numProducts: validatedForm.value.numProducts,
       retries: validatedForm.value.retries,
+      updateAll: validatedForm.value.updateAll,
     };
     next();
   } catch (error) {

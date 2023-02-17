@@ -2,7 +2,7 @@ window.addEventListener("load", () => {
   populateTableWithSavedSheets();
 });
 
-async function submitProductUpdates() {
+async function submitProductUpdates(e) {
   errorList.innerHTML = "";
   serverMsg.textContent = "";
 
@@ -10,12 +10,14 @@ async function submitProductUpdates() {
   serverMsg.style.display = "inline";
   mainFormButton.disabled = true;
   try {
+    console.log(startRow.defaultValue)
     const response = await sendPostRequest({
       startRow: startRow.value,
       numProducts: numProducts.value,
       sheetLink: sheetLinkInput.value,
       sheetName: sheetNameInput.value,
-      retries: retryFailedRequestsCheckbox.checked
+      retries: retryFailedRequestsCheckbox.checked,
+      updateAll: updateAllCheckbox.checked,
     });
 
     if (response === undefined) {
@@ -41,19 +43,20 @@ async function submitProductUpdates() {
       serverMsg.textContent = "client side error";
       mainFormButton.disabled = false;
       return;
-    }
-
-    if (error.response.data instanceof Array) {
+    } else if (error.response.data instanceof Array) {
       error.response.data.forEach((error) => {
         const listItem = document.createElement("li");
         listItem.textContent = error.message;
         listItem.style.color = "red";
         errorList.appendChild(listItem);
       });
+    } else if (error.response.data.msg) {
+      serverMsg.textContent = error.response.data.msg;
+      mainFormButton.disabled = false;
     } else {
       console.log(error);
+      mainFormButton.disabled = false;
     }
-    mainFormButton.disabled = false;
   }
 }
 
@@ -114,6 +117,7 @@ async function sendPostRequest({
   sheetLink,
   sheetName,
   retries,
+  updateAll,
 }) {
   try {
     return await axios.patch("http://localhost:3000/user/spreadsheet", {
@@ -122,6 +126,7 @@ async function sendPostRequest({
       sheetLink,
       sheetName,
       retries,
+      updateAll,
     });
   } catch (error) {
     throw error;

@@ -15,7 +15,7 @@ html(lang="en")
                 form#mainForm(action="#")
                     div.labelInputDiv
                          label#startLabel Start
-                         input#startRowInput(type="number" placeholder="start"  )
+                         input#startRowInput(type="number" placeholder="2")
                     div.labelInputDiv
                         label#numProductsLabel Number of Products
                         input#numProductsInput(type="number" placeholder="number of products" )
@@ -29,8 +29,11 @@ html(lang="en")
                         label#saveGoogleSheetLabel Save Spreadsheet?
                         input#saveGoogleSheetCheckbox(type="checkbox")
                     div.labelInputDiv
-                        label#retryFailedRequestsLabel allow retries?
+                        label#retryFailedRequestsLabel Allow Retries?
                         input#retryFailedRequestsCheckbox(type="checkbox")
+                    div.labelInputDiv
+                        label#updateAllLabel Update All Products?
+                        input#updateAllCheckbox(type="checkbox")
                     button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update
                 h4#serverMsg 
                 h4#warningMsg *grant read/write permission to anyone with link*

@@ -8,9 +8,8 @@ const {
   timer,
 } = require("./helpers");
 const Product = require("../../product/class");
-const { type } = require("express/lib/response");
 
-async function fetchProducts(productIds, retries) {
+async function fetchProducts(productIds, options) {
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
@@ -28,7 +27,7 @@ async function fetchProducts(productIds, retries) {
       // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];
-        console.log(`retry product: ${idx}`);
+        console.log(`retry product: ${options.startRow + idx}`);
       }
 
       const productId = productIds[idx];
@@ -42,7 +41,7 @@ async function fetchProducts(productIds, retries) {
 
       let { quantity, price } = selectHtmlElements(content);
 
-      if (retries) {
+      if (options.retries) {
         // failed fetch
         if (quantity < 1 && price == null) {
           updates[idx] = new Product();
@@ -66,7 +65,11 @@ async function fetchProducts(productIds, retries) {
       product.markupPrice();
       updates[idx] = product;
 
-      await timer(360 * (1 + Math.random()));
+      if (options.updateAll) {
+        await timer(500 * (1 + Math.random()));
+      } else {
+        await timer(375 * (1 + Math.random()));
+      }
     }
 
     console.log(`retried (products): ${retryIndices.length}`);

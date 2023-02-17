@@ -14,13 +14,18 @@ async function submitUpdates(req, res) {
   let options = req.options;
   try {
     const googleService = google.sheets({ version: "v4", auth });
+
+    // TODO: SEND UPDATES IN INCREMENTS OF 25
     const productIds = await readProducts(googleService, sheet, options);
 
     if (productIds.length === 0) {
       throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
 
-    const updates = await fetchProducts(productIds, options.retries);
+    const updates = await fetchProducts(
+      productIds,
+      options
+    );
 
     const updatedRows = await sendUpdates(
       googleService,

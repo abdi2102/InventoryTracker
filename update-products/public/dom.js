@@ -12,4 +12,7 @@ const saveGoogleSheetCheckbox = document.getElementById(
 const retryFailedRequestsCheckbox = document.getElementById(
   "retryFailedRequestsCheckbox"
 );
+const updateAllCheckbox = document.getElementById(
+  "updateAllCheckbox"
+);
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
