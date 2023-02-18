@@ -9,7 +9,7 @@ const {
 } = require("./helpers");
 const Product = require("../../product/class");
 
-async function fetchProducts(merchant, productIds, options) {
+async function fetchProducts(productIds, options) {
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
@@ -133,24 +133,6 @@ async function fetchMerchantProduct(productId, cookies, config) {
     }
   }
 }
-
-// async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
-//   // cookies to avoid scrape detection
-
-//   try {
-//     if (productCount < 5) {
-//       return;
-//     }
-
-//     const {
-//       data: { cookies },
-//     } = await axios.get(mainAmazonUrl, config);
-
-//     return encodeURIComponent(cookies);
-//   } catch (error) {
-//     throw Error(error);
-//   }
-// }
 
 async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
   // cookies to avoid scrape detection

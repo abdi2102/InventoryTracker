@@ -17,6 +17,8 @@ async function submitUpdates(req, res) {
 
     const productIds = await readProducts(googleService, sheet, options);
 
+    console.log(productIds)
+
     if (productIds.length === 0) {
       throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
@@ -32,6 +34,7 @@ async function submitUpdates(req, res) {
         productIds.slice(updateOffset, updateOffset + numProducts),
         options
       );
+
 
       await sendUpdates(
         googleService,
