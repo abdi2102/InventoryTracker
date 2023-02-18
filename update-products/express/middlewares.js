@@ -12,18 +12,20 @@ async function submitUpdates(req, res) {
   let auth = req.oAuth2Client;
   let sheet = req.sheet;
   let options = req.options;
+
+  // TODO:------ REMOVE WHEN FRONTEND SELECT IS FULLY FUNCTIONAL------
+  options = { ...options, updateAll: false, retries: false };
+  // ----- REMOVE WHEN FRONTEND SELECT IS FULLY FUNCTIONAL------
   try {
     const googleService = google.sheets({ version: "v4", auth });
 
     const productIds = await readProducts(googleService, sheet, options);
 
-    console.log(productIds)
-
     if (productIds.length === 0) {
       throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
 
-    const setCount = 25;
+    const setCount = 3;
     const updateIterations = productIds.length / setCount;
 
     for (let x = updateIterations; x > 0; x--) {
@@ -34,7 +36,6 @@ async function submitUpdates(req, res) {
         productIds.slice(updateOffset, updateOffset + numProducts),
         options
       );
-
 
       await sendUpdates(
         googleService,

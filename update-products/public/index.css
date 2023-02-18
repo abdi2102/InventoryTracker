@@ -67,13 +67,20 @@
     height: fit-content;
 }
 
-#googleSheetsLinksTable tr {
+ #googleSheetsLinksTable th {
+    font-size: 16px;
+    border-bottom: solid black 1px;
+}
+
+#googleSheetsLinksTable tr, #googleSheetsLinksTable th {
+    font-size: 16px;
     text-align: center;
 }
 
-#sheetNameCell, #sheetLinkCell {
-   font-size: 12px;
-   word-break: break-all;
+#sheetLinkButton {
+    background-color: white;
+    border-radius: 3px;
+    margin: 8px 0px;
 }
 
 @media screen and (max-height: 768px) {

@@ -15,33 +15,33 @@ async function submitProductUpdates() {
 
   warningMsg.style.display = "none";
   serverMsg.style.display = "inline";
-  // mainFormButton.disabled = true;
+  mainFormButton.disabled = true;
   try {
-    console.log($("#optionsSelectPicker").val());
-    // const response = await sendPostRequest({
-    //   startRow: startRow.value,
-    //   numProducts: numProducts.value,
-    //   sheetLink: sheetLinkInput.value,
-    //   sheetName: sheetNameInput.value,
-    // });
+    // console.log($("#optionsSelectPicker").val());
+    const response = await sendPostRequest({
+      startRow: startRow.value,
+      numProducts: numProducts.value,
+      sheetLink: sheetLinkInput.value,
+      sheetName: sheetNameInput.value,
+    });
 
-    // if (response === undefined) {
-    //   serverMsg.textContent = "server error";
-    //   return;
-    // }
+    if (response === undefined) {
+      serverMsg.textContent = "server error";
+      return;
+    }
 
-    // if (response.data.msg) {
-    //   serverMsg.textContent = response.data.msg;
+    if (response.data.msg) {
+      serverMsg.textContent = response.data.msg;
 
-    //   // save successful sheets
-    //   let googleSheet = {
-    //     sheetName: sheetNameInput.value,
-    //     sheetLink: sheetLinkInput.value,
-    //   };
-    //   saveGoogleSheets(googleSheet);
-    // }
+      // save successful sheets
+      let googleSheet = {
+        sheetName: sheetNameInput.value,
+        sheetLink: sheetLinkInput.value,
+      };
+      saveGoogleSheets(googleSheet);
+    }
 
-    // mainFormButton.disabled = false;
+    mainFormButton.disabled = false;
   } catch (error) {
     if (error.response === undefined) {
       console.log(error);
@@ -101,18 +101,13 @@ function populateTableWithSavedSheets() {
 
   googleSheets.forEach((sheet, idx) => {
     const button = document.createElement("button");
-    button.innerHTML = "Click Here";
+    button.innerHTML = sheet.sheetName;
+    button.setAttribute("id", "sheetLinkButton");
     button.addEventListener("click", () => populateFormWithSheet(sheet));
 
     const tableRow = sheetLinksTable.insertRow(idx + 1);
-    const sheetNameCell = tableRow.insertCell(0);
-    const sheetLinkCell = tableRow.insertCell(1);
-
-    sheetNameCell.setAttribute("id", "sheetNameCell");
-    sheetLinkCell.setAttribute("id", "sheetLinkCell");
-
+    const sheetLinkCell = tableRow.insertCell(0);
     sheetLinkCell.appendChild(button);
-    sheetNameCell.innerHTML = sheet.sheetName;
   });
 }
 
