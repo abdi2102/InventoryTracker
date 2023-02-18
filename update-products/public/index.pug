@@ -6,8 +6,7 @@ html(lang="en")
         title Update Products
         link(rel="icon", href="/Users/abdi/InventoryTracker/images/refresh.png")
         style 
-            include index.css
-       
+            include index.css       
     body  
         h1.mainHeader Update Products
         div.mainDiv
@@ -25,27 +24,46 @@ html(lang="en")
                     div.labelInputDiv
                         label#sheetLinkLabel Spreadsheet Link
                         input#sheetLinkInput(type="text" placeholder="sheet link" )
-                    div.labelInputDiv
-                        label#saveGoogleSheetLabel Save Spreadsheet?
-                        input#saveGoogleSheetCheckbox(type="checkbox")
-                    div.labelInputDiv
-                        label#retryFailedRequestsLabel Allow Retries?
-                        input#retryFailedRequestsCheckbox(type="checkbox")
-                    div.labelInputDiv
-                        label#updateAllLabel Update All Products?
-                        input#updateAllCheckbox(type="checkbox")
+                    div.labelInputDiv 
+                        label#updateOptions Options
+                        select.selectPicker#optionsSelectPicker(multiple title="Query Options")
+                            optgroup(label="Merchant")               
+                                option Amazon 
+                                option Walmart 
+                            optgroup(label="Template") 
+                                option Facebook Shops
+                            optgroup(label="Options")
+                                option Save Spreadsheet
+                                option Allow Retries
+                                option Update All Products
+                     
                     button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update
                 h4#serverMsg 
-                h4#warningMsg *grant read/write permission to anyone with link*
+                h4#warningMsg *grant read/write permission sheet*
                 ul#errorList
 
             table#googleSheetsLinksTable
                 tr
-                    th Name 
-                    th Paste?
+                    //- th Name 
+                    //- th Paste?
         //- script needs to be at end so dom elements can load??/
         script
             include index.js
         script
             include dom.js
         script(src="https://unpkg.com/axios/dist/axios.min.js")
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+                    //- div.labelInputDiv
+                    //-     label#saveGoogleSheetLabel Save Spreadsheet?
+                    //-     input#saveGoogleSheetCheckbox(type="checkbox")
+                    //- div.labelInputDiv
+                    //-     label#retryFailedRequestsLabel Allow Retries?
+                    //-     input#retryFailedRequestsCheckbox(type="checkbox")
+                    //- div.labelInputDiv
+                    //-     label#updateAllLabel Update All Products?
+                    //-     input#updateAllCheckbox(type="checkbox")
