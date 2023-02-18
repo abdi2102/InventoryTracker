@@ -1,9 +1,9 @@
 // CHEERIO SELECTORS
 // Get Quantity
-const quantitySelector1 = "select#quantity";
-const quantitySelector2 = "select#rcxsubsQuan";
+const amazonQuantitySelector1 = "select#quantity";
+const amazonQuantitySelector2 = "select#rcxsubsQuan";
 //   Get Price
-const priceSelector = "div#corePrice_feature_div span.a-offscreen";
+const amazonPriceSelector = "div#corePrice_feature_div span.a-offscreen";
 // SCRAPING ANT
 const productUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=https://www.amazon.com/dp/";
@@ -27,7 +27,7 @@ module.exports = {
   productUrl,
   config,
   timer,
-  quantitySelector1,
-  quantitySelector2,
-  priceSelector,
+  amazonQuantitySelector1,
+  amazonQuantitySelector2,
+  amazonPriceSelector,
 };
