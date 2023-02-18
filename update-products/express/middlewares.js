@@ -15,26 +15,35 @@ async function submitUpdates(req, res) {
   try {
     const googleService = google.sheets({ version: "v4", auth });
 
-    // TODO: SEND UPDATES IN INCREMENTS OF 25
     const productIds = await readProducts(googleService, sheet, options);
 
     if (productIds.length === 0) {
       throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
 
-    const updates = await fetchProducts(
-      productIds,
-      options
-    );
+    const setCount = 25;
+    const updateIterations = productIds.length / setCount;
 
-    const updatedRows = await sendUpdates(
-      googleService,
-      sheet.id,
-      updates,
-      options.startRow
-    );
+    for (let x = updateIterations; x > 0; x--) {
+      let updateOffset = (updateIterations - x) * setCount;
+      let numProducts = x < 1 ? productIds.length % setCount : setCount;
 
-    res.status(200).json({ msg: `updated rows: ${updatedRows}` });
+      const updates = await fetchProducts(
+        productIds.slice(updateOffset, updateOffset + numProducts),
+        options
+      );
+
+      await sendUpdates(
+        googleService,
+        sheet.id,
+        updates,
+        updateOffset + options.startRow
+      );
+
+      console.log("split");
+    }
+
+    res.status(200).json({ msg: "updates complete" });
   } catch (error) {
     console.log(error);
     if (error.message) {

@@ -2,25 +2,29 @@ const axios = require("axios");
 const { load } = require("cheerio");
 const { productUrl, config } = require("./helpers");
 const {
-  quantitySelector1,
-  quantitySelector2,
-  priceSelector,
+  amazonQuantitySelector1,
+  amazonQuantitySelector2,
+  amazonPriceSelector,
   timer,
 } = require("./helpers");
 const Product = require("../../product/class");
 
-async function fetchProducts(productIds, options) {
+async function fetchProducts(merchant, productIds, options) {
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
 
+  // TODO: FETCH BY MERCHANT
+
   try {
+    // --------MERCHANT SPECIFIC----------
     const cookies = await fetchMerchantCookies(
       productUrl,
       productIds.length,
       config
     );
 
+    // --------MERCHANT SPECIFIC----------
     for (let i = 0; i < productIdsLength; i++) {
       let idx = i;
 
@@ -37,12 +41,14 @@ async function fetchProducts(productIds, options) {
         continue;
       }
 
+      // --------MERCHANT SPECIFIC----------
       const content = await fetchMerchantProduct(productId[0], cookies, config);
 
       let { quantity, price } = selectHtmlElements(content);
 
+      // --------MERCHANT SPECIFIC----------
+
       if (options.retries) {
-        // failed fetch
         if (quantity < 1 && price == null) {
           updates[idx] = new Product();
 
@@ -65,11 +71,7 @@ async function fetchProducts(productIds, options) {
       product.markupPrice();
       updates[idx] = product;
 
-      if (productIds.length > 50) {
-        await timer(500 * (1 + Math.random()));
-      } else {
-        await timer(375 * (1 + Math.random()));
-      }
+      await timer(400 * (1 + Math.random()));
     }
 
     console.log(`retried (products): ${retryIndices.length}`);
@@ -94,11 +96,11 @@ function selectHtmlElements(content) {
   const $ = load(content || "");
 
   let quantity =
-    $(quantitySelector1).length != 0
-      ? $(quantitySelector1).children().length
-      : $(quantitySelector2).children().length;
+    $(amazonQuantitySelector1).length != 0
+      ? $(amazonQuantitySelector1).children().length
+      : $(amazonQuantitySelector2).children().length;
 
-  let price = $(priceSelector).html();
+  let price = $(amazonPriceSelector).html();
 
   return { quantity, price };
 }
@@ -131,6 +133,24 @@ async function fetchMerchantProduct(productId, cookies, config) {
     }
   }
 }
+
+// async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
+//   // cookies to avoid scrape detection
+
+//   try {
+//     if (productCount < 5) {
+//       return;
+//     }
+
+//     const {
+//       data: { cookies },
+//     } = await axios.get(mainAmazonUrl, config);
+
+//     return encodeURIComponent(cookies);
+//   } catch (error) {
+//     throw Error(error);
+//   }
+// }
 
 async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
   // cookies to avoid scrape detection

@@ -25,6 +25,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
       values: [[product.quantity, product.availability, product.markup]],
     };
   });
+  console.log(newUpdates)
 
   const totalUpdates = existingUpdates.concat(newUpdates);
   const request = {
@@ -37,7 +38,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
     const response = await googleService.spreadsheets.values.batchUpdate(
       request
     );
-    return response.data.totalUpdatedRows;
+    console.log(response.data.totalUpdatedRows);
   } catch (error) {
     if (fs.existsSync(existingUpdatesFile) === false) {
       fs.appendFileSync(existingUpdatesFile, "");
