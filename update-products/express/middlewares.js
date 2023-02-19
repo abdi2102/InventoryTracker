@@ -20,12 +20,11 @@ async function submitUpdates(req, res) {
     const googleService = google.sheets({ version: "v4", auth });
 
     const productIds = await readProducts(googleService, sheet, options);
-
     if (productIds.length === 0) {
       throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
 
-    const setCount = 3;
+    const setCount = 25;
     const updateIterations = productIds.length / setCount;
 
     for (let x = updateIterations; x > 0; x--) {

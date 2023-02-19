@@ -2,14 +2,12 @@ const numProductsNotValid = require("./read-errors");
 
 // TODO: READ OUT OF STOCK STATUS
 async function readProducts(googleService, sheet, options) {
-  let asinColumn = "J";
+  const { startRow, numProducts, custom } = options;
+  const asinColumn = "J";
   let partialRange;
   let sheetName = sheet.sheetName !== undefined ? `${sheet.sheetName}!` : "";
 
-  if (options.updateAll === false) {
-    let numProducts = options.numProducts;
-    let startRow = options.startRow;
-
+  if (custom.includes("updateAll") === false) {
     if (isNaN(numProducts) || numProducts < 1) {
       throw Error(numProductsNotValid);
     }
@@ -17,7 +15,7 @@ async function readProducts(googleService, sheet, options) {
     let lastRow = startRow + numProducts - 1;
     let end = `${asinColumn}${lastRow}`;
 
-    partialRange = `${sheetName}${asinColumn}${options.startRow}:${end}`;
+    partialRange = `${sheetName}${asinColumn}${startRow}:${end}`;
   }
 
   try {
@@ -25,7 +23,7 @@ async function readProducts(googleService, sheet, options) {
       data: { values },
     } = await googleService.spreadsheets.values.get({
       spreadsheetId: sheet.id,
-      range: options.updateAll
+      range: custom.includes("updateAll")
         ? `${sheetName}${asinColumn}:${asinColumn}`
         : partialRange,
     });

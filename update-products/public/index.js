@@ -2,27 +2,18 @@ window.addEventListener("load", () => {
   populateTableWithSavedSheets();
 });
 
-optionsSelectPicker.addEventListener("change", (e) => {
-  console.log(e.target);
-
-  // TODO: GET select option from optgroup
-  console.log({});
-});
-
 async function submitProductUpdates() {
   errorList.innerHTML = "";
   serverMsg.textContent = "";
-
-  warningMsg.style.display = "none";
-  serverMsg.style.display = "inline";
+  optionsSelectPicker.disabled = true;
   mainFormButton.disabled = true;
   try {
-    // console.log($("#optionsSelectPicker").val());
     const response = await sendPostRequest({
       startRow: startRow.value,
       numProducts: numProducts.value,
       sheetLink: sheetLinkInput.value,
       sheetName: sheetNameInput.value,
+      custom: JSON.stringify(optionsSelectPicker.val() || []),
     });
 
     if (response === undefined) {
@@ -38,16 +29,19 @@ async function submitProductUpdates() {
         sheetName: sheetNameInput.value,
         sheetLink: sheetLinkInput.value,
       };
-      saveGoogleSheets(googleSheet);
+      const spreadsheetToBeSaved = false;
+      saveGoogleSheets(googleSheet, spreadsheetToBeSaved);
     }
 
     mainFormButton.disabled = false;
+    optionsSelectPicker.disabled = false;
   } catch (error) {
+    mainFormButton.disabled = false;
+    optionsSelectPicker.disabled = false;
+    console.log(error);
     if (error.response === undefined) {
       console.log(error);
       serverMsg.textContent = "client side error";
-      mainFormButton.disabled = false;
-      return;
     } else if (error.response.data instanceof Array) {
       error.response.data.forEach((error) => {
         const listItem = document.createElement("li");
@@ -57,10 +51,6 @@ async function submitProductUpdates() {
       });
     } else if (error.response.data.msg) {
       serverMsg.textContent = error.response.data.msg;
-      mainFormButton.disabled = false;
-    } else {
-      console.log(error);
-      mainFormButton.disabled = false;
     }
   }
 }
@@ -70,7 +60,7 @@ function populateFormWithSheet(sheet) {
   sheetLinkInput.value = sheet.sheetLink;
 }
 
-function saveGoogleSheets(googleSheet) {
+function saveGoogleSheets(googleSheet, spreadsheetToBeSaved) {
   if (
     googleSheet.sheetName === undefined ||
     googleSheet.sheetLink === undefined
@@ -78,14 +68,13 @@ function saveGoogleSheets(googleSheet) {
     return;
   }
 
-  if (saveGoogleSheetCheckbox.checked) {
+  if (spreadsheetToBeSaved) {
     let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
 
     googleSheets.push(googleSheet);
 
     if (googleSheets.length > 3) {
       googleSheets = googleSheets.slice(1, 4);
-      console.log(googleSheets);
     }
 
     localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
@@ -116,8 +105,7 @@ async function sendPostRequest({
   numProducts,
   sheetLink,
   sheetName,
-  retries,
-  updateAll,
+  custom,
 }) {
   try {
     return await axios.patch("http://localhost:3000/user/spreadsheet", {
@@ -125,8 +113,7 @@ async function sendPostRequest({
       numProducts,
       sheetLink,
       sheetName,
-      retries,
-      updateAll,
+      custom,
     });
   } catch (error) {
     throw error;
