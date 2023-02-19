@@ -5,9 +5,23 @@ window.addEventListener("load", () => {
 async function submitProductUpdates() {
   errorList.innerHTML = "";
   serverMsg.textContent = "";
-  optionsSelectPicker.disabled = true;
   mainFormButton.disabled = true;
   try {
+    const merchant = $(
+      '#optionsSelectPicker optgroup[label="Merchant"] option:selected'
+    ).val();
+    const template = $(
+      '#optionsSelectPicker optgroup[label="Template"] option:selected'
+    ).val();
+
+    const custom = $(
+      '#optionsSelectPicker optgroup[label="Custom"] option:selected'
+    )
+      .map((i, opt) => {
+        return opt.value;
+      })
+      .toArray();
+
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet",
       {
@@ -15,72 +29,71 @@ async function submitProductUpdates() {
         numProducts: numProducts.value,
         sheetLink: sheetLinkInput.value,
         sheetName: sheetNameInput.value,
-        custom: JSON.stringify(optionsSelectPicker.val() || []),
+        merchant,
+        template,
+        custom: JSON.stringify(custom),
       }
     );
 
-    if (response === undefined) {
-      serverMsg.textContent = "server error";
-      return;
-    }
-
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
-      // save successful sheets
-      let googleSheet = {
+      saveGoogleSheets({
         sheetName: sheetNameInput.value,
         sheetLink: sheetLinkInput.value,
-      };
-      const spreadsheetToBeSaved = false;
-      saveGoogleSheets(googleSheet, spreadsheetToBeSaved);
-    }
-
-    mainFormButton.disabled = false;
-    optionsSelectPicker.disabled = false;
-  } catch (error) {
-    mainFormButton.disabled = false;
-    optionsSelectPicker.disabled = false;
-    if (error.response === undefined) {
-      // console.log(error);
-      serverMsg.textContent = "client side error";
-    } else if (error.response.data instanceof Array) {
-      error.response.data.forEach((error) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = error.message;
-        listItem.style.color = "red";
-        errorList.appendChild(listItem);
       });
-    } else if (error.response.data.msg) {
-      console.log("msg here", error.response.data.msg);
-      serverMsg.textContent = error.response.data.msg;
+    } else {
+      serverMsg.textContent = "Unaccounted For Server Response";
+    }
+  } catch (error) {
+    if (error.response) {
+      if (error.response.data instanceof Array) {
+        error.response.data.forEach((error) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = error.message;
+          errorList.appendChild(listItem);
+        });
+      } else if (error.response.data.msg) {
+        serverMsg.textContent = error.response.data.msg;
+      } else {
+        serverMsg.textContent = "Unaccounted For Server Error";
+      }
+    } else {
+      serverMsg.textContent = "Client Side Error";
     }
   }
+  mainFormButton.disabled = false;
 }
 
 function populateFormWithSheet(sheet) {
-  sheetNameInput.value = sheet.sheetName;
-  sheetLinkInput.value = sheet.sheetLink;
+  const { sheetName, sheetLink } = sheet;
+
+  if (sheetName !== "UNSPECIFIED") {
+    sheetNameInput.value = sheetName;
+  }
+
+  sheetLinkInput.value = sheetLink;
 }
 
-function saveGoogleSheets(googleSheet, spreadsheetToBeSaved) {
-  if (
-    googleSheet.sheetName === undefined ||
-    googleSheet.sheetLink === undefined
-  ) {
+function saveGoogleSheets(googleSheet) {
+  let { sheetName, sheetLink } = googleSheet;
+
+  if (sheetName === undefined || sheetName.length === 0) {
+    sheetName = "UNSPECIFIED";
+  }
+
+  if (googleSheet.sheetLink === undefined) {
     return;
   }
 
-  if (spreadsheetToBeSaved) {
-    let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
+  let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
 
-    googleSheets.push(googleSheet);
+  googleSheets.unshift({ sheetName, sheetLink });
 
-    if (googleSheets.length > 3) {
-      googleSheets = googleSheets.slice(1, 4);
-    }
-
-    localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
+  if (googleSheets.length > 3) {
+    googleSheets = googleSheets.slice(2);
   }
+
+  localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
 }
 
 function populateTableWithSavedSheets() {
@@ -101,4 +114,3 @@ function populateTableWithSavedSheets() {
     sheetLinkCell.appendChild(button);
   });
 }
-

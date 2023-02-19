@@ -29,13 +29,12 @@ html(lang="en")
                     div.labelInputDiv 
                         label#updateOptions Options
                         select.selectPicker#optionsSelectPicker(name="optionsSelectPicker" multiple title="Query Options")
-                            optgroup(label="Merchant Source")               
-                                option(value="amazon") Amazon 
+                            optgroup(label="Merchant" data-max-options="1")               
+                                option(value="amazon" selected) Amazon 
                                 option(value="walmart") Walmart 
-                            optgroup(label="Template") 
-                                option(value="fbShops") Facebook Shops
-                            optgroup(label="Options")
-                                //- option(value="saveSpreadsheet") Save Spreadsheet
+                            optgroup(label="Template" data-max-options="1") 
+                                option(value="fbShops" selected) Facebook Shops
+                            optgroup(label="Custom")
                                 option(value="retries") Allow Retries
                                 option(value ="updateAll") Update All Products         
                     button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update

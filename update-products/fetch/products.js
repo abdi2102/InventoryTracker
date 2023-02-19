@@ -9,8 +9,8 @@ const {
 } = require("./helpers");
 const Product = require("../../product/class");
 
-async function fetchProducts(productIds, options) {
-  const { custom } = options;
+async function fetchProducts(productIds, updateQuery) {
+  const { custom } = updateQuery;
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
@@ -32,7 +32,7 @@ async function fetchProducts(productIds, options) {
       // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];
-        console.log(`retry product: ${options.startRow + idx}`);
+        console.log(`retry product: ${updateQuery.startRow + idx}`);
       }
 
       const productId = productIds[idx];

@@ -77,6 +77,10 @@
     margin: 8px 0px;
 }
 
+#errorList li {
+    color: red;
+}
+
 @media screen and (max-height: 768px) {
     body {
         height: 768px;

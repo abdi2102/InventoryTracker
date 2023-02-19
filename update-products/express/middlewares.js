@@ -11,12 +11,13 @@ function renderUserSpreadsheet(req, res) {
 async function submitUpdates(req, res) {
   let auth = req.oAuth2Client;
   let sheet = req.sheet;
-  let options = req.options;
+  let updateQuery = req.updateQuery;
+  console.log(updateQuery);
 
   try {
     const googleService = google.sheets({ version: "v4", auth });
 
-    const productIds = await readProducts(googleService, sheet, options);
+    const productIds = await readProducts(googleService, sheet, updateQuery);
     if (productIds.length === 0) {
       throw Error(`No product id(s) found for ${sheet.sheetName}`);
     }
@@ -30,14 +31,14 @@ async function submitUpdates(req, res) {
 
       const updates = await fetchProducts(
         productIds.slice(updateOffset, updateOffset + numProducts),
-        options
+        updateQuery
       );
 
       await sendUpdates(
         googleService,
         sheet.id,
         updates,
-        updateOffset + options.startRow
+        updateOffset + updateQuery.startRow
       );
 
       console.log("split");
