@@ -6,6 +6,8 @@ const form = Joi.object({
   numProducts: Joi.number().required().min(0).max(100),
   sheetName: Joi.string().optional(),
   sheetLink: Joi.string().required().uri(),
+  merchant: Joi.string().required(),
+  template: Joi.string().required(),
   custom: Joi.array().optional(),
 });
 

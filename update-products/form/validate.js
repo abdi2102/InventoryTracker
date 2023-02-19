@@ -9,6 +9,10 @@ function validateForm(req, res, next) {
       sheetLink: req.body.sheetLink,
       sheetName: req.body.sheetName || undefined,
       custom: JSON.parse(req.body.custom),
+      // merchant: req.body.merchant,
+      // template: req.body.template
+      merchant: "amazon",
+      template: "fbShops",
     };
 
     const validatedForm = form.validate(formToValidate, { abortEarly: false });

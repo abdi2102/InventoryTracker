@@ -7,7 +7,8 @@ html(lang="en")
         link(rel="icon", href="/Users/abdi/InventoryTracker/images/refresh.png")
         style 
             include index.css
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>    
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>  
+ 
     body  
         h1.mainHeader Update Products
         div.mainDiv
@@ -28,43 +29,31 @@ html(lang="en")
                     div.labelInputDiv 
                         label#updateOptions Options
                         select.selectPicker#optionsSelectPicker(name="optionsSelectPicker" multiple title="Query Options")
+                            optgroup(label="Merchant Source")               
+                                option(value="amazon") Amazon 
+                                option(value="walmart") Walmart 
+                            optgroup(label="Template") 
+                                option(value="fbShops") Facebook Shops
                             optgroup(label="Options")
                                 //- option(value="saveSpreadsheet") Save Spreadsheet
                                 option(value="retries") Allow Retries
-                                option(value ="updateAll") Update All Products
+                                option(value ="updateAll") Update All Products         
                     button#mainFormButton(type="submit" onclick="submitProductUpdates()") Update
-                h4#serverMsg 
-                ul#errorList
-
-            h4#warningMsg *grant read/write permission sheet*
+                    h4#warningMsg *grant read/write permission sheet*
+                    h4#serverMsg 
+                    ul#errorList
             table#googleSheetsLinksTable
                 tr
                     th Saved Sheets
-
-
-                          //- optgroup(label="Merchant")               
-                            //-     option Amazon 
-                            //-     option Walmart 
-                            //- optgroup(label="Template") 
-                            //-     option Facebook Shops
-        
         //- script needs to be at end so dom elements can load??/
         script
             include index.js
         script
             include dom.js
         script(src="https://unpkg.com/axios/dist/axios.min.js")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js")
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css"> 
 
-                    //- div.labelInputDiv
-                    //-     label#saveGoogleSheetLabel Save Spreadsheet?
-                    //-     input#saveGoogleSheetCheckbox(type="checkbox")
-                    //- div.labelInputDiv
-                    //-     label#retryFailedRequestsLabel Allow Retries?
-                    //-     input#retryFailedRequestsCheckbox(type="checkbox")
-                    //- div.labelInputDiv
-                    //-     label#updateAllLabel Update All Products?
-                    //-     input#updateAllCheckbox(type="checkbox")
+
