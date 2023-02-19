@@ -10,6 +10,7 @@ const {
 const Product = require("../../product/class");
 
 async function fetchProducts(productIds, options) {
+  const { custom } = options;
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
@@ -48,7 +49,7 @@ async function fetchProducts(productIds, options) {
 
       // --------MERCHANT SPECIFIC----------
 
-      if (options.retries) {
+      if (custom.includes("retries")) {
         if (quantity < 1 && price == null) {
           updates[idx] = new Product();
 

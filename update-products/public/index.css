@@ -55,9 +55,7 @@
     height: 10%;
     
 }
-#serverMsg {
-    display: none;
-}
+
 #warningMsg {
     color: red;
 }

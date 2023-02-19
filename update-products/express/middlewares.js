@@ -13,9 +13,6 @@ async function submitUpdates(req, res) {
   let sheet = req.sheet;
   let options = req.options;
 
-  // TODO:------ REMOVE WHEN FRONTEND SELECT IS FULLY FUNCTIONAL------
-  options = { ...options, updateAll: false, retries: false };
-  // ----- REMOVE WHEN FRONTEND SELECT IS FULLY FUNCTIONAL------
   try {
     const googleService = google.sheets({ version: "v4", auth });
 

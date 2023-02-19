@@ -8,13 +8,16 @@ async function submitProductUpdates() {
   optionsSelectPicker.disabled = true;
   mainFormButton.disabled = true;
   try {
-    const response = await sendPostRequest({
-      startRow: startRow.value,
-      numProducts: numProducts.value,
-      sheetLink: sheetLinkInput.value,
-      sheetName: sheetNameInput.value,
-      custom: JSON.stringify(optionsSelectPicker.val() || []),
-    });
+    const response = await axios.patch(
+      "http://localhost:3000/user/spreadsheet",
+      {
+        startRow: startRow.value,
+        numProducts: numProducts.value,
+        sheetLink: sheetLinkInput.value,
+        sheetName: sheetNameInput.value,
+        custom: JSON.stringify(optionsSelectPicker.val() || []),
+      }
+    );
 
     if (response === undefined) {
       serverMsg.textContent = "server error";
@@ -23,7 +26,6 @@ async function submitProductUpdates() {
 
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
-
       // save successful sheets
       let googleSheet = {
         sheetName: sheetNameInput.value,
@@ -38,9 +40,8 @@ async function submitProductUpdates() {
   } catch (error) {
     mainFormButton.disabled = false;
     optionsSelectPicker.disabled = false;
-    console.log(error);
     if (error.response === undefined) {
-      console.log(error);
+      // console.log(error);
       serverMsg.textContent = "client side error";
     } else if (error.response.data instanceof Array) {
       error.response.data.forEach((error) => {
@@ -50,6 +51,7 @@ async function submitProductUpdates() {
         errorList.appendChild(listItem);
       });
     } else if (error.response.data.msg) {
+      console.log("msg here", error.response.data.msg);
       serverMsg.textContent = error.response.data.msg;
     }
   }
@@ -100,22 +102,3 @@ function populateTableWithSavedSheets() {
   });
 }
 
-async function sendPostRequest({
-  startRow,
-  numProducts,
-  sheetLink,
-  sheetName,
-  custom,
-}) {
-  try {
-    return await axios.patch("http://localhost:3000/user/spreadsheet", {
-      startRow,
-      numProducts,
-      sheetLink,
-      sheetName,
-      custom,
-    });
-  } catch (error) {
-    throw error;
-  }
-}
