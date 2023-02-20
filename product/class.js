@@ -1,6 +1,8 @@
 const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
 
+// TODO:// --------ACCOUNT FOR MERCHANT----------
+
 class Product {
   constructor(availability, quantity, price) {
     this.availability = availability || "out of stock";
@@ -25,4 +27,4 @@ class Product {
   }
 }
 
-module.exports = Product
+module.exports = Product;

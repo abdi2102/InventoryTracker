@@ -1,15 +1,13 @@
 class Sheet {
-
-  constructor(link, sheetName) {
+  constructor(link, sheetName, template) {
     this.link = link;
     this.sheetName = sheetName;
-    this.id;
+    this.template = template;
   }
 
   getId() {
-    this.id = this.link.match("/d/([a-zA-Z0-9-_]+)")[1];
+    return this.link.match("/d/([a-zA-Z0-9-_]+)")[1];
   }
 }
 
-module.exports = Sheet
-
+module.exports = Sheet;

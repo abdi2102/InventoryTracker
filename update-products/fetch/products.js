@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { load } = require("cheerio");
-const { productUrl, config } = require("./helpers");
+const { config } = require("./helpers");
 const {
   amazonQuantitySelector1,
   amazonQuantitySelector2,
@@ -8,6 +8,8 @@ const {
   timer,
 } = require("./helpers");
 const Product = require("../../product/class");
+const scrapingAntUrl =
+  "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
 async function fetchProducts(productIds, updateQuery) {
   const { custom } = updateQuery;
@@ -15,17 +17,22 @@ async function fetchProducts(productIds, updateQuery) {
   let retryIndices = [];
   let productIdsLength = productIds.length;
 
-  // TODO: FETCH BY MERCHANT
+  let merchantUrl;
+  switch (updateQuery.merchant) {
+    case "amazon":
+      merchantUrl = `https://www.amazon.com/dp/"`;
+      break;
+    default:
+      throw Error("merchant not recognized");
+  }
 
   try {
-    // --------MERCHANT SPECIFIC----------
     const cookies = await fetchMerchantCookies(
-      productUrl,
+      merchantUrl,
       productIds.length,
       config
     );
 
-    // --------MERCHANT SPECIFIC----------
     for (let i = 0; i < productIdsLength; i++) {
       let idx = i;
 
@@ -42,12 +49,15 @@ async function fetchProducts(productIds, updateQuery) {
         continue;
       }
 
-      // --------MERCHANT SPECIFIC----------
-      const content = await fetchMerchantProduct(productId[0], cookies, config);
+      const content = await fetchMerchantProduct(
+        merchantUrl,
+        productId[0],
+        cookies,
+        config
+      );
 
-      let { quantity, price } = selectHtmlElements(content);
 
-      // --------MERCHANT SPECIFIC----------
+      let { quantity, price } = selectHtmlElements(updateQuery.merchant, content);
 
       if (custom.includes("retries")) {
         if (quantity < 1 && price == null) {
@@ -82,6 +92,7 @@ async function fetchProducts(productIds, updateQuery) {
     if (updates.length > 0) {
       return updates;
     } else {
+      console.log(error);
       throw Error("could not fetch products. try again later.");
     }
   }
@@ -93,21 +104,30 @@ function isValidProductId(productId) {
     : true;
 }
 
-function selectHtmlElements(content) {
+function selectHtmlElements(merchant, content) {
   const $ = load(content || "");
 
-  let quantity =
-    $(amazonQuantitySelector1).length != 0
-      ? $(amazonQuantitySelector1).children().length
-      : $(amazonQuantitySelector2).children().length;
+  let quantity;
+  let price;
 
-  let price = $(amazonPriceSelector).html();
+  switch (merchant) {
+    case "amazon":
+      quantity =
+        $(amazonQuantitySelector1).length != 0
+          ? $(amazonQuantitySelector1).children().length
+          : $(amazonQuantitySelector2).children().length;
+
+      price = $(amazonPriceSelector).html();
+      break;
+    default:
+      throw Error("merchant not recognized");
+  }
 
   return { quantity, price };
 }
 
-async function fetchMerchantProduct(productId, cookies, config) {
-  let url = `${productUrl}${productId}`;
+async function fetchMerchantProduct(merchantUrl, productId, cookies, config) {
+  let url = `${scrapingAntUrl}${merchantUrl}${productId}`;
   if (cookies) {
     url += `&cookies=${cookies}`;
   }
@@ -130,22 +150,22 @@ async function fetchMerchantProduct(productId, cookies, config) {
 
       return undefined;
     } else {
-      throw Error(error);
+      throw error;
     }
   }
 }
 
-async function fetchMerchantCookies(mainAmazonUrl, productCount, config) {
+async function fetchMerchantCookies(merchantUrl, productCount, config) {
   // cookies to avoid scrape detection
 
-  try {
-    if (productCount < 5) {
-      return;
-    }
+  if (productCount < 5) {
+    return;
+  }
 
+  try {
     const {
       data: { cookies },
-    } = await axios.get(mainAmazonUrl, config);
+    } = await axios.get(`${scrapingAntUrl}${merchantUrl}`, config);
 
     return encodeURIComponent(cookies);
   } catch (error) {

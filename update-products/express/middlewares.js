@@ -4,22 +4,22 @@ const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
 const path = require("path");
 
-function renderUserSpreadsheet(req, res) {
+function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
 }
 
 async function submitUpdates(req, res) {
-  let auth = req.oAuth2Client;
-  let sheet = req.sheet;
-  let updateQuery = req.updateQuery;
-  console.log(updateQuery);
+  const { oAuth2Client: auth, updateQuery, sheet } = req;
 
   try {
     const googleService = google.sheets({ version: "v4", auth });
 
     const productIds = await readProducts(googleService, sheet, updateQuery);
+
     if (productIds.length === 0) {
-      throw Error(`No product id(s) found for ${sheet.sheetName}`);
+      return res
+        .status(200)
+        .json({ msg: `No product id(s) found for ${sheet.sheetName}` });
     }
 
     const setCount = 25;
@@ -36,19 +36,17 @@ async function submitUpdates(req, res) {
 
       await sendUpdates(
         googleService,
-        sheet.id,
+        sheet,
         updates,
         updateOffset + updateQuery.startRow
       );
-
-      console.log("split");
     }
 
     res.status(200).json({ msg: "updates complete" });
   } catch (error) {
     console.log(error);
     if (error.message) {
-      res.status(500).json({ msg: error.message });
+      res.status(400).json({ msg: error.message });
     } else {
       res.status(500).json(error);
     }

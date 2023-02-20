@@ -1,5 +1,5 @@
-const Sheet = require("../../sheet/class");
 const form = require("./schema");
+const Sheet = require("../../sheet/class");
 
 function validateForm(req, res, next) {
   try {
@@ -10,8 +10,18 @@ function validateForm(req, res, next) {
       sheetName: req.body.sheetName || undefined,
       custom: JSON.parse(req.body.custom),
       merchant: req.body.merchant,
-      template: req.body.template
+      template: req.body.template,
     };
+
+    const allowedCustoms = ["retries", "updateAll"];
+    const queryCustomIsValid = formToValidate.custom.every((_) => {
+      return allowedCustoms.includes(_);
+    });
+
+    if (queryCustomIsValid === false) {
+      console.log("false");
+      return res.status(400).json({ msg: "query options not valid" });
+    }
 
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
@@ -28,13 +38,11 @@ function validateForm(req, res, next) {
       });
     }
 
-    const sheet = new Sheet(
+    req.sheet = new Sheet(
       (link = validatedForm.value.sheetLink),
-      (sheetName = validatedForm.value.sheetName)
+      (sheetName = validatedForm.value.sheetName),
+      (template = validatedForm.value.template)
     );
-
-    sheet.getId();
-    req.sheet = sheet;
 
     req.updateQuery = validatedForm.value;
     next();

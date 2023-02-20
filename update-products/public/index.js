@@ -90,7 +90,7 @@ function saveGoogleSheets(googleSheet) {
   googleSheets.unshift({ sheetName, sheetLink });
 
   if (googleSheets.length > 3) {
-    googleSheets = googleSheets.slice(2);
+    googleSheets = googleSheets.slice(3);
   }
 
   localStorage.setItem("googleSheets", JSON.stringify(googleSheets));

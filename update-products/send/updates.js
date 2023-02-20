@@ -2,11 +2,13 @@ const fs = require("fs");
 const path = require("path");
 const existingUpdatesFile = path.join(__dirname, "../unpublished-updates.json");
 
-async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
-  let startColumn = "C";
-  let endColumn = "E";
+async function sendUpdates(googleService, sheet, updates, startRow) {
+  const startColumn = "C";
+  const endColumn = "E";
 
   let existingUpdates = [];
+
+  // TODO: ACCOUNT FOR TEMPLATE
 
   // TODO: check if updates are  NULL OR INVALID TYPE
   // TODO: MONITOR OUT OF STOCK
@@ -25,11 +27,10 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
       values: [[product.quantity, product.availability, product.markup]],
     };
   });
-  console.log(newUpdates)
 
   const totalUpdates = existingUpdates.concat(newUpdates);
   const request = {
-    spreadsheetId,
+    spreadsheetId: sheet.getId(),
     valueInputOption: "USER_ENTERED",
     resource: { data: totalUpdates },
   };
@@ -38,7 +39,7 @@ async function sendUpdates(googleService, spreadsheetId, updates, startRow) {
     const response = await googleService.spreadsheets.values.batchUpdate(
       request
     );
-    console.log(response.data.totalUpdatedRows);
+    console.log("updated rows:", response.data.totalUpdatedRows);
   } catch (error) {
     if (fs.existsSync(existingUpdatesFile) === false) {
       fs.appendFileSync(existingUpdatesFile, "");

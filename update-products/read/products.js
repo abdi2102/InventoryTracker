@@ -1,30 +1,31 @@
-const numProductsNotValid = require("./read-errors");
-
-// TODO: READ OUT OF STOCK STATUS
-async function readProducts(googleService, sheet, options) {
-  const { startRow, numProducts, custom } = options;
-  const asinColumn = "J";
+async function readProducts(googleService, sheet, updateQuery) {
+  const { startRow, numProducts, custom } = updateQuery;
+  const sheetName = sheet.sheetName !== undefined ? `${sheet.sheetName}!` : "";
   let partialRange;
-  let sheetName = sheet.sheetName !== undefined ? `${sheet.sheetName}!` : "";
+  let productIdColumn;
+
+  switch (sheet.template) {
+    case "fbShops":
+      productIdColumn = "J";
+      break;
+    default:
+      throw Error("sheet template not recognized");
+  }
 
   if (custom.includes("updateAll") === false) {
-    if (isNaN(numProducts) || numProducts < 1) {
-      throw Error(numProductsNotValid);
-    }
-
     let lastRow = startRow + numProducts - 1;
-    let end = `${asinColumn}${lastRow}`;
+    let end = `${productIdColumn}${lastRow}`;
 
-    partialRange = `${sheetName}${asinColumn}${startRow}:${end}`;
+    partialRange = `${sheetName}${productIdColumn}${startRow}:${end}`;
   }
 
   try {
     const {
       data: { values },
     } = await googleService.spreadsheets.values.get({
-      spreadsheetId: sheet.id,
+      spreadsheetId: sheet.getId(),
       range: custom.includes("updateAll")
-        ? `${sheetName}${asinColumn}:${asinColumn}`
+        ? `${sheetName}${productIdColumn}:${productIdColumn}`
         : partialRange,
     });
 
