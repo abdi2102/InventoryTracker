@@ -17,7 +17,7 @@ async function submitProductUpdates() {
     const custom = $(
       '#optionsSelectPicker optgroup[label="Custom"] option:selected'
     )
-      .map((i, opt) => {
+      .map((_, opt) => {
         return opt.value;
       })
       .toArray();
@@ -90,7 +90,7 @@ function saveGoogleSheets(googleSheet) {
   googleSheets.unshift({ sheetName, sheetLink });
 
   if (googleSheets.length > 3) {
-    googleSheets = googleSheets.slice(3);
+    googleSheets = googleSheets.slice(0, 3);
   }
 
   localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
@@ -114,3 +114,4 @@ function populateTableWithSavedSheets() {
     sheetLinkCell.appendChild(button);
   });
 }
+
