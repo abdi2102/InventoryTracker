@@ -19,7 +19,6 @@ function validateForm(req, res, next) {
     });
 
     if (queryCustomIsValid === false) {
-      console.log("false");
       return res.status(400).json({ msg: "query options not valid" });
     }
 
