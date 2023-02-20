@@ -20,7 +20,7 @@ async function fetchProducts(productIds, updateQuery) {
   let merchantUrl;
   switch (updateQuery.merchant) {
     case "amazon":
-      merchantUrl = `https://www.amazon.com/dp/"`;
+      merchantUrl = "https://www.amazon.com/dp/";
       break;
     default:
       throw Error("merchant not recognized");
@@ -56,8 +56,10 @@ async function fetchProducts(productIds, updateQuery) {
         config
       );
 
-
-      let { quantity, price } = selectHtmlElements(updateQuery.merchant, content);
+      let { quantity, price } = selectHtmlElements(
+        updateQuery.merchant,
+        content
+      );
 
       if (custom.includes("retries")) {
         if (quantity < 1 && price == null) {
@@ -106,10 +108,8 @@ function isValidProductId(productId) {
 
 function selectHtmlElements(merchant, content) {
   const $ = load(content || "");
-
   let quantity;
   let price;
-
   switch (merchant) {
     case "amazon":
       quantity =
@@ -122,12 +122,12 @@ function selectHtmlElements(merchant, content) {
     default:
       throw Error("merchant not recognized");
   }
-
   return { quantity, price };
 }
 
 async function fetchMerchantProduct(merchantUrl, productId, cookies, config) {
-  let url = `${scrapingAntUrl}${merchantUrl}${productId}`;
+  let url = scrapingAntUrl + merchantUrl + productId;
+
   if (cookies) {
     url += `&cookies=${cookies}`;
   }
@@ -166,7 +166,6 @@ async function fetchMerchantCookies(merchantUrl, productCount, config) {
     const {
       data: { cookies },
     } = await axios.get(`${scrapingAntUrl}${merchantUrl}`, config);
-
     return encodeURIComponent(cookies);
   } catch (error) {
     throw Error(error);

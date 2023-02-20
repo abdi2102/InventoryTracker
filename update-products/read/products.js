@@ -28,7 +28,6 @@ async function readProducts(googleService, sheet, updateQuery) {
         ? `${sheetName}${productIdColumn}:${productIdColumn}`
         : partialRange,
     });
-
     return values || [];
   } catch (error) {
     throw error;
