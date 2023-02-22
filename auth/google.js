@@ -65,7 +65,7 @@ async function authorize(req, res, next) {
         throw "Refresh Token Not Valid";
       }
     }
-    oAuth2Client.setCredentials(token);
+    oAuth2Client.setCredentials({ access_token: token.token });
     req.oAuth2Client = oAuth2Client;
     next();
   } catch (error) {

@@ -40,7 +40,7 @@ function validateForm(req, res, next) {
 
     }
 
-    if (valErrors) {
+    if (valErrors.length > 0) {
       let sanitizedValErrors = "";
       valErrors.forEach((err) => {
         sanitizedValErrors += `${err}\n`;
