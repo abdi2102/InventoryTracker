@@ -38,7 +38,12 @@ async function authorize(req, res, next) {
     let token = req.cookies["token"];
 
     if (token === undefined && req.cookies["refresh_token"] === undefined) {
-      return res.status(401).json({ msg: "Login Failed", authUrl });
+      switch (req.method) {
+        case "GET":
+          return res.status(401).redirect(authUrl);
+        default:
+          return res.status(401).json({ msg: "Login Failed", authUrl });
+      }
     }
 
     try {
@@ -65,7 +70,12 @@ async function authorize(req, res, next) {
     next();
   } catch (error) {
     if (authUrl) {
-      return res.status(401).json({ msg: "Login Failed", authUrl });
+      switch (req.method) {
+        case "GET":
+          return res.status(401).redirect(authUrl);
+        default:
+          return res.status(401).json({ msg: "Login Failed", authUrl });
+      }
     } else {
       res.status(500).json({ msg: error.message });
     }
