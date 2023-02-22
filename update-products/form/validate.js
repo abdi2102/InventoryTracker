@@ -24,21 +24,29 @@ function validateForm(req, res, next) {
 
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
-    if (validatedForm.error) {
-      let valErrors = "";
-      validatedForm.error.details.forEach((err) => {
-        valErrors += `${err.message}\n`;
-      });
-      return res.status(400).json({msg: valErrors});
-    }
+    let valErrors = [];
 
     if (
       validatedForm.value.numProducts <= 0 &&
       validatedForm.value.custom.includes("updateAll") === false
     ) {
-      return res.status(400).json({
-        msg: "At least one update required",
+      valErrors.push("at least one update required");
+    }
+
+    if (validatedForm.error) {
+      validatedForm.error.details.forEach((err) => {
+        valErrors.push(err.message);
       });
+
+    }
+
+    if (valErrors) {
+      let sanitizedValErrors = "";
+      valErrors.forEach((err) => {
+        sanitizedValErrors += `${err}\n`;
+      });
+
+      return res.status(400).json({ msg: sanitizedValErrors });
     }
 
     req.sheet = new Sheet(

@@ -18,6 +18,7 @@ async function getGmailUserInfoAndRedirect(req, res) {
     const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     const token = await oAuth2Client.getToken(req.query.code);
     res.cookie("token", token.tokens, { httpOnly: true });
+    res.cookie("refresh_token", token.tokens.refresh_token, { httpOnly: true });
 
     const redirectTo = req.session.redirectTo || "";
     delete req.session.redirectTo;
@@ -34,24 +35,37 @@ async function authorize(req, res, next) {
   try {
     const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     authUrl = requestGoogleAuth(oAuth2Client);
-    const token = req.cookies["token"];
+    let token = req.cookies["token"];
 
-    if (token === undefined) {
+    if (token === undefined && req.cookies["refresh_token"] === undefined) {
       return res.status(401).json({ msg: "Login Failed", authUrl });
     }
 
-    // verify if token is valid
-    const validateGoogleTokenUrl = `${verifyGoogleAccessTokenUrl}${token.access_token}`;
-
-    await axios.get(validateGoogleTokenUrl);
+    try {
+      if (token !== undefined) {
+        // verify if token is valid
+        const validateGoogleTokenUrl = `${verifyGoogleAccessTokenUrl}${token.token}`;
+        await axios.get(validateGoogleTokenUrl);
+      } else {
+        throw "Access Token Not Valid";
+      }
+    } catch (error) {
+      if (req.cookies["refresh_token"] !== undefined) {
+        oAuth2Client.setCredentials({
+          refresh_token: req.cookies["refresh_token"],
+        });
+        token = await oAuth2Client.getAccessToken();
+        res.cookie("token", token, { httpOnly: true });
+      } else {
+        throw "Refresh Token Not Valid";
+      }
+    }
     oAuth2Client.setCredentials(token);
     req.oAuth2Client = oAuth2Client;
     next();
   } catch (error) {
-    console.log(error);
-
     if (authUrl) {
-      res.redirect(authUrl);
+      return res.status(401).json({ msg: "Login Failed", authUrl });
     } else {
       res.status(500).json({ msg: error.message });
     }

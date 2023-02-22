@@ -44,7 +44,7 @@ async function submitProductUpdates() {
       serverMsg.textContent = "Unaccounted For Server Response";
     }
   } catch (error) {
-    if (error.response) {
+    if (error.code) {
       switch (error.code) {
         case "ERR_BAD_REQUEST":
           if (error.response.data.msg === "Login Failed") {
