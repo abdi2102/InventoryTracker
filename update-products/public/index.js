@@ -3,7 +3,6 @@ window.addEventListener("load", () => {
 });
 
 async function submitProductUpdates() {
-  errorList.innerHTML = "";
   serverMsg.textContent = "";
   mainFormButton.disabled = true;
   try {
@@ -46,19 +45,23 @@ async function submitProductUpdates() {
     }
   } catch (error) {
     if (error.response) {
-      if (error.response.data instanceof Array) {
-        error.response.data.forEach((error) => {
-          const listItem = document.createElement("li");
-          listItem.textContent = error.message;
-          errorList.appendChild(listItem);
-        });
-      } else if (error.response.data.msg) {
-        serverMsg.textContent = error.response.data.msg;
-      } else {
-        serverMsg.textContent = "Unaccounted For Server Error";
+      switch (error.code) {
+        case "ERR_BAD_REQUEST":
+          if (error.response.data.msg === "Login Failed") {
+            window.location.href = error.response.data.authUrl;
+          } else {
+            serverMsg.textContent = error.response.data.msg;
+          }
+          break;
+        case "ERR_NETWORK":
+          serverMsg.textContent = "Error Connecting To Server...";
+          break;
+        default:
+          serverMsg.textContent = "Unaccounted For Server Error";
       }
     } else {
       serverMsg.textContent = "Client Side Error";
+      console.log(error);
     }
   }
   mainFormButton.disabled = false;
@@ -114,4 +117,3 @@ function populateTableWithSavedSheets() {
     sheetLinkCell.appendChild(button);
   });
 }
-

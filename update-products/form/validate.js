@@ -25,7 +25,11 @@ function validateForm(req, res, next) {
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
     if (validatedForm.error) {
-      return res.status(400).json(validatedForm.error.details);
+      let valErrors = "";
+      validatedForm.error.details.forEach((err) => {
+        valErrors += `${err.message}\n`;
+      });
+      return res.status(400).json({msg: valErrors});
     }
 
     if (

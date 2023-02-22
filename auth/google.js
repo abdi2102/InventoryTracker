@@ -37,8 +37,7 @@ async function authorize(req, res, next) {
     const token = req.cookies["token"];
 
     if (token === undefined) {
-      res.redirect(authUrl);
-      return;
+      return res.status(401).json({ msg: "Login Failed", authUrl });
     }
 
     // verify if token is valid
@@ -49,6 +48,8 @@ async function authorize(req, res, next) {
     req.oAuth2Client = oAuth2Client;
     next();
   } catch (error) {
+    console.log(error);
+
     if (authUrl) {
       res.redirect(authUrl);
     } else {
