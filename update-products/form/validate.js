@@ -37,7 +37,6 @@ function validateForm(req, res, next) {
       validatedForm.error.details.forEach((err) => {
         valErrors.push(err.message);
       });
-
     }
 
     if (valErrors.length > 0) {
