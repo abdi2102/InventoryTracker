@@ -35,7 +35,7 @@ async function fetchProducts(productIds, updateQuery) {
 
     for (let i = 0; i < productIdsLength; i++) {
       let idx = i;
-
+      
       // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];

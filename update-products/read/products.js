@@ -25,7 +25,7 @@ async function readProducts(googleService, sheet, updateQuery) {
     } = await googleService.spreadsheets.values.get({
       spreadsheetId: sheet.getId(),
       range: custom.includes("updateAll")
-        ? `${sheetName}${productIdColumn}:${productIdColumn}`
+        ? `${sheetName}${productIdColumn}${startRow}:${productIdColumn}`
         : partialRange,
     });
     return values || [];

@@ -15,13 +15,6 @@ async function submitUpdates(req, res) {
     const googleService = google.sheets({ version: "v4", auth });
 
     const productIds = await readProducts(googleService, sheet, updateQuery);
-
-    if (productIds.length === 0) {
-      return res
-        .status(200)
-        .json({ msg: `No product id(s) found for ${sheet.sheetName}` });
-    }
-
     const setCount = 25;
     const updateIterations = productIds.length / setCount;
 
@@ -29,10 +22,10 @@ async function submitUpdates(req, res) {
       let updateOffset = (updateIterations - x) * setCount;
       let numProducts = x < 1 ? productIds.length % setCount : setCount;
 
-      const updates = await fetchProducts(
-        productIds.slice(updateOffset, updateOffset + numProducts),
-        updateQuery
-      );
+        const updates = await fetchProducts(
+          productIds.slice(updateOffset, updateOffset + numProducts),
+          updateQuery
+        );
 
       await sendUpdates(
         googleService,
@@ -40,9 +33,12 @@ async function submitUpdates(req, res) {
         updates,
         updateOffset + updateQuery.startRow
       );
+
     }
 
-    res.status(200).json({ msg: `updated ${productIds.length} products` });
+    res.status(200).json({
+      msg: `updated ${productIds.length} ${sheet.sheetName} products`,
+    });
   } catch (error) {
     if (error.message) {
       res.status(400).json({ msg: error.message });

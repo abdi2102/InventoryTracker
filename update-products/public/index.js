@@ -64,7 +64,7 @@ async function submitProductUpdates() {
       console.log(error);
     }
   }
- mainFormStartButton.disabled = false;
+  mainFormStartButton.disabled = false;
 }
 
 function populateFormWithSheet(sheet) {

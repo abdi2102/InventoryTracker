@@ -10,8 +10,6 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
 
   // TODO: ACCOUNT FOR TEMPLATE
 
-  // TODO: check if updates are  NULL OR INVALID TYPE
-  // TODO: MONITOR OUT OF STOCK
 
   if (fs.existsSync(existingUpdatesFile) === true) {
     let content = fs.readFileSync(existingUpdatesFile, "utf8");
@@ -36,10 +34,7 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
   };
 
   try {
-    const response = await googleService.spreadsheets.values.batchUpdate(
-      request
-    );
-    console.log("updated rows:", response.data.totalUpdatedRows);
+    await googleService.spreadsheets.values.batchUpdate(request);
   } catch (error) {
     if (fs.existsSync(existingUpdatesFile) === false) {
       fs.appendFileSync(existingUpdatesFile, "");
