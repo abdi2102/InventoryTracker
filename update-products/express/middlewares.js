@@ -13,6 +13,7 @@ async function submitUpdates(req, res) {
 
   try {
     const googleService = google.sheets({ version: "v4", auth });
+
     const productIds = await readProducts(googleService, sheet, updateQuery);
 
     if (productIds.length === 0) {
@@ -41,9 +42,8 @@ async function submitUpdates(req, res) {
       );
     }
 
-    res.status(200).json({ msg: "updates complete" });
+    res.status(200).json({ msg: `updated ${productIds.length} products` });
   } catch (error) {
-    console.log(error);
     if (error.message) {
       res.status(400).json({ msg: error.message });
     } else {

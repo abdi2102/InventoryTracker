@@ -1,4 +1,4 @@
-const mainFormButton = document.getElementById("mainFormButton");
+const mainFormStartButton = document.getElementById("mainFormStartButton");
 const startRow = document.getElementById("startRowInput");
 const numProducts = document.getElementById("numProductsInput");
 const sheetNameInput = document.getElementById("sheetNameInput");

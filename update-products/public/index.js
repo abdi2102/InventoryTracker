@@ -4,7 +4,7 @@ window.addEventListener("load", () => {
 
 async function submitProductUpdates() {
   serverMsg.textContent = "";
-  mainFormButton.disabled = true;
+  mainFormStartButton.disabled = true;
   try {
     const merchant = $(
       '#optionsSelectPicker optgroup[label="Merchant"] option:selected'
@@ -64,7 +64,7 @@ async function submitProductUpdates() {
       console.log(error);
     }
   }
-  mainFormButton.disabled = false;
+ mainFormStartButton.disabled = false;
 }
 
 function populateFormWithSheet(sheet) {

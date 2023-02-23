@@ -43,7 +43,7 @@
     padding-right: 10px;
 }
 
-#mainFormButton {
+#mainFormStartButton {
     width: 20%;
     height: 10%;
 
@@ -122,7 +122,7 @@
     flex-direction: column;
 }
 
-#mainFormButton {
+#mainFormStartButton {
     width: 30%;
     height: 10%;
 }
