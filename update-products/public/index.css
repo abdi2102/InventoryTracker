@@ -54,6 +54,7 @@
     width: 50%;
     color: red;
     white-space: pre;
+    padding: 0px 5px;
 }
 
 #googleSheetsLinksTable {

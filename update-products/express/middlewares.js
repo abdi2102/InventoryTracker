@@ -22,10 +22,11 @@ async function submitUpdates(req, res) {
       let updateOffset = (updateIterations - x) * setCount;
       let numProducts = x < 1 ? productIds.length % setCount : setCount;
 
-        const updates = await fetchProducts(
-          productIds.slice(updateOffset, updateOffset + numProducts),
-          updateQuery
-        );
+      const updates = [{ availability: "in stock", quantity: 10, markup: 200 }];
+      // const updates = await fetchProducts(
+      //   productIds.slice(updateOffset, updateOffset + numProducts),
+      //   updateQuery
+      // );
 
       await sendUpdates(
         googleService,
@@ -33,7 +34,6 @@ async function submitUpdates(req, res) {
         updates,
         updateOffset + updateQuery.startRow
       );
-
     }
 
     res.status(200).json({

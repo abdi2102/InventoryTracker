@@ -1,22 +1,29 @@
 const fs = require("fs");
 const path = require("path");
-const existingUpdatesFile = path.join(__dirname, "../unpublished-updates.json");
+const unpublishedUpdatesFile = path.join(
+  __dirname,
+  "../unpublished-updates.json"
+);
 
 async function sendUpdates(googleService, sheet, updates, startRow) {
   const startColumn = "C";
   const endColumn = "E";
 
-  let existingUpdates = [];
+  let unpublishedUpdates = {};
+  let totalUpdates = [];
 
   // TODO: ACCOUNT FOR TEMPLATE
 
-
-  if (fs.existsSync(existingUpdatesFile) === true) {
-    let content = fs.readFileSync(existingUpdatesFile, "utf8");
+  if (fs.existsSync(unpublishedUpdatesFile) === true) {
+    let content = fs.readFileSync(unpublishedUpdatesFile, "utf8");
 
     if (content.length > 0) {
-      existingUpdates = JSON.parse(content);
+      unpublishedUpdates = JSON.parse(content);
     }
+  }
+
+  if (unpublishedUpdates[sheet.sheetName]) {
+    totalUpdates = totalUpdates.concat(unpublishedUpdates[sheet.sheetName]);
   }
 
   let newUpdates = updates.map((product, idx) => {
@@ -26,7 +33,8 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
     };
   });
 
-  const totalUpdates = existingUpdates.concat(newUpdates);
+  totalUpdates = totalUpdates.concat(newUpdates);
+
   const request = {
     spreadsheetId: sheet.getId(),
     valueInputOption: "USER_ENTERED",
@@ -35,31 +43,40 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
 
   try {
     await googleService.spreadsheets.values.batchUpdate(request);
+    if (totalUpdates.length > newUpdates.length) {
+      fs.writeFileSync(unpublishedUpdatesFile, "");
+    }
   } catch (error) {
-    if (fs.existsSync(existingUpdatesFile) === false) {
-      fs.appendFileSync(existingUpdatesFile, "");
+    if (fs.existsSync(unpublishedUpdatesFile) === false) {
+      fs.appendFileSync(unpublishedUpdatesFile, "");
     }
 
-    fs.readFile(existingUpdatesFile, "utf8", (error, data) => {
+    fs.readFile(unpublishedUpdatesFile, "utf8", (error, data) => {
       if (error) {
         return console.log(error);
       }
 
-      let existingUpdates;
-      if (data.length === 0) {
-        existingUpdates = [].concat(newUpdates);
-      } else {
-        existingUpdates = totalUpdates;
+      let unpublishedUpdates;
+
+      try {
+        unpublishedUpdates = JSON.parse(data);
+      } catch {
+        unpublishedUpdates = {};
+      }
+
+      if (typeof unpublishedUpdates === "object") {
+        console.log("hey");
+        unpublishedUpdates[sheet.sheetName] = totalUpdates;
       }
 
       fs.writeFile(
-        existingUpdatesFile,
-        JSON.stringify(existingUpdates),
+        unpublishedUpdatesFile,
+        JSON.stringify(unpublishedUpdates),
         () => {}
       );
     });
 
-    throw error;
+    throw new Error("Unable To Publish Updates");
   }
 }
 

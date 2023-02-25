@@ -35,7 +35,7 @@ async function fetchProducts(productIds, updateQuery) {
 
     for (let i = 0; i < productIdsLength; i++) {
       let idx = i;
-      
+
       // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];
@@ -83,7 +83,6 @@ async function fetchProducts(productIds, updateQuery) {
       const product = new Product("in stock", quantity, price);
       product.markupPrice();
       updates[idx] = product;
-
       await timer(400 * (1 + Math.random()));
     }
 
@@ -168,6 +167,7 @@ async function fetchMerchantCookies(merchantUrl, productCount, config) {
     } = await axios.get(`${scrapingAntUrl}${merchantUrl}`, config);
     return encodeURIComponent(cookies);
   } catch (error) {
+    console.log(error);
     throw Error(error);
   }
 }
