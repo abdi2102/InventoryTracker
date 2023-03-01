@@ -2,9 +2,11 @@ window.addEventListener("load", () => {
   populateTableWithSavedSheets();
 });
 
-async function submitProductUpdates() {
+// -----RUN UPDATES ---- //
+async function startProductUpdates() {
   serverMsg.textContent = "";
-  mainFormStartButton.disabled = true;
+  mainFormStartButton.style.display = "none";
+  mainFormPauseButton.style.display = "block";
   try {
     const merchant = $(
       '#optionsSelectPicker optgroup[label="Merchant"] option:selected'
@@ -64,8 +66,16 @@ async function submitProductUpdates() {
       console.log(error);
     }
   }
-  mainFormStartButton.disabled = false;
+  mainFormStartButton.style.display = "block";
+  mainFormPauseButton.style.display = "none";
 }
+
+// -----RUN UPDATES ---- //
+
+// -----PAUSE UPDATES ---- //
+
+async function stopProductUpdates() {}
+// -----PAUSE UPDATES ---- //
 
 function populateFormWithSheet(sheet) {
   const { sheetName, sheetLink } = sheet;

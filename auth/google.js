@@ -19,7 +19,10 @@ async function getGmailUserInfoAndRedirect(req, res) {
     const token = await oAuth2Client.getToken(req.query.code);
     res.cookie("token", token.tokens, { httpOnly: true });
     // REFRESH_TOKEN SHOULD BE SAVED IN DATABASE FOR SAFETY
-    res.cookie("refresh_token", token.tokens.refresh_token, { httpOnly: true });
+    res.cookie("refresh_token", token.tokens.refresh_token, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 3600000,
+    });
 
     const redirectTo = req.session.redirectTo || "";
     delete req.session.redirectTo;

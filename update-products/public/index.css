@@ -1,7 +1,4 @@
 .mainHeader {
-    width: 15% ;
-    height: 7% ;
-    margin: auto;
     text-align: center;
     font-size: 24px;
 }
@@ -12,6 +9,7 @@
     height: 60%;
     margin: auto;
     display: flex;
+    padding: 10px 0px;
   
 }
 
@@ -43,10 +41,12 @@
     padding-right: 10px;
 }
 
-#mainFormStartButton {
-    width: 20%;
-    height: 10%;
+#mainFormStartButton, #mainFormPauseButton {
+    min-width: 150px;
+}
 
+#mainFormPauseButton {
+    display:none;
 }
 
 #serverMsg, #warningMsg {
@@ -123,9 +123,8 @@
     flex-direction: column;
 }
 
-#mainFormStartButton {
-    width: 30%;
-    height: 10%;
+#mainFormStartButton, #mainFormPauseButton{
+    min-width: 100px;
 }
 
 #warningMsg, #serverMsg {

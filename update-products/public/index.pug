@@ -10,10 +10,10 @@ html(lang="en")
 
  
     body 
-        h1.mainHeader Update Products
         div.mainDiv
-                div.formDiv
+                div.formDiv            
                     form#mainForm(action="#")
+                        h1.mainHeader Update Products
                         div.labelInputDiv
                             label#startLabel Start
                             input#startRowInput(type="number" placeholder="2")
@@ -37,8 +37,9 @@ html(lang="en")
                                 optgroup(label="Custom")
                                     option(value="retries") Allow Retries
                                     option(value ="updateAll") Update All Products         
-                        button#mainFormStartButton(type="submit" onclick="submitProductUpdates()") Update
-                        h4#warningMsg *grant read/write permission sheet*
+                        button#mainFormStartButton(type="submit" onclick="startProductUpdates()") Update
+                        button#mainFormPauseButton(type="button" onclick="stopProductUpdates()") Pause
+                        h4#warningMsg *grant read/write permission*
                         p#serverMsg  
                 table#googleSheetsLinksTable
                     tr

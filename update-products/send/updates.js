@@ -65,7 +65,6 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
       }
 
       if (typeof unpublishedUpdates === "object") {
-        console.log("hey");
         unpublishedUpdates[sheet.sheetName] = totalUpdates;
       }
 
