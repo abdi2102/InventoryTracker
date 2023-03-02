@@ -1,12 +1,19 @@
 const axios = require("axios");
 const { load } = require("cheerio");
-const { config } = require("./helpers");
-const {
-  amazonQuantitySelector1,
-  amazonQuantitySelector2,
-  amazonPriceSelector,
-  timer,
-} = require("./helpers");
+const config = {
+  headers: {
+    "x-api-key": process.env.SCRAPING_ANT_X_API_KEY,
+    useQueryString: true,
+  },
+};
+
+// AMAZON FETCH HELPERS
+const timer = function (ms) {
+  return new Promise(function (res) {
+    return setTimeout(res, ms);
+  });
+};
+
 const Product = require("../../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
@@ -45,7 +52,8 @@ async function fetchProducts(productIds, updateQuery) {
       const productId = productIds[idx];
 
       if (isValidProductId(productId) === false) {
-        updates[idx] = new Product();
+        console.log(`${productId} is not a valid product ID`);
+        updates[idx] = new Product((template = updateQuery.template));
         continue;
       }
 
@@ -62,8 +70,8 @@ async function fetchProducts(productIds, updateQuery) {
       );
 
       if (custom.includes("retries")) {
-        if (quantity < 1 || price == null) {
-          updates[idx] = new Product();
+        if (quantity < 5 || price == null) {
+          updates[idx] = new Product((template = updateQuery.template));
 
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
@@ -74,14 +82,19 @@ async function fetchProducts(productIds, updateQuery) {
       }
 
       if (quantity < 5 || price === null) {
-        updates[idx] = new Product();
+        updates[idx] = new Product((template = updateQuery.template));
         continue;
       }
 
-      const product = new Product("in stock", quantity, price);
+      const product = new Product(
+        (template = updateQuery.template),
+        "in stock",
+        quantity,
+        price
+      );
       product.markupPrice();
       updates[idx] = product;
-      await timer(375 * (1 + Math.random()));
+      await timer(360 * (1 + Math.random()));
     }
 
     console.log(`retried (products): ${retryIndices.length}`);
@@ -109,6 +122,10 @@ function selectHtmlElements(merchant, content) {
   let price;
   switch (merchant) {
     case "amazon":
+      const amazonQuantitySelector1 = "select#quantity";
+      const amazonQuantitySelector2 = "select#rcxsubsQuan";
+      const amazonPriceSelector = "div#corePrice_feature_div span.a-offscreen";
+
       quantity =
         $(amazonQuantitySelector1).length != 0
           ? $(amazonQuantitySelector1).children().length
@@ -165,7 +182,6 @@ async function fetchMerchantCookies(merchantUrl, productCount, config) {
     } = await axios.get(`${scrapingAntUrl}${merchantUrl}`, config);
     return encodeURIComponent(cookies);
   } catch (error) {
-    console.log(error);
     throw Error(error);
   }
 }

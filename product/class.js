@@ -1,14 +1,24 @@
 const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
 
-// TODO:// --------ACCOUNT FOR MERCHANT----------
+// TODO:// --------ACCOUNT FOR TEMPLATE----------
 
 class Product {
-  constructor(availability, quantity, price) {
-    this.availability = availability || "out of stock";
-    this.quantity = quantity || "0";
-    this.price = price;
-    this.markup = 0.5;
+  constructor(template, availability, quantity, price) {
+    this.template = template;
+    switch (template) {
+      case "fbShops":
+        this.availability = availability || "out of stock";
+        this.quantity = quantity || "0";
+        this.price = price;
+        this.markup = 0.5;
+        break;
+      default:
+        this.availability = availability;
+        this.quantity = quantity;
+        this.price = price;
+        this.markup = 0;
+    }
   }
 
   markupPrice() {
