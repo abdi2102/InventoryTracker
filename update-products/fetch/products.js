@@ -62,20 +62,18 @@ async function fetchProducts(productIds, updateQuery) {
       );
 
       if (custom.includes("retries")) {
-        if (quantity < 1 && price == null) {
+        if (quantity < 1 || price == null) {
           updates[idx] = new Product();
 
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
             productIdsLength += 1;
           }
-
           continue;
         }
       }
 
-      if (quantity < 5 || quantity === null) {
-        // product is likely out of stock
+      if (quantity < 5 || price === null) {
         updates[idx] = new Product();
         continue;
       }
@@ -83,7 +81,7 @@ async function fetchProducts(productIds, updateQuery) {
       const product = new Product("in stock", quantity, price);
       product.markupPrice();
       updates[idx] = product;
-      await timer(400 * (1 + Math.random()));
+      await timer(375 * (1 + Math.random()));
     }
 
     console.log(`retried (products): ${retryIndices.length}`);

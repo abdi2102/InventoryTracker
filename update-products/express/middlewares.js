@@ -15,7 +15,7 @@ async function submitUpdates(req, res) {
     const googleService = google.sheets({ version: "v4", auth });
 
     const productIds = await readProducts(googleService, sheet, updateQuery);
-    const setCount = 25;
+    const setCount = 30;
     const updateIterations = productIds.length / setCount;
 
     for (let x = updateIterations; x > 0; x--) {
