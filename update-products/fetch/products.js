@@ -6,18 +6,17 @@ const config = {
     useQueryString: true,
   },
 };
-
-// AMAZON FETCH HELPERS
 const timer = function (ms) {
   return new Promise(function (res) {
     return setTimeout(res, ms);
   });
 };
-
 const Product = require("../../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
+
+  
 async function fetchProducts(productIds, updateQuery) {
   const { custom } = updateQuery;
   let updates = [];

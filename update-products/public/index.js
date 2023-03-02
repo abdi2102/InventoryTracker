@@ -46,6 +46,7 @@ async function startProductUpdates() {
       serverMsg.textContent = "Unaccounted For Server Response";
     }
   } catch (error) {
+    console.log(error)
     if (error.code) {
       switch (error.code) {
         case "ERR_BAD_REQUEST":

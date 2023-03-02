@@ -5,14 +5,14 @@ const unpublishedUpdatesFile = path.join(
   "../unpublished-updates.json"
 );
 
+// TODO: ACCOUNT FOR TEMPLATE
+
 async function sendUpdates(googleService, sheet, updates, startRow) {
   const startColumn = "C";
   const endColumn = "E";
 
   let unpublishedUpdates = {};
   let totalUpdates = [];
-
-  // TODO: ACCOUNT FOR TEMPLATE
 
   if (fs.existsSync(unpublishedUpdatesFile) === true) {
     let content = fs.readFileSync(unpublishedUpdatesFile, "utf8");

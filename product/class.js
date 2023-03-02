@@ -1,8 +1,6 @@
 const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
 
-// TODO:// --------ACCOUNT FOR TEMPLATE----------
-
 class Product {
   constructor(template, availability, quantity, price) {
     this.template = template;
