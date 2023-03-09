@@ -11,13 +11,11 @@ const timer = function (ms) {
     return setTimeout(res, ms);
   });
 };
-const Product = require("../../product/class");
+const Product = require("../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
-
-  
-async function fetchProducts(productIds, updateQuery) {
+async function fetchProducts(productIds, updateQuery, start) {
   const { custom } = updateQuery;
   let updates = [];
   let retryIndices = [];
@@ -45,7 +43,7 @@ async function fetchProducts(productIds, updateQuery) {
       // if productIdsLength is bigger than productIds argument
       if (productIds[idx] === undefined) {
         idx = retryIndices[idx - productIds.length];
-        console.log(`retry product: ${updateQuery.startRow + idx}`);
+        console.log(`retry product: ${start + idx}`);
       }
 
       const productId = productIds[idx];
@@ -87,13 +85,13 @@ async function fetchProducts(productIds, updateQuery) {
 
       const product = new Product(
         (template = updateQuery.template),
-        "in stock",
+        (availability = "in stock"),
         quantity,
         price
       );
       product.markupPrice();
       updates[idx] = product;
-      await timer(360 * (1 + Math.random()));
+      await timer(350 * (1 + Math.random()));
     }
 
     console.log(`retried (products): ${retryIndices.length}`);

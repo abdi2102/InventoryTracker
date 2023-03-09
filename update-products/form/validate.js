@@ -1,5 +1,5 @@
 const form = require("./schema");
-const Sheet = require("../../sheet/class");
+const Sheet = require("../sheet/class");
 
 function validateForm(req, res, next) {
   try {

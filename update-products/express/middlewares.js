@@ -11,34 +11,41 @@ function renderUserSpreadsheet(_, res) {
 async function submitUpdates(req, res) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
 
+  const productCount = updateQuery.custom.includes("updateAll")
+    ? 500
+    : updateQuery.numProducts;
+
+  const setCount = 2;
+  const updateIterations = productCount / setCount;
+
+  let updatedProductsCount = 0;
+
   try {
     const googleService = google.sheets({ version: "v4", auth });
 
-    const productIds = await readProducts(googleService, sheet, updateQuery);
-    const setCount = 30;
-    const updateIterations = productIds.length / setCount;
-
     for (let x = updateIterations; x > 0; x--) {
-      let updateOffset = (updateIterations - x) * setCount;
-      let numProducts = x < 1 ? productIds.length % setCount : setCount;
+      const numProducts = x < 1 ? productCount % setCount : setCount;
+      const start = (updateIterations - x) * setCount + updateQuery.startRow;
+      const end = start + numProducts - 1;
 
-      const updates = await fetchProducts(
-        productIds.slice(updateOffset, updateOffset + numProducts),
-        updateQuery
-      );
+      const productIds = await readProducts(googleService, sheet, start, end);
 
-      await sendUpdates(
-        googleService,
-        sheet,
-        updates,
-        updateOffset + updateQuery.startRow
-      );
+      const updates = await fetchProducts(productIds, updateQuery, start);
+
+      await sendUpdates(googleService, sheet, updates, start);
+
+      updatedProductsCount += productIds.length;
+      if (productIds.length < numProducts) {
+        console.log("breaking out of for loop");
+        break;
+      }
     }
 
     res.status(200).json({
-      msg: `updated ${productIds.length} ${sheet.sheetName} products`,
+      msg: `updated ${updatedProductsCount} ${sheet.sheetName} products`,
     });
   } catch (error) {
+    console.log(error);
     if (error.message) {
       res.status(400).json({ msg: error.message });
     } else {

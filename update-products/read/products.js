@@ -1,7 +1,6 @@
-async function readProducts(googleService, sheet, updateQuery) {
-  const { startRow, numProducts, custom } = updateQuery;
+
+async function readProducts(googleService, sheet, start, end) {
   const sheetName = sheet.sheetName !== undefined ? `${sheet.sheetName}!` : "";
-  let partialRange;
   let productIdColumn;
 
   switch (sheet.template) {
@@ -12,21 +11,12 @@ async function readProducts(googleService, sheet, updateQuery) {
       throw Error("sheet template not recognized");
   }
 
-  if (custom.includes("updateAll") === false) {
-    let lastRow = startRow + numProducts - 1;
-    let end = `${productIdColumn}${lastRow}`;
-
-    partialRange = `${sheetName}${productIdColumn}${startRow}:${end}`;
-  }
-
   try {
     const {
       data: { values },
     } = await googleService.spreadsheets.values.get({
       spreadsheetId: sheet.getId(),
-      range: custom.includes("updateAll")
-        ? `${sheetName}${productIdColumn}${startRow}:${productIdColumn}`
-        : partialRange,
+      range: `${sheetName}${productIdColumn}${start}:${productIdColumn}${end}`,
     });
     return values || [];
   } catch (error) {

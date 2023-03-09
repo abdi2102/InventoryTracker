@@ -6,7 +6,6 @@
 
 .mainDiv {
     width: 60%;
-    height: 60%;
     margin: auto;
     display: flex;
     padding: 10px 0px;
@@ -22,8 +21,6 @@
 
 #mainForm {
     width: 100%;
-    height: 65%;
-
 }
 
 .labelInputDiv {
@@ -49,11 +46,10 @@
     display:none;
 }
 
-#serverMsg, #warningMsg {
+#serverMsg {
     font-size: 16px;
-    width: 50%;
+    max-width: 100%;
     color: red;
-    white-space: pre;
     padding: 0px 5px;
 }
 
@@ -101,7 +97,6 @@
 
 .formDiv {
     width: 100%;
-    height: 78%;
 }
 
 .labelInputDiv {
@@ -127,9 +122,8 @@
     min-width: 100px;
 }
 
-#warningMsg, #serverMsg {
+#serverMsg {
     font-size: 14px;
-    width: 100%;
     overflow: hidden;
     
 }

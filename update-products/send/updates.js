@@ -1,30 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const unpublishedUpdatesFile = path.join(
-  __dirname,
-  "../unpublished-updates.json"
-);
-
 // TODO: ACCOUNT FOR TEMPLATE
 
 async function sendUpdates(googleService, sheet, updates, startRow) {
   const startColumn = "C";
   const endColumn = "E";
-
-  let unpublishedUpdates = {};
-  let totalUpdates = [];
-
-  if (fs.existsSync(unpublishedUpdatesFile) === true) {
-    let content = fs.readFileSync(unpublishedUpdatesFile, "utf8");
-
-    if (content.length > 0) {
-      unpublishedUpdates = JSON.parse(content);
-    }
-  }
-
-  if (unpublishedUpdates[sheet.sheetName]) {
-    totalUpdates = totalUpdates.concat(unpublishedUpdates[sheet.sheetName]);
-  }
 
   let newUpdates = updates.map((product, idx) => {
     return {
@@ -33,49 +11,47 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
     };
   });
 
-  totalUpdates = totalUpdates.concat(newUpdates);
-
-  const request = {
-    spreadsheetId: sheet.getId(),
+  let request = {
     valueInputOption: "USER_ENTERED",
-    resource: { data: totalUpdates },
+    resource: { data: newUpdates },
   };
 
   try {
+    request.spreadsheetId = sheet.getId();
     await googleService.spreadsheets.values.batchUpdate(request);
-    if (totalUpdates.length > newUpdates.length) {
-      fs.writeFileSync(unpublishedUpdatesFile, "");
-    }
   } catch (error) {
-    if (fs.existsSync(unpublishedUpdatesFile) === false) {
-      fs.appendFileSync(unpublishedUpdatesFile, "");
-    }
+    // create unique google spreadsheet
+    const newSpreadsheetId = await createGoogleSpreadsheet(
+      googleService,
+      sheet.sheetName
+    );
 
-    fs.readFile(unpublishedUpdatesFile, "utf8", (error, data) => {
-      if (error) {
-        return console.log(error);
-      }
+    // add to new spreadsheet
+    request.spreadsheetId = newSpreadsheetId;
+    await googleService.spreadsheets.values.batchUpdate(request);
 
-      let unpublishedUpdates;
+    throw new Error(
+      `Write Access Not Granted. Get New Updates Here: https://docs.google.com/spreadsheets/d/${newSpreadsheetId}`
+    );
+  }
+}
 
-      try {
-        unpublishedUpdates = JSON.parse(data);
-      } catch {
-        unpublishedUpdates = {};
-      }
+async function createGoogleSpreadsheet(googleService, title) {
+  try {
+    const rndInt = Math.floor(Math.random() * 1000) + 1;
 
-      if (typeof unpublishedUpdates === "object") {
-        unpublishedUpdates[sheet.sheetName] = totalUpdates;
-      }
-
-      fs.writeFile(
-        unpublishedUpdatesFile,
-        JSON.stringify(unpublishedUpdates),
-        () => {}
-      );
+    const spreadsheet = await googleService.spreadsheets.create({
+      resource: {
+        properties: {
+          title: `${title}_${rndInt}`,
+        },
+      },
+      fields: "spreadsheetId",
     });
-
-    throw new Error("Unable To Publish Updates");
+    return spreadsheet.data.spreadsheetId;
+  } catch (error) {
+    console.log(error);
+    throw Error("Could Not Send Updates To Google");
   }
 }
 
