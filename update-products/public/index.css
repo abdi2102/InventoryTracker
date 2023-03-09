@@ -3,7 +3,6 @@
     font-size: 24px;
 }
 
-
 .mainDiv {
     width: 60%;
     margin: auto;
@@ -13,14 +12,9 @@
 }
 
 .formDiv {
-    width: 65%;
+    width: 80%;
     background-color: cornsilk;
     border: 1px solid black;
-
-}
-
-#mainForm {
-    width: 100%;
 }
 
 .labelInputDiv {
@@ -51,6 +45,8 @@
     max-width: 100%;
     color: red;
     padding: 0px 5px;
+    white-space: pre;
+    display: inline-block;
 }
 
 #googleSheetsLinksTable {
@@ -59,6 +55,7 @@
 }
 
  #googleSheetsLinksTable th {
+    background-color: cornsilk;
     font-size: 16px;
     border-bottom: solid black 1px;
 }
@@ -75,29 +72,11 @@
 }
 
 
-@media screen and (max-height: 768px) {
-    body {
-        height: 768px;
-        overflow-y: scroll;
-    }
-}
-
-
 @media screen and (max-width: 1024px) {
 
     .mainDiv {
         flex-direction: column;
-        width: 75%;
-        height: fit-content;
     }
-
-#googleSheetsLinksTable {
-   width: 80%;
-}
-
-.formDiv {
-    width: 100%;
-}
 
 .labelInputDiv {
     display: flex;
@@ -118,14 +97,12 @@
     flex-direction: column;
 }
 
-#mainFormStartButton, #mainFormPauseButton{
-    min-width: 100px;
+#googleSheetsLinksTable {
+    width: 80%;
 }
 
-#serverMsg {
-    font-size: 14px;
-    overflow: hidden;
-    
+#mainFormStartButton, #mainFormPauseButton{
+    min-width: 100px;
 }
 
 
