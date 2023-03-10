@@ -1,8 +1,6 @@
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
-// using the actual module is necessary b/c. jest is spying
-// const getOAuth2ClientModule = require("./google-client");
 const getOAuth2ClientModule = require("./google-client");
 const axios = require("axios");
 
@@ -35,11 +33,12 @@ async function getGmailUserInfoAndRedirect(req, res) {
 async function authorize(req, res, next) {
   let authUrl;
   req.session.redirectTo = req.originalUrl;
+  let token = req.cookies["token"];
+  const refresh_token = req.cookies["refresh_token"];
 
   try {
     const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
     authUrl = requestGoogleAuth(oAuth2Client);
-    let token = req.cookies["token"];
 
     if (token === undefined && req.cookies["refresh_token"] === undefined) {
       switch (req.method) {
@@ -61,7 +60,7 @@ async function authorize(req, res, next) {
     } catch (error) {
       if (req.cookies["refresh_token"] !== undefined) {
         oAuth2Client.setCredentials({
-          refresh_token: req.cookies["refresh_token"],
+          refresh_token,
         });
         token = await oAuth2Client.getAccessToken();
         res.cookie("token", token, { httpOnly: true });
@@ -69,7 +68,8 @@ async function authorize(req, res, next) {
         throw "Refresh Token Not Valid";
       }
     }
-    oAuth2Client.setCredentials({ access_token: token.token });
+    oAuth2Client.setCredentials({ refresh_token });
+    // oAuth2Client.setCredentials({ access_token: token.token, refresh_token });
     req.oAuth2Client = oAuth2Client;
     next();
   } catch (error) {

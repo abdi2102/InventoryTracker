@@ -91,17 +91,19 @@ async function fetchProducts(productIds, updateQuery, start) {
       );
       product.markupPrice();
       updates[idx] = product;
-      await timer(350 * (1 + Math.random()));
+      await timer(200 * (1 + Math.random()));
     }
 
-    console.log(`retried (products): ${retryIndices.length}`);
+    if (custom.includes["retries"] === true) {
+      console.log(`retried (products): ${retryIndices.length}`);
+    }
+
     return updates;
   } catch (error) {
     console.log(error);
     if (updates.length > 0) {
       return updates;
     } else {
-      console.log(error);
       throw Error("could not fetch products. try again later.");
     }
   }

@@ -15,7 +15,7 @@ async function submitUpdates(req, res) {
     ? 500
     : updateQuery.numProducts;
 
-  const setCount = 2;
+  const setCount = 25;
   const updateIterations = productCount / setCount;
 
   let updatedProductsCount = 0;
