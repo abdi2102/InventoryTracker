@@ -4,6 +4,7 @@ const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
 const path = require("path");
 const process = require("process");
+const { performance } = require("perf_hooks");
 
 function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
@@ -20,6 +21,7 @@ function stopProductUpdates(req, res) {
 
 async function submitUpdates(req, res) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
+  const startTime = performance.now();
 
   const productCount = updateQuery.custom.includes("updateAll")
     ? 500
@@ -51,8 +53,12 @@ async function submitUpdates(req, res) {
       }
     }
 
+    const endTime = performance.now();
+
     res.status(200).json({
-      msg: `updated ${updatedProductsCount} ${sheet.sheetName} products`,
+      msg: `updated ${updatedProductsCount} ${sheet.sheetName} products in ${
+        Math.round(((endTime - startTime) / 1000 / 60) * 10) / 10
+      } minutes`,
     });
   } catch (error) {
     console.log(error);
@@ -63,4 +69,5 @@ async function submitUpdates(req, res) {
     }
   }
 }
+
 module.exports = { renderUserSpreadsheet, submitUpdates, stopProductUpdates };

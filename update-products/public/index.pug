@@ -13,16 +13,15 @@ html(lang="en")
         div.mainDiv
                 div.formDiv            
                     form#mainForm(action="#")
-                        h1.mainHeader Update Products
+                        div.formTitleHeader
+                            h3.mainHeader Updating 
+                            input#sheetNameInput(type="text" placeholder="UNSPECIFIED" )
                         div.labelInputDiv
                             label#startLabel Start
-                            input#startRowInput(type="number" placeholder="2")
+                            input#startRowInput(type="number" placeholder=2)
                         div.labelInputDiv
                             label#numProductsLabel Number of Products
-                            input#numProductsInput(type="number" placeholder="number of products" )
-                        div.labelInputDiv
-                            label#googleSheetNameLabel Spreadsheet Name
-                            input#sheetNameInput(type="text" placeholder="sheet name" )
+                            input#numProductsInput(type="number" placeholder="0" )
                         div.labelInputDiv
                             label#sheetLinkLabel Spreadsheet Link
                             input#sheetLinkInput(type="text" placeholder="sheet link" )

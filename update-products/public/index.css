@@ -1,6 +1,6 @@
-.mainHeader {
-    text-align: center;
-    font-size: 24px;
+* {
+    margin: 0px;
+    padding: 0px;
 }
 
 .mainDiv {
@@ -8,13 +8,14 @@
     margin: auto;
     display: flex;
     padding: 10px 0px;
-  
+    background-color: rgb(242, 243, 245);  
+    min-height: 400px;
 }
 
 .formDiv {
     width: 80%;
-    min-width: 250px;
-    background-color: cornsilk;
+    min-width: 260px;
+    background-color: white;
     border: 1px solid black;
 }
 
@@ -25,6 +26,11 @@
     font-size: 16px;
 }
 
+#startRowInput, #numProductsInput {
+    width: 15%;
+}
+
+
 .labelInputDiv label {
     width:180px;
     float: left;
@@ -33,16 +39,56 @@
     padding-right: 10px;
 }
 
+.formTitleHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    height: 75px;
+    margin: auto;
+}
+
+.mainHeader {
+    margin: 0px;
+}
+
+
+#sheetNameInput {
+    width: 150px;
+    height: 30px;
+    border: none;
+    font-size: 22px;
+    padding-left: 5px;
+
+}
+
+#sheetNameInput:focus {
+    outline: none;
+    border: 1px solid black;
+    background-color: white;
+}
+
+#sheetNameInput::placeholder {
+    color: red;
+}
+
+#sheetNameInput:focus::placeholder {
+    color: transparent;
+}
+
 
 #mainFormStartButton, #mainFormPauseButton {
     min-width: 150px;
     height: 35px;
     margin: 10px 5px;
+    background-color: white;
 }
 
 #mainFormPauseButton {
-    /* display:none; */
+    display:none;
 }
+
+
 
 #serverMsg {
     font-size: 16px;
@@ -55,13 +101,12 @@
 
 #googleSheetsLinksTable {
     width: 30%;
-    min-width: 250px;
+    min-width: 260px;
     height: fit-content;
     margin: 0px 15px;
 }
 
  #googleSheetsLinksTable th {
-    background-color: cornsilk;
     font-size: 16px;
     border-bottom: solid black 1px;
     
@@ -83,6 +128,7 @@
 
     .mainDiv {
         flex-direction: column;
+        align-items: center;
     }
 
     #mainForm {
@@ -102,8 +148,6 @@
 
 .labelInputDiv label, .labelInputDiv input {
     text-align: center;
-    width: 70%;
-    height: 40%;
 }
 
 #mainForm {

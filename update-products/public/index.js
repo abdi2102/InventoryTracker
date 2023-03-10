@@ -5,7 +5,6 @@ const numProducts = document.getElementById("numProductsInput");
 const sheetNameInput = document.getElementById("sheetNameInput");
 const sheetLinkInput = document.getElementById("sheetLinkInput");
 const serverMsg = document.getElementById("serverMsg");
-const errorList = document.getElementById("errorList");
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
 
 window.addEventListener("load", function () {
@@ -107,23 +106,29 @@ function populateFormWithSheet(sheet) {
 function saveGoogleSheets(googleSheet) {
   let { sheetName, sheetLink } = googleSheet;
 
-  if (sheetName === undefined || sheetName.length === 0) {
-    sheetName = "UNSPECIFIED";
-  }
-
-  if (googleSheet.sheetLink === undefined) {
+  if (
+    sheetLink === undefined ||
+    sheetName === undefined ||
+    sheetName.length === 0
+  ) {
     return;
   }
 
   let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
 
-  googleSheets.unshift({ sheetName, sheetLink });
+  const validSave = googleSheets.every((sheet) => {
+    return sheet.sheetName !== sheetName;
+  });
 
-  if (googleSheets.length > 3) {
-    googleSheets = googleSheets.slice(0, 3);
+  if (validSave) {
+    googleSheets.unshift({ sheetName, sheetLink });
+
+    if (googleSheets.length > 3) {
+      googleSheets = googleSheets.slice(0, 3);
+    }
+
+    localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
   }
-
-  localStorage.setItem("googleSheets", JSON.stringify(googleSheets));
 }
 
 function populateTableWithSavedSheets() {
