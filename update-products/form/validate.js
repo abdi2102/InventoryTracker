@@ -39,7 +39,9 @@ function validateForm(req, res, next) {
       });
     }
 
-    return res.status(400).json({ msg: valErrors });
+    if (valErrors.length > 0) {
+      return res.status(400).json({ msg: valErrors });
+    }
 
     req.sheet = new Sheet(
       (link = validatedForm.value.sheetLink),

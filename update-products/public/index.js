@@ -34,7 +34,7 @@ async function startProductUpdates() {
       .toArray();
 
     const response = await axios.patch(
-      "http://localhost:3000/user/spreadsheet",
+      "http://localhost:3000/user/spreadsheet/update",
       {
         startRow: startRow.value,
         numProducts: numProducts.value,
@@ -85,7 +85,13 @@ async function startProductUpdates() {
 
 // -----PAUSE UPDATES ---- //
 
-async function stopProductUpdates() {}
+async function stopProductUpdates() {
+  try {
+    await axios.post("http://localhost:3000/user/spreadsheet/stop/updates");
+  } catch (error) {
+    console.log(error);
+  }
+}
 // -----PAUSE UPDATES ---- //
 
 function populateFormWithSheet(sheet) {

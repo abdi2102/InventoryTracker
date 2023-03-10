@@ -3,9 +3,19 @@ const readProducts = require("../read/products");
 const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
 const path = require("path");
+const process = require("process");
 
 function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
+}
+
+function stopProductUpdates(req, res) {
+  try {
+    console.log(process.pid);
+    res.status(200).send({});
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function submitUpdates(req, res) {
@@ -53,4 +63,4 @@ async function submitUpdates(req, res) {
     }
   }
 }
-module.exports = { renderUserSpreadsheet, submitUpdates };
+module.exports = { renderUserSpreadsheet, submitUpdates, stopProductUpdates };

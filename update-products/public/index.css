@@ -33,20 +33,15 @@
     padding-right: 10px;
 }
 
-#mainForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
 
 #mainFormStartButton, #mainFormPauseButton {
-    min-width: 140px;
+    min-width: 150px;
     height: 35px;
-    margin: 10px 0px;
+    margin: 10px 5px;
 }
 
 #mainFormPauseButton {
-    display:none;
+    /* display:none; */
 }
 
 #serverMsg {
@@ -62,12 +57,14 @@
     width: 30%;
     min-width: 250px;
     height: fit-content;
+    margin: 0px 15px;
 }
 
  #googleSheetsLinksTable th {
     background-color: cornsilk;
     font-size: 16px;
     border-bottom: solid black 1px;
+    
 }
 
 #googleSheetsLinksTable tr, #googleSheetsLinksTable th {
@@ -87,6 +84,12 @@
     .mainDiv {
         flex-direction: column;
     }
+
+    #mainForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
 .labelInputDiv {
     display: flex;
@@ -109,6 +112,8 @@
 
 #googleSheetsLinksTable {
     width: 80%;
+    margin: 0px;
+
 }
 }
 
