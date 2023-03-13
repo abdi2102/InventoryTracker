@@ -36,12 +36,28 @@ html(lang="en")
                                 optgroup(label="Custom")
                                     option(value="retries") Allow Retries
                                     option(value ="updateAll") Update All Products         
-                        button#mainFormStartButton(type="submit" onclick="startProductUpdates()") Update
+                        button#mainFormStartButton(type="submit" onclick="startProductUpdates(event)") Update
                         button#mainFormPauseButton(type="button" onclick="stopProductUpdates()") Pause
                         p#serverMsg 
-                table#googleSheetsLinksTable
-                    tr
-                        th Saved Sheets
+                    table#googleSheetsLinksTable
+                        thead 
+                            th Saved Sheets
+                        tbody 
+                            tr
+                table.table#requestStatsTable 
+                    thead 
+                        th  Last 10 Completions
+                        tr
+                                <th scope="col">Date</th>
+                                <th scope="col">Product Count</th>
+                                <th scope="col">Completion Time (min)</th>
+                                <th scope="col">Success Rate</th>
+                    tbody 
+                        <td>03/12/2023</td>
+                        <td>45</td>
+                        <td>12.9</td>
+                        <td>100%</td>
+                        </tr>
         script
             include index.js
         script(src="https://unpkg.com/axios/dist/axios.min.js")

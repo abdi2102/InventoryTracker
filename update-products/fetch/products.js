@@ -1,3 +1,30 @@
+// program stops when internet connection is terminated
+
+// AxiosError: read ECONNRESET
+//     at TLSWrap.onStreamRead (node:internal/stream_base_commons:217:20) {
+//   syscall: 'read',
+//   code: 'ECONNRESET',
+//   errno: -54,
+//     headers: {
+//       Accept: 'application/json, text/plain, */*',
+//       'x-api-key': 'aacf5794c3394314915f4932ef412cdd',
+//       useQueryString: true,
+//       'User-Agent': 'axios/0.27.2'
+//     },
+//     method: 'get',
+//     url: 'https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=https://www.amazon.com/dp/B07PCPBX46&cookies=session-id%3D143-1296729-4462841%3Bsession-id-time%3D2082787201l%3Bi18n-prefs%3DUSD%3Bsp-cdn%3D%22L5Z9%3AGB%22%3Bubid-main%3D131-5699832-8008128%3Bskin%3Dnoskin',
+//     data: undefined
+
+// Error: AxiosError: Request failed with status code 500
+//     at fetchMerchantCookies (/Users/abdi/amz-inventory-tracker/update-products/fetch/products.js:184:11)
+//     at processTicksAndRejections (node:internal/process/task_queues:96:5)
+//     at async fetchProducts (/Users/abdi/amz-inventory-tracker/update-products/fetch/products.js:34:21)
+//     at async submitUpdates (/Users/abdi/amz-inventory-tracker/update-products/express/middlewares.js:45:23)
+// Error: could not fetch products. try again later.
+//     at fetchProducts (/Users/abdi/amz-inventory-tracker/update-products/fetch/products.js:107:13)
+//     at processTicksAndRejections (node:internal/process/task_queues:96:5)
+//     at async submitUpdates (/Users/abdi/amz-inventory-tracker/update-products/express/middlewares.js:45:23)
+
 const axios = require("axios");
 const { load } = require("cheerio");
 const config = {

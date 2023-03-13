@@ -12,10 +12,10 @@ window.addEventListener("load", function () {
 });
 
 // -----RUN UPDATES ---- //
-async function startProductUpdates() {
+async function startProductUpdates(event) {
+  event.preventDefault();
   serverMsg.textContent = "";
-  mainFormStartButton.style.display = "none";
-  mainFormPauseButton.style.display = "block";
+  mainFormStartButton.disabled = true;
   try {
     const merchant = $(
       '#optionsSelectPicker optgroup[label="Merchant"] option:selected'
@@ -47,13 +47,13 @@ async function startProductUpdates() {
 
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
-      saveGoogleSheets({
-        sheetName: sheetNameInput.value,
-        sheetLink: sheetLinkInput.value,
-      });
     } else {
       serverMsg.textContent = "Unaccounted For Server Response";
     }
+    saveGoogleSheets({
+      sheetName: sheetNameInput.value,
+      sheetLink: sheetLinkInput.value,
+    });
   } catch (error) {
     console.log(error);
     if (error.code) {
@@ -76,8 +76,7 @@ async function startProductUpdates() {
       console.log(error);
     }
   }
-  mainFormStartButton.style.display = "block";
-  mainFormPauseButton.style.display = "none";
+  mainFormStartButton.disabled = false;
 }
 
 // -----RUN UPDATES ---- //
@@ -138,14 +137,15 @@ function populateTableWithSavedSheets() {
     return;
   }
 
+  const tableRow = sheetLinksTable.insertRow();
+
   googleSheets.forEach((sheet, idx) => {
     const button = document.createElement("button");
     button.innerHTML = sheet.sheetName;
     button.setAttribute("id", "sheetLinkButton");
     button.addEventListener("click", () => populateFormWithSheet(sheet));
 
-    const tableRow = sheetLinksTable.insertRow(idx + 1);
-    const sheetLinkCell = tableRow.insertCell(0);
+    const sheetLinkCell = tableRow.insertCell(idx);
     sheetLinkCell.appendChild(button);
   });
 }

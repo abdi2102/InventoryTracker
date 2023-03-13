@@ -1,29 +1,24 @@
-* {
-    margin: 0px;
-    padding: 0px;
-}
 
 .mainDiv {
-    width: 60%;
-    margin: auto;
+    min-width: 260px;
+    width: fit-content;
+    margin: 20px auto;
     display: flex;
-    padding: 10px 0px;
-    background-color: rgb(242, 243, 245);  
-    min-height: 400px;
+    flex-direction: column;
 }
 
 .formDiv {
-    width: 80%;
     min-width: 260px;
+    width: 100%;
     background-color: white;
     border: 1px solid black;
 }
 
 .labelInputDiv {
     width: 100%;
-    margin: 8px 0px;
-    padding: 2px 0px;
+    min-height: 40px;
     font-size: 16px;
+    padding: 3px;
 }
 
 #startRowInput, #numProductsInput {
@@ -58,18 +53,18 @@
     height: 30px;
     border: none;
     font-size: 22px;
-    padding-left: 5px;
+    padding-left: 4px;
 
 }
 
 #sheetNameInput:focus {
     outline: none;
-    border: 1px solid black;
+    border-bottom: 1px black solid;
     background-color: white;
 }
 
 #sheetNameInput::placeholder {
-    color: red;
+    color: gray
 }
 
 #sheetNameInput:focus::placeholder {
@@ -100,49 +95,38 @@
 }
 
 #googleSheetsLinksTable {
-    width: 30%;
     min-width: 260px;
-    height: fit-content;
-    margin: 0px 15px;
+    max-width: 100%;
 }
 
- #googleSheetsLinksTable th {
-    font-size: 16px;
-    border-bottom: solid black 1px;
-    
+#googleSheetsLinksTable td {
+    padding: 5px;
 }
 
-#googleSheetsLinksTable tr, #googleSheetsLinksTable th {
-    font-size: 16px;
+
+tr, th {
     text-align: center;
 }
 
 #sheetLinkButton {
+    border-radius: 2px solid black;
+    padding: 3px;
     background-color: white;
-    border-radius: 3px;
-    margin: 8px 0px;
+}
+
+#requestStatsTable {
+    margin-top: 10px;  
+    min-width: 260px;
+    width: 500px; 
 }
 
 
 @media screen and (max-width: 1024px) {
 
-    .mainDiv {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #mainForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .labelInputDiv {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 15%;
-    max-width: 350px;
     margin: 0px auto;
 }
 
@@ -150,15 +134,6 @@
     text-align: center;
 }
 
-#mainForm {
-    flex-direction: column;
-}
-
-#googleSheetsLinksTable {
-    width: 80%;
-    margin: 0px;
-
-}
 }
 
 
