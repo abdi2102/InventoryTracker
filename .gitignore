@@ -2,6 +2,3 @@ credentials.json
 node_modules
 .DS_Store
 .env
-todos.txt
-unpublished-updates.json
-coverage 

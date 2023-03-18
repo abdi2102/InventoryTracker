@@ -1,30 +1,3 @@
-// program stops when internet connection is terminated
-
-// AxiosError: read ECONNRESET
-//     at TLSWrap.onStreamRead (node:internal/stream_base_commons:217:20) {
-//   syscall: 'read',
-//   code: 'ECONNRESET',
-//   errno: -54,
-//     headers: {
-//       Accept: 'application/json, text/plain, */*',
-//       'x-api-key': 'aacf5794c3394314915f4932ef412cdd',
-//       useQueryString: true,
-//       'User-Agent': 'axios/0.27.2'
-//     },
-//     method: 'get',
-//     url: 'https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=https://www.amazon.com/dp/B07PCPBX46&cookies=session-id%3D143-1296729-4462841%3Bsession-id-time%3D2082787201l%3Bi18n-prefs%3DUSD%3Bsp-cdn%3D%22L5Z9%3AGB%22%3Bubid-main%3D131-5699832-8008128%3Bskin%3Dnoskin',
-//     data: undefined
-
-// Error: AxiosError: Request failed with status code 500
-//     at fetchMerchantCookies (/Users/abdi/amz-inventory-tracker/update-products/fetch/products.js:184:11)
-//     at processTicksAndRejections (node:internal/process/task_queues:96:5)
-//     at async fetchProducts (/Users/abdi/amz-inventory-tracker/update-products/fetch/products.js:34:21)
-//     at async submitUpdates (/Users/abdi/amz-inventory-tracker/update-products/express/middlewares.js:45:23)
-// Error: could not fetch products. try again later.
-//     at fetchProducts (/Users/abdi/amz-inventory-tracker/update-products/fetch/products.js:107:13)
-//     at processTicksAndRejections (node:internal/process/task_queues:96:5)
-//     at async submitUpdates (/Users/abdi/amz-inventory-tracker/update-products/express/middlewares.js:45:23)
-
 const axios = require("axios");
 const { load } = require("cheerio");
 const config = {
@@ -43,13 +16,13 @@ const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
 async function fetchProducts(productIds, updateQuery, start) {
-  const { custom } = updateQuery;
+  const { custom, merchant, template } = updateQuery;
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
 
   let merchantUrl;
-  switch (updateQuery.merchant) {
+  switch (merchant) {
     case "amazon":
       merchantUrl = "https://www.amazon.com/dp/";
       break;
@@ -77,7 +50,7 @@ async function fetchProducts(productIds, updateQuery, start) {
 
       if (isValidProductId(productId) === false) {
         console.log(`${productId} is not a valid product ID`);
-        updates[idx] = new Product((template = updateQuery.template));
+        updates[idx] = new Product(template);
         continue;
       }
 
@@ -88,40 +61,35 @@ async function fetchProducts(productIds, updateQuery, start) {
         config
       );
 
-      let { quantity, price } = selectHtmlElements(
-        updateQuery.merchant,
+      let { productIsInStock, quantity, price } = scrapeMerchantProduct(
+        merchant,
         content
       );
 
-      if (custom.includes("retries")) {
-        if (quantity < 5 || price == null) {
-          updates[idx] = new Product((template = updateQuery.template));
+      if (productIsInStock === false) {
+        updates[idx] = new Product(template);
 
+        if (custom.includes("retries")) {
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
             productIdsLength += 1;
           }
-          continue;
         }
-      }
-
-      if (quantity < 5 || price === null) {
-        updates[idx] = new Product((template = updateQuery.template));
         continue;
       }
 
       const product = new Product(
-        (template = updateQuery.template),
+        template,
         (availability = "in stock"),
         quantity,
         price
       );
       product.markupPrice();
       updates[idx] = product;
-      await timer(200 * (1 + Math.random()));
+      await timer(175 * (1 + Math.random()));
     }
 
-    if (custom.includes["retries"] === true) {
+    if (custom.includes("retries")) {
       console.log(`retried (products): ${retryIndices.length}`);
     }
 
@@ -142,10 +110,11 @@ function isValidProductId(productId) {
     : true;
 }
 
-function selectHtmlElements(merchant, content) {
+function scrapeMerchantProduct(merchant, content) {
   const $ = load(content || "");
   let quantity;
   let price;
+  let productIsInStock;
   switch (merchant) {
     case "amazon":
       const amazonQuantitySelector1 = "select#quantity";
@@ -158,11 +127,14 @@ function selectHtmlElements(merchant, content) {
           : $(amazonQuantitySelector2).children().length;
 
       price = $(amazonPriceSelector).html();
+
+      productInStock = quantity < 5 || price == null ? false : true;
+
       break;
     default:
       throw Error("merchant not recognized");
   }
-  return { quantity, price };
+  return { productIsInStock, quantity, price };
 }
 
 async function fetchMerchantProduct(merchantUrl, productId, cookies, config) {
