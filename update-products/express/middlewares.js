@@ -32,12 +32,10 @@ async function submitUpdates(req, res) {
   let updatedProductsCount = 0;
 
   try {
-    res.status(200).json({
-      msg: `attempting to update products`,
-    });
     const googleService = google.sheets({ version: "v4", auth });
 
     const startTime = performance.now();
+
     for (let x = updateIterations; x > 0; x--) {
       const numProducts = x < 1 ? productCount % setCount : setCount;
       const start = (updateIterations - x) * setCount + updateQuery.startRow;
@@ -54,13 +52,15 @@ async function submitUpdates(req, res) {
         break;
       }
     }
+
     const endTime = performance.now();
 
-    console.log(
-      `updated ${updatedProductsCount} ${sheet.sheetName} products in ${
+    res.status(200).json({
+      msg: `updated ${updatedProductsCount} ${sheet.sheetName} products in ${
         Math.round(((endTime - startTime) / 60000) * 10) / 10
-      } minutes`
-    );
+      } minutes`,
+    });
+
   } catch (error) {
     console.log(error);
     if (error.message) {
