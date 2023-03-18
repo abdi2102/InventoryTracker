@@ -8,7 +8,7 @@ const form = Joi.object({
   sheetLink: Joi.string().required().uri(),
   merchant: Joi.string().valid("amazon", "walmart").required(),
   template: Joi.string().valid("fbShops").required(),
-  custom: Joi.array().optional(),
+  custom: Joi.object().optional(),
 });
 
 module.exports = form;

@@ -8,13 +8,15 @@ function validateForm(req, res, next) {
       numProducts: req.body.numProducts || 0,
       sheetLink: req.body.sheetLink,
       sheetName: req.body.sheetName || undefined,
+      // TODO: VALIDATE CUSTOM OBJECT
       custom: JSON.parse(req.body.custom),
       merchant: req.body.merchant,
       template: req.body.template,
     };
 
     const allowedCustoms = ["retries", "updateAll"];
-    const queryCustomIsValid = formToValidate.custom.every((_) => {
+
+    const queryCustomIsValid = Object.keys(formToValidate.custom).every((_) => {
       return allowedCustoms.includes(_);
     });
 
@@ -28,7 +30,7 @@ function validateForm(req, res, next) {
 
     if (
       validatedForm.value.numProducts <= 0 &&
-      validatedForm.value.custom.includes("updateAll") === false
+      validatedForm.value.custom["updateAll"] !== true
     ) {
       valErrors += `at least one update required`;
     }

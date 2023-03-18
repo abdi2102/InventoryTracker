@@ -24,13 +24,12 @@ async function startProductUpdates(event) {
       '#optionsSelectPicker optgroup[label="Template"] option:selected'
     ).val();
 
-    const custom = $(
-      '#optionsSelectPicker optgroup[label="Custom"] option:selected'
-    )
-      .map((_, opt) => {
-        return opt.value;
-      })
-      .toArray();
+    let customObject = {};
+    const _ = $('#optionsSelectPicker optgroup[label="Custom"] option:selected')
+      .toArray()
+      .forEach((_, opt) => {
+        customObject[_.value] = true;
+      });
 
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
@@ -41,7 +40,7 @@ async function startProductUpdates(event) {
         sheetName: sheetNameInput.value,
         merchant,
         template,
-        custom: JSON.stringify(custom),
+        custom: JSON.stringify(customObject),
       }
     );
 

@@ -22,7 +22,7 @@ function stopProductUpdates(req, res) {
 async function submitUpdates(req, res) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
 
-  const productCount = updateQuery.custom.includes("updateAll")
+  const productCount = updateQuery.custom["updateAll"]
     ? 500
     : updateQuery.numProducts;
 

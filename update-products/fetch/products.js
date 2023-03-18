@@ -69,7 +69,7 @@ async function fetchProducts(productIds, updateQuery, start) {
       if (productIsInStock === false) {
         updates[idx] = new Product(template);
 
-        if (custom.includes("retries")) {
+        if (custom["retries"] === true) {
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
             productIdsLength += 1;
@@ -89,7 +89,7 @@ async function fetchProducts(productIds, updateQuery, start) {
       await timer(175 * (1 + Math.random()));
     }
 
-    if (custom.includes("retries")) {
+    if (custom["retries"] === true) {
       console.log(`retried (products): ${retryIndices.length}`);
     }
 
@@ -128,7 +128,7 @@ function scrapeMerchantProduct(merchant, content) {
 
       price = $(amazonPriceSelector).html();
 
-      productInStock = quantity < 5 || price == null ? false : true;
+      productIsInStock = quantity < 5 || price == null ? false : true;
 
       break;
     default:
