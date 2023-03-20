@@ -16,20 +16,8 @@ const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
 async function fetchProducts(productIds, updateQuery, start) {
-  // validate productIds
-  const productIdsValid = productIds.every((id) => isValidProductId(id));
-
-  if (productIdsValid === false) {
-    throw Error("Product Id(s) Not Valid");
-  }
-
-  // fetch products
-
-  const { custom, merchant, template } = updateQuery;
-  let updates = [];
-  let retryIndices = [];
-  let productIdsLength = productIds.length;
-
+  const { merchant } = updateQuery;
+  // merchant pick
   let merchantUrl;
   switch (merchant) {
     case "amazon":
@@ -38,6 +26,18 @@ async function fetchProducts(productIds, updateQuery, start) {
     default:
       throw Error("merchant not recognized");
   }
+
+  // validate
+  const productIdsValid = validateProductIds(productIds);
+  if (productIdsValid === false) {
+    throw Error("Product Id(s) Not Valid");
+  }
+
+  // fetch
+  const { custom, template } = updateQuery;
+  let updates = [];
+  let retryIndices = [];
+  let productIdsLength = productIds.length;
 
   try {
     const cookies = await fetchMerchantCookies(
@@ -52,14 +52,12 @@ async function fetchProducts(productIds, updateQuery, start) {
       if (idx >= productIds.length) {
         // retry code
         idx = retryIndices[idx - productIds.length];
-        console.log(`retry product: ${start + idx}`);
+        console.log(`retrying product: ${start + idx}`);
       }
-
-      const productId = productIds[idx];
 
       const content = await fetchMerchantProduct(
         merchantUrl,
-        productId[0],
+        productIds[idx][0],
         cookies,
         config
       );
@@ -68,6 +66,7 @@ async function fetchProducts(productIds, updateQuery, start) {
         merchant,
         content
       );
+
 
       if (productIsInStock === false) {
         updates[idx] = new Product(template);
@@ -89,11 +88,8 @@ async function fetchProducts(productIds, updateQuery, start) {
       );
       product.markupPrice();
       updates[idx] = product;
-      await timer(160 * (1 + Math.random()));
-    }
 
-    if (custom["retries"] === true) {
-      console.log(`retried (products): ${retryIndices.length}`);
+      await timer(160 * (1 + Math.random()));
     }
 
     return updates;
@@ -105,12 +101,6 @@ async function fetchProducts(productIds, updateQuery, start) {
       throw Error("could not fetch products. try again later.");
     }
   }
-}
-
-function isValidProductId(productId) {
-  return Array.isArray(productId) === false || productId[0] == undefined
-    ? false
-    : true;
 }
 
 function scrapeMerchantProduct(merchant, content) {
@@ -185,6 +175,15 @@ async function fetchMerchantCookies(merchantUrl, productCount, config) {
   } catch (error) {
     throw Error(error);
   }
+}
+
+function validateProductIds(productIds) {
+  // validate productIds
+  const productIdsValid = productIds.every((id) => {
+    return Array.isArray(id) === false || id[0] == undefined ? false : true;
+  });
+
+  return productIdsValid;
 }
 
 module.exports = fetchProducts;

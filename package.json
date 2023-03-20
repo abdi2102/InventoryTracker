@@ -4,7 +4,7 @@
   "main": "express/index.js",
   "scripts": {
     "test": "jest --coverage --watchAll",
-    "start": "nodemon express/index.js"
+    "start": "nodemon express/index.js --ignore update-stats.json"
   },
   "author": "",
   "license": "ISC",
