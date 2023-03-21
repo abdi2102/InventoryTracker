@@ -12,10 +12,13 @@ function renderUserSpreadsheet(_, res) {
 
 async function submitUpdates(req, res) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
+  const {
+    numProducts,
+    startRow,
+    custom: { updateAll },
+  } = updateQuery;
 
-  const productCount = updateQuery.custom["updateAll"]
-    ? 400
-    : updateQuery.numProducts;
+  const productCount = updateAll ? 400 : numProducts;
 
   const setCount = 25;
   const updateIterations = productCount / setCount;
@@ -27,21 +30,23 @@ async function submitUpdates(req, res) {
 
     const completionTime = estimateCompletionTime();
 
-    res.status(200).json(
-      updateQuery.updateAll === undefined
-        ? {
-            msg: `attempting to update. Time Estimate: ${
-              completionTime * updateQuery.numProducts
-            }`,
-          }
-        : { msg: `attempting to update.` }
-    );
+    if (updateAll) {
+      res.status(200).json({ msg: `Attempting To Update.` });
+    } else {
+      res.status(200).json({
+        msg: ` Completion Time: ${
+          isNaN(completionTime) === false
+            ? `${completionTime * numProducts} min.`
+            : "Unable To Estimate"
+        } `,
+      });
+    }
 
     const startTime = performance.now();
 
     for (let x = updateIterations; x > 0; x--) {
       const numProducts = x < 1 ? productCount % setCount : setCount;
-      const start = (updateIterations - x) * setCount + updateQuery.startRow;
+      const start = (updateIterations - x) * setCount + startRow;
       const end = start + numProducts - 1;
 
       const productIds = await readProducts(googleService, sheet, start, end);
@@ -54,8 +59,6 @@ async function submitUpdates(req, res) {
       if (productIds.length < numProducts) {
         break;
       }
-
-      console.log(`completed set ${Math.ceil(updateIterations - x + 1)}`);
     }
 
     const endTime = performance.now();
@@ -78,23 +81,30 @@ async function submitUpdates(req, res) {
 
 module.exports = { renderUserSpreadsheet, submitUpdates };
 
-async function saveUpdateStats(stat) {
+function saveUpdateStats(stat) {
   try {
     // READING FILE
     let existingStats = [];
 
     if (fs.existsSync("update-stats.json")) {
-      existingStats = fs.readFileSync("update-stats.json");
+      existingStats = fs.readFileSync("update-stats.json", {
+        encoding: "utf-8",
+      });
 
       if (existingStats.length !== 0) {
         existingStats = JSON.parse(existingStats);
       }
     }
 
+    if (existingStats.length > 14) {
+      existingStats.pop();
+    }
+
     const newStats = JSON.stringify([stat].concat(existingStats));
     fs.writeFileSync("update-stats.json", newStats);
   } catch (error) {
-    console.log("Unable To Save Stats", error);
+    console.log("Unable To Save Stats");
+    return;
   }
 }
 
@@ -110,10 +120,9 @@ function estimateCompletionTime() {
 
         return completionTimes.reduce((a, b) => a + b) / completionTimes.length;
       }
-    } else {
-      return "unable to estimate completion time";
     }
+    return;
   } catch (error) {
-    return "unable to estimate time";
+    return;
   }
 }
