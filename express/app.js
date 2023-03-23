@@ -8,6 +8,7 @@ app.use(express.json());
 app.set("view engine", "pug");
 const session = require("express-session");
 const userSpreadsheetsRouter = require("../update-products/express/router");
+const path = require("path");
 app.use(
   session({
     resave: true,
@@ -18,5 +19,8 @@ app.use(
 
 app.use("/user/spreadsheet", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
+app.get("*", (req, res) =>
+  res.render(path.join(__dirname, "../update-products/public/404.pug"))
+);
 
 module.exports = app;

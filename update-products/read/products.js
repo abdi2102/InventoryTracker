@@ -5,7 +5,7 @@ async function readProducts(googleService, sheet, start, end) {
 
   switch (sheet.template) {
     case "fbShops":
-      productIdColumn = "K";
+      productIdColumn = "J";
       break;
     default:
       throw Error("sheet template not recognized");

@@ -67,7 +67,6 @@ async function fetchProducts(productIds, updateQuery, start) {
         content
       );
 
-
       if (productIsInStock === false) {
         updates[idx] = new Product(template);
 
@@ -110,19 +109,27 @@ function scrapeMerchantProduct(merchant, content) {
   let productIsInStock;
   switch (merchant) {
     case "amazon":
-      const amazonQuantitySelector1 = "select#quantity";
-      const amazonQuantitySelector2 = "select#rcxsubsQuan";
-      const amazonPriceSelector = "div#corePrice_feature_div span.a-offscreen";
+      const amazonQuantity1 = $("select#quantity");
+      const amazonQuantity2 = $("select#rcxsubsQuan");
+      const amazonPrice = $(
+        "div#corePrice_feature_div span.a-offscreen"
+      ).html();
+      const amazonAvailability =
+        $("div#availability span").html() === null
+          ? ""
+          : $("div#availability span").html().trim();
 
       quantity =
-        $(amazonQuantitySelector1).length != 0
-          ? $(amazonQuantitySelector1).children().length
-          : $(amazonQuantitySelector2).children().length;
+        amazonQuantity1.length != 0
+          ? amazonQuantity1.children().length
+          : amazonQuantity2.children().length;
 
-      price = $(amazonPriceSelector).html();
+      price = amazonPrice;
 
-      productIsInStock = quantity < 5 || price == null ? false : true;
-
+      productIsInStock =
+        (quantity < 5 || price == null) && amazonAvailability != "In Stock"
+          ? false
+          : true;
       break;
     default:
       throw Error("merchant not recognized");

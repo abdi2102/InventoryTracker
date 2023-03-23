@@ -10,7 +10,7 @@ function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
 }
 
-async function submitUpdates(req, res) {
+async function submitUpdates(req, res, next) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
   const {
     numProducts,
@@ -20,27 +20,19 @@ async function submitUpdates(req, res) {
 
   const productCount = updateAll ? 400 : numProducts;
 
-  const setCount = 25;
+  const setCount = 30;
   const updateIterations = productCount / setCount;
 
   let updatedProductsCount = 0;
 
   try {
+    res
+      .status(200)
+      .json({ msg: `attempting to update. check back for updates.` });
+
     const googleService = google.sheets({ version: "v4", auth });
 
-    const completionTime = estimateCompletionTime();
-
-    if (updateAll) {
-      res.status(200).json({ msg: `Attempting To Update.` });
-    } else {
-      res.status(200).json({
-        msg: ` Completion Time: ${
-          isNaN(completionTime) === false
-            ? `${completionTime * numProducts} min.`
-            : "Unable To Estimate"
-        } `,
-      });
-    }
+    // const completionTime = estimateCompletionTime();
 
     const startTime = performance.now();
 
@@ -56,6 +48,12 @@ async function submitUpdates(req, res) {
 
       updatedProductsCount += productIds.length;
 
+      console.log(
+        `completed set ${Math.ceil(
+          updateIterations - x + 1
+        )}. Number sets left: ${Math.ceil(updateIterations - 1)}`
+      );
+
       if (productIds.length < numProducts) {
         break;
       }
@@ -70,12 +68,7 @@ async function submitUpdates(req, res) {
       completionTime: Math.round(((endTime - startTime) / 60000) * 10) / 10,
     });
   } catch (error) {
-    console.log(error);
-    if (error.message) {
-      res.status(400).json({ msg: error.message });
-    } else {
-      res.status(500).json(error);
-    }
+    next(error);
   }
 }
 
