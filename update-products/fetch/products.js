@@ -70,13 +70,18 @@ async function fetchProducts(productIds, updateQuery, start) {
       if (productIsInStock === false) {
         updates[idx] = new Product(template);
 
+        if (0 < quantity < 5) {
+          // low stock items should not be retried
+          continue;
+        }
+
         if (custom["retries"] === true) {
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
             productIdsLength += 1;
           }
+          continue;
         }
-        continue;
       }
 
       const product = new Product(
@@ -130,6 +135,8 @@ function scrapeMerchantProduct(merchant, content) {
         (quantity < 5 || price == null) && amazonAvailability != "In Stock"
           ? false
           : true;
+
+      console.log(price, quantity, productIsInStock);
       break;
     default:
       throw Error("merchant not recognized");
