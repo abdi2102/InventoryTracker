@@ -6,6 +6,8 @@ const path = require("path");
 const { performance } = require("perf_hooks");
 const fs = require("fs");
 
+let canUpdateProducts = true;
+
 function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
 }
@@ -20,23 +22,20 @@ async function submitUpdates(req, res, next) {
 
   const productCount = updateAll ? 400 : numProducts;
 
-  const setCount = 30;
+  const setCount = 1;
   const updateIterations = productCount / setCount;
 
   let updatedProductsCount = 0;
 
   try {
-    res
-      .status(200)
-      .json({ msg: `attempting to update. check back for updates.` });
-
     const googleService = google.sheets({ version: "v4", auth });
 
     // const completionTime = estimateCompletionTime();
 
     const startTime = performance.now();
 
-    for (let x = updateIterations; x > 0; x--) {
+    for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
+      console.log(canUpdateProducts);
       const numProducts = x < 1 ? productCount % setCount : setCount;
       const start = (updateIterations - x) * setCount + startRow;
       const end = start + numProducts - 1;
@@ -67,12 +66,25 @@ async function submitUpdates(req, res, next) {
       productCount: updatedProductsCount,
       completionTime: Math.round(((endTime - startTime) / 60000) * 10) / 10,
     });
+
+    // reset updating variable
+    canUpdateProducts = true;
   } catch (error) {
-    next(error);
+    res.locals.submitUpdatesError = error;
+    next();
   }
 }
 
-module.exports = { renderUserSpreadsheet, submitUpdates };
+function stopUpdates(req, res, next) {
+  try {
+    canUpdateProducts = false;
+    res.status(200).json({ msg: "stopping updates" });
+  } catch (error) {
+    res.status(500).json({ msg: "oops. ran into error." });
+  }
+}
+
+module.exports = { renderUserSpreadsheet, submitUpdates, stopUpdates };
 
 function saveUpdateStats(stat) {
   try {

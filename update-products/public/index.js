@@ -15,7 +15,7 @@ window.addEventListener("load", function () {
 async function startProductUpdates(event) {
   event.preventDefault();
   serverMsg.textContent = "";
-  mainFormStartButton.disabled = true;
+
   try {
     const merchant = $(
       '#optionsSelectPicker optgroup[label="Merchant"] option:selected'
@@ -23,14 +23,12 @@ async function startProductUpdates(event) {
     const template = $(
       '#optionsSelectPicker optgroup[label="Template"] option:selected'
     ).val();
-
     let customObject = {};
     const _ = $('#optionsSelectPicker optgroup[label="Custom"] option:selected')
       .toArray()
       .forEach((_, opt) => {
         customObject[_.value] = true;
       });
-
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
       {
@@ -43,8 +41,8 @@ async function startProductUpdates(event) {
         custom: JSON.stringify(customObject),
       }
     );
-
     if (response.data.msg) {
+      console.log(response.data.msg);
       serverMsg.textContent = response.data.msg;
     } else {
       serverMsg.textContent = "Unaccounted For Server Response";
@@ -54,7 +52,6 @@ async function startProductUpdates(event) {
       sheetLink: sheetLinkInput.value,
     });
   } catch (error) {
-    console.log(error);
     if (error.code) {
       switch (error.code) {
         case "ERR_BAD_REQUEST":
@@ -75,7 +72,6 @@ async function startProductUpdates(event) {
       console.log(error);
     }
   }
-  mainFormStartButton.disabled = false;
 }
 
 // -----RUN UPDATES ---- //
@@ -84,7 +80,12 @@ async function startProductUpdates(event) {
 
 async function stopProductUpdates() {
   try {
-    await axios.post("http://localhost:3000/user/spreadsheet/stop/updates");
+    const response = await axios.get(
+      "http://localhost:3000/user/spreadsheet/updates/stop/"
+    );
+    if (response.data.msg) {
+      serverMsg.textContent = response.data.msg;
+    }
   } catch (error) {
     console.log(error);
   }
@@ -115,7 +116,7 @@ function saveGoogleSheets(googleSheet) {
   let googleSheets = JSON.parse(localStorage.getItem("googleSheets")) || [];
 
   const validSave = googleSheets.every((sheet) => {
-    return sheet.sheetName !== sheetName;
+    return sheet.sheetName !== sheetName && sheet.sheetLink !== sheetLink;
   });
 
   if (validSave) {
@@ -136,6 +137,7 @@ function populateTableWithSavedSheets() {
     return;
   }
 
+  sheetLinksTable.style.display = "block";
   const tableRow = sheetLinksTable.insertRow();
 
   googleSheets.forEach((sheet, idx) => {

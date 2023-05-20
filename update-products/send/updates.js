@@ -1,8 +1,8 @@
 // TODO: ACCOUNT FOR TEMPLATE
 
 async function sendUpdates(googleService, sheet, updates, startRow) {
-  const startColumn = "C";
-  const endColumn = "E";
+  const startColumn = "D";
+  const endColumn = "F";
 
   let newUpdates = updates.map((product, idx) => {
     return {
@@ -30,9 +30,10 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
     request.spreadsheetId = newSpreadsheetId;
     await googleService.spreadsheets.values.batchUpdate(request);
 
-    throw new Error(
-      `Write Access Not Granted. Get New Updates Here: https://docs.google.com/spreadsheets/d/${newSpreadsheetId}`
-    );
+    throw {
+      msg: `Write Access Not Granted. Get New Updates Here: https://docs.google.com/spreadsheets/d/${newSpreadsheetId}`,
+      code: 400,
+    };
   }
 }
 

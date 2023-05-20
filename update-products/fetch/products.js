@@ -24,17 +24,18 @@ async function fetchProducts(productIds, updateQuery, start) {
       merchantUrl = "https://www.amazon.com/dp/";
       break;
     default:
-      throw Error("merchant not recognized");
+      throw { msg: "merchant not recognized", code: 400 };
   }
 
   // validate
   const productIdsValid = validateProductIds(productIds);
   if (productIdsValid === false) {
-    throw Error("Product Id(s) Not Valid");
+    throw { msg: "Product Id(s) Not Valid", code: 400 };
   }
 
   // fetch
   const { custom, template } = updateQuery;
+  const { retries } = custom;
   let updates = [];
   let retryIndices = [];
   let productIdsLength = productIds.length;
@@ -70,12 +71,13 @@ async function fetchProducts(productIds, updateQuery, start) {
       if (productIsInStock === false) {
         updates[idx] = new Product(template);
 
-        if (0 < quantity < 5) {
+        if (0 < quantity < 5 && price != null) {
           // low stock items should not be retried
           continue;
         }
 
-        if (custom["retries"] === true) {
+        // retries only when price is null, and quantity is 0
+        if (retries === true) {
           if (retryIndices.includes(idx) === false) {
             retryIndices.push(idx);
             productIdsLength += 1;
@@ -93,7 +95,7 @@ async function fetchProducts(productIds, updateQuery, start) {
       product.markupPrice();
       updates[idx] = product;
 
-      await timer(160 * (1 + Math.random()));
+      await timer(150 * (1 + Math.random()));
     }
 
     return updates;
@@ -102,7 +104,10 @@ async function fetchProducts(productIds, updateQuery, start) {
     if (updates.length > 0) {
       return updates;
     } else {
-      throw Error("could not fetch products. try again later.");
+      throw Error({
+        msg: "could not fetch products. try again later.",
+        code: 500,
+      });
     }
   }
 }
@@ -132,7 +137,7 @@ function scrapeMerchantProduct(merchant, content) {
       price = amazonPrice;
 
       productIsInStock =
-        (quantity < 5 || price == null) && amazonAvailability != "In Stock"
+        (quantity < 5 && amazonAvailability != "In Stock") || price == null
           ? false
           : true;
 
@@ -158,13 +163,15 @@ async function fetchMerchantProduct(merchantUrl, productId, cookies, config) {
 
     return content;
   } catch (error) {
+    console.log(error);
     if (error.response) {
       const status = error.response.status;
-      const statusText = error.response.statusText;
-
       if (status === 423 || status === 403) {
         // requests after are doomed to fail with these statuses
-        throw Error(statusText);
+        throw {
+          msg: "Unable to continue updates. Check back later.",
+          code: status,
+        };
       }
 
       return undefined;

@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-app.use("/user/spreadsheet", userSpreadsheetsRouter);
+app.use("/user/spreadsheet/", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
 app.get("*", (req, res) =>
   res.render(path.join(__dirname, "../update-products/public/404.pug"))
