@@ -8,14 +8,11 @@ const fs = require("fs");
 let canUpdateProducts = true;
 
 function renderUserSpreadsheet(_, res) {
-
-  // check if authenticated
   res.render(path.join(__dirname, "../public/index.pug"));
 }
 
 async function submitUpdates(req, res, next) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
-  console.log(auth)
   const {
     numProducts,
     startRow,
@@ -32,11 +29,11 @@ async function submitUpdates(req, res, next) {
     const googleService = google.sheets({ version: "v4", auth });
     const completionTime = estimateCompletionTime();
 
-    // res
-    //   // .status(200)
-    //   .json({
-    //     msg: `attempting to update. estimate completion time: ${completionTime}`,
-    //   });
+    res
+      .status(200)
+      .json({
+        msg: `attempting to update. estimate completion time: ${completionTime}`,
+      });
     const startTime = performance.now();
 
     for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {

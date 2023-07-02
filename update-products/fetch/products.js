@@ -19,7 +19,6 @@ async function fetchProducts(productIds, updateQuery, start) {
   const { merchant } = updateQuery;
   // merchant pick
   let merchantUrl;
-  console.log("hey")
   switch (merchant) {
     case "amazon":
       merchantUrl = "https://www.amazon.com/dp/";
@@ -101,7 +100,6 @@ async function fetchProducts(productIds, updateQuery, start) {
       }
 
       return updates;
-    // return [{ availability: "in stock", quantity: "10", markupPrice: "$5.00" }];
   } catch (error) {
     console.log(error);
     if (updates.length > 0) {

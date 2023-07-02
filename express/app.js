@@ -6,6 +6,11 @@ const app = require("express")();
 
 const http = require("http");
 const server = http.createServer(app);
+const io = require("socket.io")(http);
+
+io.on("connection", (socket) => {
+  console.log("A client connected.");
+});
 
 app.use(cookieParser());
 app.use(express.json());
@@ -20,22 +25,25 @@ app.use(
     saveUninitialized: true,
   })
 );
-
+const { auth } = require("../auth/middleware");
+app.use("/user/spreadsheet/", auth);
 app.use("/user/spreadsheet/", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
 
-// login
+// login //
 const { googleLogin } = require("../auth/google");
 
 app.get("/login", (req, res) =>
   res.render(path.join(__dirname, "../update-products/public/login.pug"))
 );
 
-app.get("/login/google", googleLogin);
+app.post("/login/google", googleLogin);
+// login //
 
 app.get("*", (req, res) =>
   res.render(path.join(__dirname, "../update-products/public/404.pug"))
 );
+
 app.use((err, req, res, next) => {
   try {
     if (err.msg) {

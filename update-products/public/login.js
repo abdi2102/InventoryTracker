@@ -1,15 +1,15 @@
-// $(document).ready(function () {
-//   $("#loginModal").modal("show");
-//   $(function () {
-//     $('[data-toggle="tooltip"]').tooltip();
-//   });
-// });
-
 async function login() {
   try {
-    const res = await axios.get("http://localhost:3000/login/google");
-    window.location.href = res.data.authUrl;
+    console.log("gefdaj")
+    const res = await axios.post("http://localhost:3000/login/google");
+
+    if (res.data.authUrl) {
+      window.location.href = res.data.authUrl;
+    } else {
+      window.location.href = "/user/spreadsheet";
+    }
   } catch (error) {
-    console.log("something went wrong. oops.")
+    console.log(error)
+    console.log("something went wrong. oops.");
   }
 }
