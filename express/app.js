@@ -4,7 +4,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = require("express")();
 
-const http = require("http")
+const http = require("http");
 const server = http.createServer(app);
 
 app.use(cookieParser());
@@ -23,10 +23,19 @@ app.use(
 
 app.use("/user/spreadsheet/", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
+
+// login
+const { googleLogin } = require("../auth/google");
+
+app.get("/login", (req, res) =>
+  res.render(path.join(__dirname, "../update-products/public/login.pug"))
+);
+
+app.get("/login/google", googleLogin);
+
 app.get("*", (req, res) =>
   res.render(path.join(__dirname, "../update-products/public/404.pug"))
 );
-
 app.use((err, req, res, next) => {
   try {
     if (err.msg) {

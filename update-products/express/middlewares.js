@@ -8,11 +8,14 @@ const fs = require("fs");
 let canUpdateProducts = true;
 
 function renderUserSpreadsheet(_, res) {
+
+  // check if authenticated
   res.render(path.join(__dirname, "../public/index.pug"));
 }
 
 async function submitUpdates(req, res, next) {
   const { oAuth2Client: auth, updateQuery, sheet } = req;
+  console.log(auth)
   const {
     numProducts,
     startRow,
@@ -70,7 +73,6 @@ async function submitUpdates(req, res, next) {
 
     canUpdateProducts = true;
   } catch (error) {
-    console.log("hey", error);
     next(error);
   }
 }

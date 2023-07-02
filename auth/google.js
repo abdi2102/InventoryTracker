@@ -1,8 +1,23 @@
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 const verifyGoogleAccessTokenUrl =
   "https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=";
-const getOAuth2ClientModule = require("./google-client");
 const axios = require("axios");
+const { readFileSync } = require("fs");
+const { google } = require("googleapis");
+
+
+function getOAuth2Client() {
+  try {
+    const content = readFileSync("credentials.json");
+
+    const {
+      web: { client_secret, client_id, redirect_uris },
+    } = JSON.parse(content);
+    return new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+  } catch (error) {
+    throw Error(error);
+  }
+}
 
 function requestGoogleAuth(oAuth2Client) {
   return oAuth2Client.generateAuthUrl({
@@ -13,7 +28,7 @@ function requestGoogleAuth(oAuth2Client) {
 
 async function getGmailUserInfoAndRedirect(req, res) {
   try {
-    const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
+    const oAuth2Client = getOAuth2Client();
     const token = await oAuth2Client.getToken(req.query.code);
     res.cookie("token", token.tokens, { httpOnly: true });
     // REFRESH_TOKEN SHOULD BE SAVED IN DATABASE FOR SAFETY
@@ -30,60 +45,61 @@ async function getGmailUserInfoAndRedirect(req, res) {
   }
 }
 
-async function authorize(req, res, next) {
-  let authUrl;
-  req.session.redirectTo = req.originalUrl;
+async function googleAuth(req, res, _) {
   let token = req.cookies["token"];
   const refresh_token = req.cookies["refresh_token"];
+  const oAuth2Client = getOAuth2Client();
+  req.session.redirectTo = req.originalUrl;
 
   try {
-    const oAuth2Client = getOAuth2ClientModule.getOAuth2Client();
-    authUrl = requestGoogleAuth(oAuth2Client);
-
-    if (token === undefined && req.cookies["refresh_token"] === undefined) {
-      switch (req.method) {
-        case "GET":
-          return res.status(401).redirect(authUrl);
-        default:
-          return res.status(401).json({ msg: "Login Failed", authUrl });
-      }
+    if (token !== undefined) {
+      // verify if token is valid
+      const validateGoogleTokenUrl = `${verifyGoogleAccessTokenUrl}${token.token}`;
+      await axios.get(validateGoogleTokenUrl);
+    } else {
+      throw Error();
     }
-
+  } catch (error) {
     try {
-      if (token !== undefined) {
-        // verify if token is valid
-        const validateGoogleTokenUrl = `${verifyGoogleAccessTokenUrl}${token.token}`;
-        await axios.get(validateGoogleTokenUrl);
-      } else {
-        throw "Access Token Not Valid";
-      }
-    } catch (error) {
       if (req.cookies["refresh_token"] !== undefined) {
         oAuth2Client.setCredentials({
           refresh_token,
         });
+
         token = await oAuth2Client.getAccessToken();
         res.cookie("token", token, { httpOnly: true });
       } else {
-        throw "Refresh Token Not Valid";
+        throw Error();
       }
+    } catch (error) {
+      res.redirect("/login");
     }
-    oAuth2Client.setCredentials({ refresh_token });
-    // oAuth2Client.setCredentials({ access_token: token.token, refresh_token });
-    req.oAuth2Client = oAuth2Client;
-    next();
+  }
+
+  oAuth2Client.setCredentials({
+    access_token: token.token,
+    refresh_token,
+  });
+
+  req.oAuth2Client = oAuth2Client;
+}
+
+async function googleLogin(req, res, next) {
+  try {
+    let authUrl;
+    const oAuth2Client = getOAuth2Client();
+    authUrl = requestGoogleAuth(oAuth2Client);
+    res.send({ authUrl });
   } catch (error) {
-    if (authUrl) {
-      switch (req.method) {
-        case "GET":
-          return res.status(401).redirect(authUrl);
-        default:
-          return res.status(401).json({ msg: "Login Failed", authUrl });
-      }
-    } else {
-      res.status(500).json({ msg: error.message });
-    }
+    console.log(error);
+    throw error;
   }
 }
 
-module.exports = { authorize, getGmailUserInfoAndRedirect };
+
+
+module.exports = {
+  googleLogin,
+  googleAuth,
+  getGmailUserInfoAndRedirect,
+};
