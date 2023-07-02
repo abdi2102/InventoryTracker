@@ -21,28 +21,24 @@ function validateForm(req, res, next) {
     });
 
     if (queryCustomIsValid === false) {
-      return res.status(400).json({ msg: "query options not valid" });
+      throw { msg: "query options not valid", code: 400 };
     }
 
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
-
-    let valErrors = "";
 
     if (
       validatedForm.value.numProducts <= 0 &&
       validatedForm.value.custom["updateAll"] !== true
     ) {
-      valErrors += `at least one update required`;
+      throw { msg: "at least one update required", code: 400 };
     }
 
     if (validatedForm.error) {
-      validatedForm.error.details.forEach((err) => {
-        valErrors += `${err.message}`;
+      const valErrors = validatedForm.error.details.map((err) => {
+        return err.message;
       });
-    }
 
-    if (valErrors.length > 0) {
-      return res.status(400).json({ msg: valErrors });
+      throw { msg: valErrors, code: 400 };
     }
 
     req.sheet = new Sheet(
@@ -53,9 +49,8 @@ function validateForm(req, res, next) {
 
     req.updateQuery = validatedForm.value;
     next();
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: error.message });
+  } catch (err) {
+    next({ msg: err.msg, code: err.code });
   }
 }
 

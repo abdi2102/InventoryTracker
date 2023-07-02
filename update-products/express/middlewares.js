@@ -3,7 +3,6 @@ const readProducts = require("../read/products");
 const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
 const path = require("path");
-const { performance } = require("perf_hooks");
 const fs = require("fs");
 
 let canUpdateProducts = true;
@@ -19,23 +18,25 @@ async function submitUpdates(req, res, next) {
     startRow,
     custom: { updateAll },
   } = updateQuery;
-
   const productCount = updateAll ? 400 : numProducts;
 
-  const setCount = 1;
+  const setCount = 25;
   const updateIterations = productCount / setCount;
 
   let updatedProductsCount = 0;
 
   try {
     const googleService = google.sheets({ version: "v4", auth });
+    const completionTime = estimateCompletionTime();
 
-    // const completionTime = estimateCompletionTime();
-
+    // res
+    //   // .status(200)
+    //   .json({
+    //     msg: `attempting to update. estimate completion time: ${completionTime}`,
+    //   });
     const startTime = performance.now();
 
     for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
-      console.log(canUpdateProducts);
       const numProducts = x < 1 ? productCount % setCount : setCount;
       const start = (updateIterations - x) * setCount + startRow;
       const end = start + numProducts - 1;
@@ -67,11 +68,10 @@ async function submitUpdates(req, res, next) {
       completionTime: Math.round(((endTime - startTime) / 60000) * 10) / 10,
     });
 
-    // reset updating variable
     canUpdateProducts = true;
   } catch (error) {
-    res.locals.submitUpdatesError = error;
-    next();
+    console.log("hey", error);
+    next(error);
   }
 }
 

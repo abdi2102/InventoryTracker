@@ -9,9 +9,11 @@ const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
 
 window.addEventListener("load", function () {
   populateTableWithSavedSheets();
+
 });
 
 // -----RUN UPDATES ---- //
+
 async function startProductUpdates(event) {
   event.preventDefault();
   serverMsg.textContent = "";
@@ -41,12 +43,15 @@ async function startProductUpdates(event) {
         custom: JSON.stringify(customObject),
       }
     );
+
     if (response.data.msg) {
       console.log(response.data.msg);
       serverMsg.textContent = response.data.msg;
     } else {
+      console.log(response);
       serverMsg.textContent = "Unaccounted For Server Response";
     }
+
     saveGoogleSheets({
       sheetName: sheetNameInput.value,
       sheetLink: sheetLinkInput.value,

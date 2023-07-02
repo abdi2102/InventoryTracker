@@ -1,2 +1,3 @@
-const app = require("./app");
-app.listen(3000);
+const server = require("./app");
+const port = process.env.PORT || 3000;
+server.listen(port);

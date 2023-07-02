@@ -19,11 +19,13 @@ async function fetchProducts(productIds, updateQuery, start) {
   const { merchant } = updateQuery;
   // merchant pick
   let merchantUrl;
+  console.log("hey")
   switch (merchant) {
     case "amazon":
       merchantUrl = "https://www.amazon.com/dp/";
       break;
     default:
+      console.log("hey")
       throw { msg: "merchant not recognized", code: 400 };
   }
 
@@ -41,64 +43,65 @@ async function fetchProducts(productIds, updateQuery, start) {
   let productIdsLength = productIds.length;
 
   try {
-    const cookies = await fetchMerchantCookies(
-      merchantUrl,
-      productIds.length,
-      config
-    );
-
-    for (let i = 0; i < productIdsLength; i++) {
-      let idx = i;
-
-      if (idx >= productIds.length) {
-        // retry code
-        idx = retryIndices[idx - productIds.length];
-        console.log(`retrying product: ${start + idx}`);
-      }
-
-      const content = await fetchMerchantProduct(
+      const cookies = await fetchMerchantCookies(
         merchantUrl,
-        productIds[idx][0],
-        cookies,
+        productIds.length,
         config
       );
 
-      let { productIsInStock, quantity, price } = scrapeMerchantProduct(
-        merchant,
-        content
-      );
+      for (let i = 0; i < productIdsLength; i++) {
+        let idx = i;
 
-      if (productIsInStock === false) {
-        updates[idx] = new Product(template);
-
-        if (0 < quantity < 5 && price != null) {
-          // low stock items should not be retried
-          continue;
+        if (idx >= productIds.length) {
+          // retry code
+          idx = retryIndices[idx - productIds.length];
+          console.log(`retrying product: ${start + idx}`);
         }
 
-        // retries only when price is null, and quantity is 0
-        if (retries === true) {
-          if (retryIndices.includes(idx) === false) {
-            retryIndices.push(idx);
-            productIdsLength += 1;
+        const content = await fetchMerchantProduct(
+          merchantUrl,
+          productIds[idx][0],
+          cookies,
+          config
+        );
+
+        let { productIsInStock, quantity, price } = scrapeMerchantProduct(
+          merchant,
+          content
+        );
+
+        if (productIsInStock === false) {
+          updates[idx] = new Product(template);
+
+          if (0 < quantity < 5 && price != null) {
+            // low stock items should not be retried
+            continue;
           }
-          continue;
+
+          // retries only when price is null, and quantity is 0
+          if (retries === true) {
+            if (retryIndices.includes(idx) === false) {
+              retryIndices.push(idx);
+              productIdsLength += 1;
+            }
+            continue;
+          }
         }
+
+        const product = new Product(
+          template,
+          (availability = "in stock"),
+          quantity,
+          price
+        );
+        product.markupPrice();
+        updates[idx] = product;
+
+        await timer(150 * (1 + Math.random()));
       }
 
-      const product = new Product(
-        template,
-        (availability = "in stock"),
-        quantity,
-        price
-      );
-      product.markupPrice();
-      updates[idx] = product;
-
-      await timer(150 * (1 + Math.random()));
-    }
-
-    return updates;
+      return updates;
+    // return [{ availability: "in stock", quantity: "10", markupPrice: "$5.00" }];
   } catch (error) {
     console.log(error);
     if (updates.length > 0) {

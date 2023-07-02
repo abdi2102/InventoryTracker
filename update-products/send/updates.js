@@ -31,7 +31,7 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
     await googleService.spreadsheets.values.batchUpdate(request);
 
     throw {
-      msg: `Write Access Not Granted. Get New Updates Here: https://docs.google.com/spreadsheets/d/${newSpreadsheetId}`,
+      msg: `Write access not granted. Get new updates here: https://docs.google.com/spreadsheets/d/${newSpreadsheetId}`,
       code: 400,
     };
   }

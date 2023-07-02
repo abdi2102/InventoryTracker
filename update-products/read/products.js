@@ -7,7 +7,7 @@ async function readProducts(googleService, sheet, start, end) {
       productIdColumn = "J";
       break;
     default:
-      throw ({ msg: "sheet template not recognized", code: 400 });
+      throw { msg: "sheet template not recognized", code: 400 };
   }
 
   try {
@@ -19,13 +19,12 @@ async function readProducts(googleService, sheet, start, end) {
     });
     return values || [];
   } catch (error) {
-    console.log(error);
     if (error.code) {
       switch (error.code) {
         case 404:
           throw { msg: `${sheetName} not found`, code: 404 };
         default:
-          throw { msg: "Request not valid", code: 400 };
+          throw { msg: "request not valid", code: 400 };
       }
     } else {
       throw error;

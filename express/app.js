@@ -2,7 +2,11 @@ require("dotenv").config();
 const { getGmailUserInfoAndRedirect } = require("../auth/google");
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const app = express();
+const app = require("express")();
+
+const http = require("http")
+const server = http.createServer(app);
+
 app.use(cookieParser());
 app.use(express.json());
 app.set("view engine", "pug");
@@ -23,4 +27,16 @@ app.get("*", (req, res) =>
   res.render(path.join(__dirname, "../update-products/public/404.pug"))
 );
 
-module.exports = app;
+app.use((err, req, res, next) => {
+  try {
+    if (err.msg) {
+      res.status(err.code).json({ msg: err.msg });
+    } else {
+      res.status(500).json({ msg: err });
+    }
+  } catch (error) {
+    res.status(500).end({ msg: error });
+  }
+});
+
+module.exports = server;
