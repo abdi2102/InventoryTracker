@@ -24,7 +24,6 @@ async function auth(req, res, next) {
 
         if (isAuthenticated) {
           req.oAuth2Client = google_auth;
-
           res.cookie("token", new_token, { httpOnly: true });
           next();
         } else {

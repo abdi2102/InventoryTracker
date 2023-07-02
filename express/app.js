@@ -3,10 +3,9 @@ const { getGmailUserInfoAndRedirect } = require("../auth/google");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = require("express")();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server);
 
-const http = require("http");
-const server = http.createServer(app);
-const io = require("socket.io")(http);
 
 io.on("connection", (socket) => {
   console.log("A client connected.");
@@ -44,6 +43,7 @@ app.get("*", (req, res) =>
   res.render(path.join(__dirname, "../update-products/public/404.pug"))
 );
 
+// global err handling
 app.use((err, req, res, next) => {
   try {
     if (err.msg) {

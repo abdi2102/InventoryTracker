@@ -6,7 +6,7 @@ const sheetNameInput = document.getElementById("sheetNameInput");
 const sheetLinkInput = document.getElementById("sheetLinkInput");
 const serverMsg = document.getElementById("serverMsg");
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
-const socket = io()
+
 window.addEventListener("load", function () {
   populateTableWithSavedSheets();
 
