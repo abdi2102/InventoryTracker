@@ -4,12 +4,15 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = require("express")();
 const server = require("http").createServer(app);
-const io = require("socket.io")(server);
 
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 io.on("connection", (socket) => {
   console.log("A client connected.");
 });
+
+app.set("io", io);
 
 app.use(cookieParser());
 app.use(express.json());
@@ -55,5 +58,4 @@ app.use((err, req, res, next) => {
     res.status(500).end({ msg: error });
   }
 });
-
-module.exports = server;
+module.exports = server ;

@@ -6,17 +6,30 @@ const sheetNameInput = document.getElementById("sheetNameInput");
 const sheetLinkInput = document.getElementById("sheetLinkInput");
 const serverMsg = document.getElementById("serverMsg");
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
+const socket = io();
 
 window.addEventListener("load", function () {
   populateTableWithSavedSheets();
+});
 
+socket.on("updateProgress", (progress) => {
+  console.log(progress);
+  $("#progress-div").css({ display: "block" });
+
+  $(".progress-bar").css({ width: progress + "%" });
+});
+
+socket.on("updatesComplete", async () => {
+  $(".progress-bar").css("width", 0 + "%");
+  $("#progress-div").css({ display: "none" });
+  $("#serverMsg").text("");
 });
 
 // -----RUN UPDATES ---- //
 
 async function startProductUpdates(event) {
   event.preventDefault();
-  serverMsg.textContent = "";
+  $("#progress-div").css({ display: "block" });
 
   try {
     const merchant = $(
@@ -45,11 +58,10 @@ async function startProductUpdates(event) {
     );
 
     if (response.data.msg) {
-      console.log(response.data.msg);
       serverMsg.textContent = response.data.msg;
     } else {
       console.log(response);
-      serverMsg.textContent = "Unaccounted For Server Response";
+      $("#serverMsg").text("Unaccounted For Server Response");
     }
 
     saveGoogleSheets({
@@ -68,6 +80,7 @@ async function startProductUpdates(event) {
           break;
         case "ERR_NETWORK":
           serverMsg.textContent = "Error Connecting To Server...";
+
           break;
         default:
           serverMsg.textContent = "Unaccounted For Server Error";

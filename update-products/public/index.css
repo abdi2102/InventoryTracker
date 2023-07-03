@@ -115,6 +115,22 @@ tr, th {
     width: 500px; 
 }
 
+/* progress-bar */
+
+#progress-bar {
+    background-color: lightblue;
+}
+
+#progress-div {
+    width: 85%;
+    margin: auto;
+    display: none;
+}
+
+  
+
+
+
 
 @media screen and (max-width: 1024px) {
 
