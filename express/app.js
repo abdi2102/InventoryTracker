@@ -51,6 +51,7 @@ app.get("*", (req, res) =>
 
 // global err handling
 app.use((err, req, res, next) => {
+  console.log(err)
   try {
     if (err.msg) {
       res.status(err.code).json({ msg: err.msg });

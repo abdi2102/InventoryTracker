@@ -11,56 +11,65 @@ function renderUserSpreadsheet(_, res) {
 }
 
 async function submitUpdates(req, res, next) {
-  const { oAuth2Client: auth, updateQuery, sheet } = req;
-  const {
-    numProducts,
-    startRow,
-    custom: { updateAll },
-  } = updateQuery;
-  const io = req.app.get("io");
+  const { oAuth2Client: auth, updateQuery, sheet, app } = req;
+  const io = app.get("io");
 
   try {
+    res.status(200).json({ msg: "success", code: 200 });
+
+    // throw { msg: "rnd error", code: 400 };
     const googleService = google.sheets({ version: "v4", auth });
 
-    const productIds = await readProducts(
-      googleService,
-      sheet,
-      startRow,
-      updateAll == true ? 1000 : startRow + numProducts - 1
-    );
+    // run this func in background
+    async function updateProducts(io, googleService, sheet, updateQuery) {
+      const {
+        numProducts,
+        startRow,
+        custom: { updateAll },
+      } = updateQuery;
 
-    const productCount = updateAll ? productIds.length : numProducts;
-    const setCount = 5;
-    const updateIterations = productCount / setCount;
-
-    for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
-      const numProducts = x < 1 ? productCount % setCount : setCount;
-      const start = (updateIterations - x) * setCount + startRow;
-      const end = start + numProducts - 1;
-
-      const productIdsSubset = productIds.slice(
-        start - startRow,
-        end - startRow + 1
+      const productIds = await readProducts(
+        googleService,
+        sheet,
+        startRow,
+        updateAll == true ? 1000 : startRow + numProducts - 1
       );
 
-      const updates = await fetchProducts(productIdsSubset, updateQuery, start);
+      const productCount = updateAll ? productIds.length : numProducts;
+      const setCount = 5;
+      const updateIterations = productCount / setCount;
 
-      await sendUpdates(googleService, sheet, updates, start);
+      for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
+        const numProducts = x < 1 ? productCount % setCount : setCount;
+        const start = (updateIterations - x) * setCount + startRow;
+        const end = start + numProducts - 1;
 
-      // send progress updates
-      const updatedProductsCount = end - startRow + 1;
-      io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
+        const productIdsSubset = productIds.slice(
+          start - startRow,
+          end - startRow + 1
+        );
 
-      if (productIds.length < numProducts) {
-        break;
+        const updates = await fetchProducts(
+          productIdsSubset,
+          updateQuery,
+          start
+        );
+
+        await sendUpdates(googleService, sheet, updates, start);
+
+        // send progress updates
+        const updatedProductsCount = end - startRow + 1;
+        io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
+
+        if (productIds.length < numProducts) {
+          break;
+        }
       }
     }
-
+    await updateProducts(io, googleService, sheet, updateQuery);
+    //
     canUpdateProducts = true;
     io.emit("updatesComplete");
-    res.status(200).json({
-      msg: `updates successful. `,
-    });
   } catch (error) {
     io.emit("updatesComplete");
     next(error);

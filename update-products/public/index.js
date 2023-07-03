@@ -58,6 +58,8 @@ async function startProductUpdates(event) {
       }
     );
 
+    console.log(response)
+
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
     } else {
