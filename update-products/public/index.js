@@ -22,7 +22,7 @@ socket.on("updateProgress", (progress) => {
 socket.on("updatesComplete", async () => {
   $(".progress-bar").css("width", 0 + "%");
   $("#progress-div").css({ display: "none" });
-  // $("#serverMsg").text("");
+  $("#serverMsg").text("");
 });
 
 // -----RUN UPDATES ---- //
@@ -30,6 +30,7 @@ socket.on("updatesComplete", async () => {
 async function startProductUpdates(event) {
   event.preventDefault();
   $("#progress-div").css({ display: "block" });
+  $("#serverMsg").text("");
 
   try {
     const merchant = $(
@@ -80,9 +81,12 @@ async function startProductUpdates(event) {
           break;
         case "ERR_NETWORK":
           serverMsg.textContent = "Error Connecting To Server...";
-
+          break;
+        case "ERR_BAD_RESPONSE":
+          serverMsg.textContent = error.response.data.msg;
           break;
         default:
+          console.log(error.code);
           serverMsg.textContent = "Unaccounted For Server Error";
       }
     } else {
