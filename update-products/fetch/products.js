@@ -92,7 +92,6 @@ async function fetchProducts(productIds, updateQuery, start) {
 
     return updates;
   } catch (error) {
-    console.log(error);
     if (updates.length > 0) {
       return updates;
     } else {

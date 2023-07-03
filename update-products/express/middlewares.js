@@ -30,7 +30,7 @@ async function submitUpdates(req, res, next) {
     );
 
     const productCount = updateAll ? productIds.length : numProducts;
-    const setCount = 25;
+    const setCount = 5;
     const updateIterations = productCount / setCount;
 
     for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
@@ -62,7 +62,6 @@ async function submitUpdates(req, res, next) {
       msg: `updates successful. `,
     });
   } catch (error) {
-    console.log(error)
     io.emit("updatesComplete");
     next(error);
   }

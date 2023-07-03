@@ -108,6 +108,7 @@ async function stopProductUpdates() {
     if (response.data.msg) {
       serverMsg.textContent = response.data.msg;
     }
+    $("#progress-div").css({ display: "none" });
   } catch (error) {
     console.log(error);
   }
