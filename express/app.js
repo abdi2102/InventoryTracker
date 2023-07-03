@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const app = require("express")();
 const server = require("http").createServer(app);
 
+// socket io
 const { Server } = require("socket.io");
 const io = new Server(server);
 
@@ -13,6 +14,8 @@ io.on("connection", (socket) => {
 });
 
 app.set("io", io);
+
+// socket io
 
 app.use(cookieParser());
 app.use(express.json());
@@ -58,4 +61,4 @@ app.use((err, req, res, next) => {
     res.status(500).end({ msg: error });
   }
 });
-module.exports = server ;
+module.exports = server;

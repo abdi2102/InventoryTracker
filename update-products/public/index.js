@@ -22,7 +22,7 @@ socket.on("updateProgress", (progress) => {
 socket.on("updatesComplete", async () => {
   $(".progress-bar").css("width", 0 + "%");
   $("#progress-div").css({ display: "none" });
-  $("#serverMsg").text("");
+  // $("#serverMsg").text("");
 });
 
 // -----RUN UPDATES ---- //

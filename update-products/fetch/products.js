@@ -96,10 +96,10 @@ async function fetchProducts(productIds, updateQuery, start) {
     if (updates.length > 0) {
       return updates;
     } else {
-      throw Error({
+      throw {
         msg: "could not fetch products. try again later.",
         code: 500,
-      });
+      };
     }
   }
 }

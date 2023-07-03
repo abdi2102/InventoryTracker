@@ -3,7 +3,6 @@ const readProducts = require("../read/products");
 const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
 const path = require("path");
-const fs = require("fs");
 
 let canUpdateProducts = true;
 
@@ -18,15 +17,10 @@ async function submitUpdates(req, res, next) {
     startRow,
     custom: { updateAll },
   } = updateQuery;
+  const io = req.app.get("io");
 
   try {
     const googleService = google.sheets({ version: "v4", auth });
-
-    const io = req.app.get("io");
-
-    res.status(200).json({
-      msg: `attempting to update. `,
-    });
 
     const productIds = await readProducts(
       googleService,
@@ -36,7 +30,7 @@ async function submitUpdates(req, res, next) {
     );
 
     const productCount = updateAll ? productIds.length : numProducts;
-    const setCount = 2;
+    const setCount = 25;
     const updateIterations = productCount / setCount;
 
     for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
@@ -53,7 +47,7 @@ async function submitUpdates(req, res, next) {
 
       await sendUpdates(googleService, sheet, updates, start);
 
-      //   send progress updates
+      // send progress updates
       const updatedProductsCount = end - startRow + 1;
       io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
 
@@ -64,9 +58,12 @@ async function submitUpdates(req, res, next) {
 
     canUpdateProducts = true;
     io.emit("updatesComplete");
+    res.status(200).json({
+      msg: `updates successful. `,
+    });
   } catch (error) {
+    console.log(error)
     io.emit("updatesComplete");
-    console.log(error);
     next(error);
   }
 }

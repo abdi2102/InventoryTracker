@@ -1,5 +1,3 @@
-// TODO: ACCOUNT FOR TEMPLATE
-
 async function sendUpdates(googleService, sheet, updates, startRow) {
   const startColumn = "D";
   const endColumn = "F";

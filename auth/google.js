@@ -45,7 +45,6 @@ async function getGmailUserInfoAndRedirect(req, res) {
 
 async function googleLogin(req, res, next) {
   try {
-    // check if logged in first
     const token = req.cookies["token"];
     const refresh_token = req.cookies["refresh_token"];
     const oAuth2Client = getOAuth2Client();

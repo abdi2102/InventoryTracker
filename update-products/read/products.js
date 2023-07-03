@@ -19,11 +19,12 @@ async function readProducts(googleService, sheet, start, end) {
     });
     return values || [];
   } catch (error) {
-    console.log(error);
     if (error.code) {
       switch (error.code) {
         case 404:
           throw { msg: `${sheetName} not found`, code: 404 };
+        case 400:
+          throw {msg: error.msg, code: 400}
         default:
           throw { msg: "request not valid", code: 400 };
       }

@@ -6,7 +6,11 @@ class Sheet {
   }
 
   getId() {
-    return this.link.match("/d/([a-zA-Z0-9-_]+)")[1];
+    try {
+      return this.link.match("/d/([a-zA-Z0-9-_]+)")[1];
+    } catch (error) {
+      throw { msg: "link not valid", code: 400 };
+    }
   }
 }
 
