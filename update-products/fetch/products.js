@@ -15,8 +15,8 @@ const Product = require("../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
-async function fetchProducts(productIds, updateQuery, start) {
-  const { merchant } = updateQuery;
+async function fetchProducts(productIds, validatedForm) {
+  const { merchant } = validatedForm;
   // merchant pick
   let merchantUrl;
   switch (merchant) {
@@ -35,9 +35,9 @@ async function fetchProducts(productIds, updateQuery, start) {
 
   // fetch
   const {
-    custom: { retries },
+    updateOptions: { retries },
     template,
-  } = updateQuery;
+  } = validatedForm;
   let updates = [];
 
   try {

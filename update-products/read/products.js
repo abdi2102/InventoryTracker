@@ -14,11 +14,13 @@ async function readProducts(googleService, sheet, start, end) {
     const {
       data: { values },
     } = await googleService.spreadsheets.values.get({
-      spreadsheetId: sheet.getId(),
+      spreadsheetId: sheet.id,
+      // spreadsheetId: sheet.getId(),
       range: `${sheetName}${productIdColumn}${start}:${productIdColumn}${end}`,
     });
     return values || [];
   } catch (error) {
+    console.log(error)
     if (error.code) {
       switch (error.code) {
         case 404:

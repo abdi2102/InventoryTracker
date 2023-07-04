@@ -1,23 +1,22 @@
 const form = require("./schema");
-const Sheet = require("../sheet/class");
 
 function validateForm(req, res, next) {
   try {
     const formToValidate = {
-      startRow: req.body.startRow || 2,
-      numProducts: req.body.numProducts || 0,
       sheetLink: req.body.sheetLink,
       sheetName: req.body.sheetName || undefined,
       // TODO: VALIDATE CUSTOM OBJECT
-      custom: JSON.parse(req.body.custom),
+      updateOptions: JSON.parse(req.body.updateOptions),
       merchant: req.body.merchant,
       template: req.body.template,
     };
 
-    const allowedCustoms = ["retries", "updateAll"];
+    console.log(formToValidate)
 
-    const queryCustomIsValid = Object.keys(formToValidate.custom).every((_) => {
-      return allowedCustoms.includes(_);
+    const allowedOptions = ["retries", "updateAll", "startRow", "numProducts"];
+
+    const queryCustomIsValid = Object.keys(formToValidate.updateOptions).every((_) => {
+      return allowedOptions.includes(_);
     });
 
     if (queryCustomIsValid === false) {
@@ -41,15 +40,10 @@ function validateForm(req, res, next) {
       throw { msg: valErrors, code: 400 };
     }
 
-    req.sheet = new Sheet(
-      (link = validatedForm.value.sheetLink),
-      (sheetName = validatedForm.value.sheetName),
-      (template = validatedForm.value.template)
-    );
-
-    req.updateQuery = validatedForm.value;
+    req.validatedForm = validatedForm.value;
     next();
   } catch (err) {
+    console.log(err)
     next({ msg: err.msg, code: err.code });
   }
 }

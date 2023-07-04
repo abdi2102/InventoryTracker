@@ -2,79 +2,108 @@ const { google } = require("googleapis");
 const readProducts = require("../read/products");
 const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
+const Queue = require("bull");
+const queue = new Queue("updateProductsQueue");
 const path = require("path");
-
 let canUpdateProducts = true;
 
 function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
 }
 
+async function updateProducts(googleService, validatedForm) {
+  try {
+    const {
+      updateOptions: { updateAll, startRow, numProducts },
+    } = validatedForm;
+
+    const sheet = {
+      sheetLink: validatedForm.sheetLink,
+      sheetName: validatedForm.sheetName,
+      id: getSheetId(validatedForm.sheetLink),
+      template: validatedForm.template,
+      merchant: validatedForm.merchant,
+    };
+
+    const productIds = await readProducts(
+      googleService,
+      sheet,
+      startRow,
+      updateAll == true ? 1000 : startRow + numProducts - 1
+    );
+
+    const productCount = updateAll ? productIds.length : numProducts;
+    const setCount = 5;
+    const updateIterations = productCount / setCount;
+
+    for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
+      const numProducts = x < 1 ? productCount % setCount : setCount;
+      const start = (updateIterations - x) * setCount + startRow;
+      const end = start + numProducts - 1;
+
+      const productIdsSubset = productIds.slice(
+        start - startRow,
+        end - startRow + 1
+      );
+
+      const updates = await fetchProducts(productIdsSubset, validatedForm);
+
+      await sendUpdates(googleService, sheet, updates, start);
+
+      // send progress updates
+      // const updatedProductsCount = end - startRow + 1;
+      // io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
+    }
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+function getSheetId(sheetLink) {
+  try {
+    return sheetLink.match("/d/([a-zA-Z0-9-_]+)")[1];
+  } catch (error) {
+    throw { msg: "link not valid", code: 400 };
+  }
+}
+
 async function submitUpdates(req, res, next) {
-  const { oAuth2Client: auth, updateQuery, sheet, app } = req;
-  const io = app.get("io");
+  const { oAuth, validatedForm } = req;
+  // const io = req.app.get("io");
 
   try {
     res.status(200).json({ msg: "success", code: 200 });
 
-    // throw { msg: "rnd error", code: 400 };
-    const googleService = google.sheets({ version: "v4", auth });
+    const googleService = google.sheets({ version: "v4", auth: oAuth });
+    await updateProducts(googleService, validatedForm);
 
-    // run this func in background
-    async function updateProducts(io, googleService, sheet, updateQuery) {
-      const {
-        numProducts,
-        startRow,
-        custom: { updateAll },
-      } = updateQuery;
-
-      const productIds = await readProducts(
-        googleService,
-        sheet,
-        startRow,
-        updateAll == true ? 1000 : startRow + numProducts - 1
-      );
-
-      const productCount = updateAll ? productIds.length : numProducts;
-      const setCount = 5;
-      const updateIterations = productCount / setCount;
-
-      for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
-        const numProducts = x < 1 ? productCount % setCount : setCount;
-        const start = (updateIterations - x) * setCount + startRow;
-        const end = start + numProducts - 1;
-
-        const productIdsSubset = productIds.slice(
-          start - startRow,
-          end - startRow + 1
-        );
-
-        const updates = await fetchProducts(
-          productIdsSubset,
-          updateQuery,
-          start
-        );
-
-        await sendUpdates(googleService, sheet, updates, start);
-
-        // send progress updates
-        const updatedProductsCount = end - startRow + 1;
-        io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
-
-        if (productIds.length < numProducts) {
-          break;
-        }
-      }
-    }
-    await updateProducts(io, googleService, sheet, updateQuery);
-    //
     canUpdateProducts = true;
-    io.emit("updatesComplete");
+    // io.emit("updatesComplete");
   } catch (error) {
-    io.emit("updatesComplete");
+    // io.emit("updatesComplete");
     next(error);
   }
 }
+
+queue.process("updateProducts", async (job, done) => {
+  const { googleService, sheet, updateQuery } = job.data;
+  try {
+    await updateProducts(googleService, sheet, updateQuery);
+    done();
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+queue.on("failed", (job, error) => {
+  console.log(error);
+  console.log(`failed job ${job.id}`);
+});
+
+queue.on("completed", (job) => {
+  console.log(`completed job ${job.id}`);
+});
 
 function stopUpdates(req, res, next) {
   try {

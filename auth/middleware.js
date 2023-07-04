@@ -18,13 +18,15 @@ async function auth(req, res, next) {
 
         const {
           isAuthenticated,
-          oAuth2Client: google_auth,
-          token: new_token,
+          oAuth2Client: oAuth,
+          new_token,
         } = await googleAuth(oAuth2Client, refresh_token, token);
 
         if (isAuthenticated) {
-          req.oAuth2Client = google_auth;
-          res.cookie("token", new_token, { httpOnly: true });
+          req.oAuth = oAuth;
+          if (new_token) {
+            res.cookie("token", new_token, { httpOnly: true });
+          }
           next();
         } else {
           res.redirect("/login");

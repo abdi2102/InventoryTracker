@@ -39,22 +39,25 @@ async function startProductUpdates(event) {
     const template = $(
       '#optionsSelectPicker optgroup[label="Template"] option:selected'
     ).val();
-    let customObject = {};
+    
+    // 
+    let updateOptions = {};
     const _ = $('#optionsSelectPicker optgroup[label="Custom"] option:selected')
       .toArray()
       .forEach((_, opt) => {
-        customObject[_.value] = true;
+        updateOptions[_.value] = true;
       });
+      updateOptions.startRow = startRow.value;
+      updateOptions.numProducts = numProducts.value;
+
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
       {
-        startRow: startRow.value,
-        numProducts: numProducts.value,
         sheetLink: sheetLinkInput.value,
         sheetName: sheetNameInput.value,
         merchant,
         template,
-        custom: JSON.stringify(customObject),
+        updateOptions: JSON.stringify(updateOptions),
       }
     );
 

@@ -69,8 +69,10 @@ async function googleLogin(req, res, next) {
     throw error;
   }
 }
+
 async function googleAuth(oAuth2Client, refresh_token, token) {
   let isAuthenticated = false;
+  let new_token;
 
   try {
     try {
@@ -82,16 +84,16 @@ async function googleAuth(oAuth2Client, refresh_token, token) {
         throw Error();
       }
     } catch (error) {
-      token = await refreshGoogleAccessToken(refresh_token, oAuth2Client);
+      new_token = await refreshGoogleAccessToken(refresh_token, oAuth2Client);
     }
 
     oAuth2Client.setCredentials({
-      access_token: token.token,
+      access_token: new_token !== undefined ? new_token.token : token.token,
       refresh_token,
     });
 
     isAuthenticated = true;
-    return { isAuthenticated, oAuth2Client, token };
+    return { isAuthenticated, oAuth2Client, new_token };
   } catch (error) {
     return { isAuthenticated };
   }

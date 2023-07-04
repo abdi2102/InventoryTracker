@@ -2,6 +2,7 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
   const startColumn = "D";
   const endColumn = "F";
 
+
   let newUpdates = updates.map((product, idx) => {
     return {
       range: `${startColumn}${startRow + idx}:${endColumn}${startRow + idx}`,
@@ -15,7 +16,8 @@ async function sendUpdates(googleService, sheet, updates, startRow) {
   };
 
   try {
-    request.spreadsheetId = sheet.getId();
+    request.spreadsheetId = sheet.id;
+    // request.spreadsheetId = sheet.getId();
     await googleService.spreadsheets.values.batchUpdate(request);
   } catch (error) {
     // create unique google spreadsheet
