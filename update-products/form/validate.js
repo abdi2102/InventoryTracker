@@ -11,8 +11,6 @@ function validateForm(req, res, next) {
       template: req.body.template,
     };
 
-    console.log(formToValidate)
-
     const allowedOptions = ["retries", "updateAll", "startRow", "numProducts"];
 
     const queryCustomIsValid = Object.keys(formToValidate.updateOptions).every((_) => {

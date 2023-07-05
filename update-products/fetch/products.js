@@ -30,7 +30,7 @@ async function fetchProducts(productIds, validatedForm) {
   // validate
   const productIdsValid = validateProductIds(productIds);
   if (productIdsValid === false) {
-    throw { msg: "Product Id(s) Not Valid", code: 400 };
+    throw { msg: "product id(s) not valid", code: 400 };
   }
 
   // fetch
@@ -41,11 +41,7 @@ async function fetchProducts(productIds, validatedForm) {
   let updates = [];
 
   try {
-    const cookies = await fetchMerchantCookies(
-      merchantUrl,
-      productIds.length,
-      config
-    );
+    const cookies = await fetchMerchantCookies(merchantUrl, config);
 
     for (let i = 0; i < productIds.length; i++) {
       const productId = productIds[i][0];
@@ -67,25 +63,23 @@ async function fetchProducts(productIds, validatedForm) {
           cookies
         );
 
-        await timer(1 + Math.random());
+        await timer(Math.random());
 
         productInfo = scrapeMerchantProduct(merchant, content);
       }
 
       const { quantity, price } = productInfo;
 
-      if (productInfo.productIsInStock === false) {
-        updates[i] = new Product(template);
-      } else {
-        const product = new Product(
-          template,
-          (availability = "in stock"),
-          quantity,
-          price
-        );
+      let product = new Product(template);
+
+      if (productInfo.productIsInStock === true) {
+        product.availability = "in stock";
+        product.quantity = quantity;
+        product.price = price;
         product.markupPrice();
-        updates[i] = product;
       }
+
+      updates[i] = product;
 
       await timer(150 * (1 + Math.random()));
     }
@@ -172,13 +166,8 @@ async function fetchMerchantProduct(merchantUrl, productId, config, cookies) {
   }
 }
 
-async function fetchMerchantCookies(merchantUrl, productCount, config) {
+async function fetchMerchantCookies(merchantUrl, config) {
   // cookies to avoid scrape detection
-
-  if (productCount < 10) {
-    return;
-  }
-
   try {
     const {
       data: { cookies },

@@ -25,7 +25,10 @@ async function auth(req, res, next) {
         if (isAuthenticated) {
           req.oAuth = oAuth;
           if (new_token) {
-            res.cookie("token", new_token, { httpOnly: true });
+            res.cookie("token", new_token, {
+              httpOnly: true,
+              maxAge: 24 * 3600000,
+            });
           }
           next();
         } else {

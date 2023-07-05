@@ -54,7 +54,10 @@ async function googleLogin(req, res, next) {
       token
     );
 
-    res.cookie("auth_type", "google");
+    res.cookie("auth_type", "google", {
+      httpOnly: true,
+      maxAge: 30 * 24 * 3600000,
+    });
 
     if (isAuthenticated === true) {
       res.redirect("/user/spreadsheet");

@@ -47,8 +47,8 @@ async function startProductUpdates(event) {
       .forEach((_, opt) => {
         updateOptions[_.value] = true;
       });
-      updateOptions.startRow = startRow.value;
-      updateOptions.numProducts = numProducts.value;
+      updateOptions.startRow = startRow.value || 2;
+      updateOptions.numProducts = numProducts.value || 1;
 
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
