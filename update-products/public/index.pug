@@ -21,7 +21,7 @@ html(lang="en")
                             input#startRowInput(type="number" placeholder=2)
                         div.labelInputDiv
                             label#numProductsLabel Number of Products
-                            input#numProductsInput(type="number" placeholder="0" )
+                            input#numProductsInput(type="number" placeholder="1" )
                         div.labelInputDiv
                             label#sheetLinkLabel Spreadsheet Link
                             input#sheetLinkInput(type="text" placeholder="sheet link" )
@@ -30,39 +30,22 @@ html(lang="en")
                             select.selectPicker#optionsSelectPicker(name="optionsSelectPicker" multiple title="Query Options")
                                 optgroup(label="Merchant" data-max-options="1")               
                                     option(value="amazon" selected) Amazon 
-                                    option(value="walmart") Walmart 
                                 optgroup(label="Template" data-max-options="1") 
                                     option(value="fbShops" selected) Facebook Shops
                                 optgroup(label="Custom")
                                     option(value="retries") Allow Retries
-                                    option(value ="updateAll") Update All Products         
+                                    option(value ="updateAll") Update All Products  
                         button#mainFormStartButton(type="submit" onclick="startProductUpdates(event)") Update
                         button#mainFormPauseButton(type="button" onclick="stopProductUpdates()") Pause
-                        p#serverMsg 
+                        p#userMsg 
                         div.progress#progress-div
                             div.progress-bar#progress-bar(role="progressbar"  aria-valuemin="0" aria-valuemax="100")
-
                     table#googleSheetsLinksTable
                         thead 
                             th Saved Sheets
                         tbody 
                             tr
-                table.table#requestStatsTable 
-                    thead 
-                        th  Last 10 Completions
-                        tr
-                                <th scope="col">Date</th>
-                                <th scope="col">Merchant</th>
-                                <th scope="col">Product Count</th>
-                                <th scope="col">Completion Time (min)</th>
-                    tbody 
-                        <td>03/12/2023</td>
-                        <td>Amazon</td>
-                        <td>25</td>
-                        <td>12.9</td>
-                        </tr>
-                <script src="/socket.io/socket.io.js"></script>
-
+        <script src="/socket.io/socket.io.js"></script>
         script
             include index.js
         script(src="https://unpkg.com/axios/dist/axios.min.js")

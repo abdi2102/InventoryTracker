@@ -6,7 +6,7 @@ const path = require("path");
 let canUpdateProducts = true;
 
 function renderUserSpreadsheet(_, res) {
-  res.render(path.join(__dirname, "../public/update-spreadsheets/index.pug"));
+  res.render(path.join(__dirname, "../public/index.pug"));
 }
 
 async function updateProducts(io, googleService, validatedForm) {
@@ -45,7 +45,6 @@ async function updateProducts(io, googleService, validatedForm) {
       );
 
       const updates = await fetchProducts(productIdsSubset, validatedForm);
-
       await sendUpdates(googleService, sheet, updates, start);
 
       // send progress updates

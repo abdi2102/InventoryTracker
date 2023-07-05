@@ -35,7 +35,7 @@ function validateForm(req, res, next) {
         return err.message;
       });
 
-      throw { msg: valErrors, code: 400 };
+      throw { msg: valErrors.join(), code: 400 };
     }
 
     req.validatedForm = validatedForm.value;

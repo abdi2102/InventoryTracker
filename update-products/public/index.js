@@ -1,10 +1,5 @@
-const mainFormStartButton = document.getElementById("mainFormStartButton");
-const mainFormPauseButton = document.getElementById("mainFormPauseButton");
-const startRow = document.getElementById("startRowInput");
-const numProducts = document.getElementById("numProductsInput");
 const sheetNameInput = document.getElementById("sheetNameInput");
 const sheetLinkInput = document.getElementById("sheetLinkInput");
-const serverMsg = document.getElementById("serverMsg");
 const sheetLinksTable = document.getElementById("googleSheetsLinksTable");
 const socket = io();
 
@@ -13,16 +8,12 @@ window.addEventListener("load", function () {
 });
 
 socket.on("updateProgress", (progress) => {
-  console.log(progress);
-  $("#progress-div").css({ display: "block" });
-
   $(".progress-bar").css({ width: progress + "%" });
 });
 
 socket.on("updatesComplete", async () => {
   $(".progress-bar").css("width", 0 + "%");
   $("#progress-div").css({ display: "none" });
-  $("#serverMsg").text("");
 });
 
 // -----RUN UPDATES ---- //
@@ -30,7 +21,7 @@ socket.on("updatesComplete", async () => {
 async function startProductUpdates(event) {
   event.preventDefault();
   $("#progress-div").css({ display: "block" });
-  $("#serverMsg").text("");
+  $("#userMsg").text("");
 
   try {
     const merchant = $(
@@ -39,16 +30,15 @@ async function startProductUpdates(event) {
     const template = $(
       '#optionsSelectPicker optgroup[label="Template"] option:selected'
     ).val();
-    
-    // 
+
     let updateOptions = {};
     const _ = $('#optionsSelectPicker optgroup[label="Custom"] option:selected')
       .toArray()
       .forEach((_, opt) => {
         updateOptions[_.value] = true;
       });
-      updateOptions.startRow = startRow.value || 2;
-      updateOptions.numProducts = numProducts.value || 1;
+    updateOptions.startRow = $("#startRowInput").val() || 2;
+    updateOptions.numProducts = $("#numProductsInput").val() || 1;
 
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
@@ -61,13 +51,10 @@ async function startProductUpdates(event) {
       }
     );
 
-    console.log(response)
-
     if (response.data.msg) {
-      serverMsg.textContent = response.data.msg;
+      $("#userMsg").text(response.data.msg);
     } else {
-      console.log(response);
-      $("#serverMsg").text("Unaccounted For Server Response");
+      $("#userMsg").text("Unaccounted For Error");
     }
 
     saveGoogleSheets({
@@ -75,28 +62,10 @@ async function startProductUpdates(event) {
       sheetLink: sheetLinkInput.value,
     });
   } catch (error) {
-    if (error.code) {
-      switch (error.code) {
-        case "ERR_BAD_REQUEST":
-          if (error.response.data.msg === "Login Failed") {
-            window.location.href = error.response.data.authUrl;
-          } else {
-            serverMsg.textContent = error.response.data.msg;
-          }
-          break;
-        case "ERR_NETWORK":
-          serverMsg.textContent = "Error Connecting To Server...";
-          break;
-        case "ERR_BAD_RESPONSE":
-          serverMsg.textContent = error.response.data.msg;
-          break;
-        default:
-          console.log(error.code);
-          serverMsg.textContent = "Unaccounted For Server Error";
-      }
+    if (error.response) {
+      $("#userMsg").text(error.response.data.msg);
     } else {
-      serverMsg.textContent = "Client Side Error";
-      console.log(error);
+      $("#userMsg").text("Oops. Unaccounted For Error");
     }
   }
 }
@@ -111,11 +80,15 @@ async function stopProductUpdates() {
       "http://localhost:3000/user/spreadsheet/updates/stop/"
     );
     if (response.data.msg) {
-      serverMsg.textContent = response.data.msg;
+      $("#userMsg").text(response.data.msg);
     }
     $("#progress-div").css({ display: "none" });
   } catch (error) {
-    console.log(error);
+    if (error.response) {
+      $("#userMsg").text(error.response.data.msg);
+    } else {
+      $("#userMsg").text("Oops. Unaccounted For Error");
+    }
   }
 }
 // -----PAUSE UPDATES ---- //
@@ -123,21 +96,14 @@ async function stopProductUpdates() {
 function populateFormWithSheet(sheet) {
   const { sheetName, sheetLink } = sheet;
 
-  if (sheetName !== "UNSPECIFIED") {
-    sheetNameInput.value = sheetName;
-  }
-
+  sheetNameInput.value = sheetName;
   sheetLinkInput.value = sheetLink;
 }
 
 function saveGoogleSheets(googleSheet) {
   let { sheetName, sheetLink } = googleSheet;
 
-  if (
-    sheetLink === undefined ||
-    sheetName === undefined ||
-    sheetName.length === 0
-  ) {
+  if (sheetLink === undefined || sheetName.length === 0) {
     return;
   }
 
