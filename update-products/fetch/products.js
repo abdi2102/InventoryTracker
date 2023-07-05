@@ -16,16 +16,8 @@ const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
 async function fetchProducts(productIds, validatedForm) {
-  const { merchant } = validatedForm;
   // merchant pick
-  let merchantUrl;
-  switch (merchant) {
-    case "amazon":
-      merchantUrl = "https://www.amazon.com/dp/";
-      break;
-    default:
-      throw { msg: "merchant not recognized", code: 400 };
-  }
+  let merchantUrl = "https://www.amazon.com/dp/";
 
   // validate
   const productIdsValid = validateProductIds(productIds);
@@ -52,7 +44,7 @@ async function fetchProducts(productIds, validatedForm) {
         cookies
       );
 
-      let productInfo = scrapeMerchantProduct(merchant, content);
+      let productInfo = scrapeMerchantProduct(content);
 
       if (productInfo.productIsInStock === false && retries === true) {
         console.log("i", i, productInfo, "retrying");
@@ -65,7 +57,7 @@ async function fetchProducts(productIds, validatedForm) {
 
         await timer(Math.random());
 
-        productInfo = scrapeMerchantProduct(merchant, content);
+        productInfo = scrapeMerchantProduct(content);
       }
 
       const { quantity, price } = productInfo;
@@ -86,6 +78,7 @@ async function fetchProducts(productIds, validatedForm) {
 
     return updates;
   } catch (error) {
+    console.log(error);
     if (updates.length > 0) {
       return updates;
     } else {
@@ -97,40 +90,32 @@ async function fetchProducts(productIds, validatedForm) {
   }
 }
 
-function scrapeMerchantProduct(merchant, content) {
+function scrapeMerchantProduct(content) {
   const $ = load(content || "");
   let quantity;
   let price;
   let productIsInStock;
-  switch (merchant) {
-    case "amazon":
-      const amazonQuantity1 = $("select#quantity");
-      const amazonQuantity2 = $("select#rcxsubsQuan");
-      const amazonPrice = $(
-        "div#corePrice_feature_div span.a-offscreen"
-      ).html();
-      const amazonAvailability =
-        $("div#availability span").html() === null
-          ? ""
-          : $("div#availability span").html().trim();
+  const amazonQuantity1 = $("select#quantity");
+  const amazonQuantity2 = $("select#rcxsubsQuan");
+  const amazonPrice = $("div#corePrice_feature_div span.a-offscreen").html();
+  const amazonAvailability =
+    $("div#availability span").html() === null
+      ? ""
+      : $("div#availability span").html().trim();
 
-      quantity =
-        amazonQuantity1.length != 0
-          ? amazonQuantity1.children().length
-          : amazonQuantity2.children().length;
+  quantity =
+    amazonQuantity1.length != 0
+      ? amazonQuantity1.children().length
+      : amazonQuantity2.children().length;
 
-      price = amazonPrice;
+  price = amazonPrice;
 
-      productIsInStock =
-        quantity < 5 || amazonAvailability != "In Stock" || price == null
-          ? false
-          : true;
+  productIsInStock =
+    quantity < 5 || amazonAvailability != "In Stock" || price == null
+      ? false
+      : true;
 
-      console.log(price, quantity, productIsInStock);
-      break;
-    default:
-      throw Error("merchant not recognized");
-  }
+  console.log(price, quantity, productIsInStock);
   return { productIsInStock, quantity, price };
 }
 

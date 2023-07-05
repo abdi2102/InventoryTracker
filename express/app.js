@@ -39,14 +39,14 @@ app.get("/gmail/user", getGmailUserInfoAndRedirect);
 const { googleLogin } = require("../auth/google");
 
 app.get("/login", (req, res) =>
-  res.render(path.join(__dirname, "../update-products/public/login.pug"))
+  res.render(path.join(__dirname, "../update-products/public/login/login.pug"))
 );
 
 app.post("/login/google", googleLogin);
 // login //
 
 app.get("*", (req, res) =>
-  res.render(path.join(__dirname, "../update-products/public/404.pug"))
+  res.render(path.join(__dirname, "../update-products/public/404/404.pug"))
 );
 
 // global err handling

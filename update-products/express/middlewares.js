@@ -6,7 +6,7 @@ const path = require("path");
 let canUpdateProducts = true;
 
 function renderUserSpreadsheet(_, res) {
-  res.render(path.join(__dirname, "../public/index.pug"));
+  res.render(path.join(__dirname, "../public/update-spreadsheets/index.pug"));
 }
 
 async function updateProducts(io, googleService, validatedForm) {
@@ -71,8 +71,7 @@ async function submitUpdates(req, res, next) {
   const io = req.app.get("io");
 
   try {
-    res.status(200).json({ msg: "success", code: 200 });
-
+    res.status(200).json({ msg: "success" });
     const googleService = google.sheets({ version: "v4", auth: oAuth });
     await updateProducts(io, googleService, validatedForm);
     canUpdateProducts = true;
@@ -88,7 +87,7 @@ function stopUpdates(req, res, next) {
     canUpdateProducts = false;
     res.status(200).json({ msg: "stopping updates" });
   } catch (error) {
-    res.status(500).json({ msg: "oops. ran into error." });
+    next({ msg: "oops. ran into error.", code: 500 });
   }
 }
 

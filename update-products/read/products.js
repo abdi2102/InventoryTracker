@@ -1,14 +1,6 @@
 async function readProducts(googleService, sheet, start, end) {
   const sheetName = sheet.sheetName !== undefined ? `${sheet.sheetName}!` : "";
-  let productIdColumn;
-
-  switch (sheet.template) {
-    case "fbShops":
-      productIdColumn = "J";
-      break;
-    default:
-      throw { msg: "sheet template not recognized", code: 400 };
-  }
+  let productIdColumn = "J";
 
   try {
     const {
@@ -27,7 +19,7 @@ async function readProducts(googleService, sheet, start, end) {
           throw { msg: "request not valid", code: error.code };
       }
     } else {
-      throw error;
+      throw { msg: "unexpected server error", code: 500 };
     }
   }
 }
