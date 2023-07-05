@@ -14,6 +14,9 @@ socket.on("updateProgress", (progress) => {
 socket.on("updatesComplete", async () => {
   $(".progress-bar").css("width", 0 + "%");
   $("#progress-div").css({ display: "none" });
+
+  $("#mainFormStartButton").show();
+  $("#mainFormPauseButton").hide();
 });
 
 // -----RUN UPDATES ---- //
@@ -22,6 +25,8 @@ async function startProductUpdates(event) {
   event.preventDefault();
   $("#progress-div").css({ display: "block" });
   $("#userMsg").text("");
+  $("#mainFormStartButton").hide();
+  $("#mainFormPauseButton").show();
 
   try {
     const merchant = $(
