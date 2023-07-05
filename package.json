@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "express/index.js",
   "scripts": {
-    "test": "jest --coverage --watchAll",
-    "start": "nodemon express/index.js --ignore update-stats.json"
+    "test": "",
+    "start": "nodemon express/index.js"
   },
   "author": "",
   "license": "ISC",
