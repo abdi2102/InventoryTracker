@@ -1,7 +1,6 @@
 async function readProducts(googleService, sheet, start, end) {
-  const sheetName = sheet.sheetName !== undefined ? `${sheet.sheetName}!` : "";
+  const sheetName = sheet.name !== undefined ? `${sheet.name}!` : "";
   let productIdColumn = "J";
-
   try {
     const {
       data: { values },

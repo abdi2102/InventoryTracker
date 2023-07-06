@@ -14,7 +14,7 @@ function getOAuth2Client() {
     } = JSON.parse(content);
     return new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
   } catch (error) {
-    throw Error(error);
+    throw { msg: "Error authenticating request.", code: 500 };
   }
 }
 

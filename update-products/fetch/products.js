@@ -15,10 +15,7 @@ const Product = require("../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
-async function fetchProducts(
-  productIds,
-  { updateOptions: { retries }, template }
-) {
+async function fetchProducts(productIds, allowRetries) {
   // merchant pick
   let merchantUrl = "https://www.amazon.com/dp/";
 
@@ -44,7 +41,7 @@ async function fetchProducts(
 
       let productInfo = scrapeMerchantProduct(content);
 
-      if (productInfo.productIsInStock === false && retries === true) {
+      if (productInfo.productIsInStock === false && allowRetries === true) {
         console.log("i", i, productInfo, "retrying");
         const content = await fetchMerchantProduct(
           merchantUrl,
@@ -60,7 +57,7 @@ async function fetchProducts(
 
       const { quantity, price } = productInfo;
 
-      let product = new Product(template);
+      let product = new Product();
 
       if (productInfo.productIsInStock === true) {
         product.availability = "in stock";

@@ -48,10 +48,12 @@ async function startProductUpdates(event) {
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
       {
-        sheetLink: sheetLinkInput.value,
-        sheetName: sheetNameInput.value,
         merchant,
-        template,
+        sheet: {
+          link: sheetLinkInput.value,
+          name: sheetNameInput.value,
+          template
+        },
         productsToUpdate: {
           updateAll: $("#updateAllInput").is(":checked"),
           numProducts: $("#numProductsInput").val() || 0,
