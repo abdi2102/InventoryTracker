@@ -36,13 +36,14 @@ async function startProductUpdates(event) {
       '#optionsSelectPicker optgroup[label="Template"] option:selected'
     ).val();
 
-    let updateOptions = {};
-    const _ = $('#optionsSelectPicker optgroup[label="Options"] option:selected')
+    let updateOptions = { startRow: $("#startRowInput").val() || 2 };
+    const _ = $(
+      '#optionsSelectPicker optgroup[label="Options"] option:selected'
+    )
       .toArray()
       .forEach((_, opt) => {
         updateOptions[_.value] = true;
       });
-    updateOptions.startRow = $("#startRowInput").val() || 2;
 
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
@@ -55,7 +56,7 @@ async function startProductUpdates(event) {
           updateAll: $("#updateAllInput").is(":checked"),
           numProducts: $("#numProductsInput").val() || 0,
         },
-        updateOptions: JSON.stringify(updateOptions),
+        updateOptions,
       }
     );
 
