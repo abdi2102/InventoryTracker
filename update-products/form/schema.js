@@ -1,4 +1,3 @@
-// const Joi = require("joi");
 const Joi = require("@hapi/joi");
 
 const updateOptionsSchema = Joi.object().keys({
@@ -6,7 +5,6 @@ const updateOptionsSchema = Joi.object().keys({
   retries: Joi.bool().optional(),
 });
 
-// joi will attempt to convert start and numProducts to a string
 const form = Joi.object({
   sheetName: Joi.string().optional().allow(""),
   sheetLink: Joi.string().required().uri(),
@@ -17,11 +15,10 @@ const form = Joi.object({
     updateAll: Joi.bool().required(),
     numProducts: Joi.when("updateAll", {
       is: false,
-      then: Joi.number()
-        .required()
-        .min(1)
-        .max(100)
-        .messages({ "number.min": "at least one update required" }),
+      then: Joi.number().required().min(1).max(100).messages({
+        "number.min": "at least one update required",
+        "number.max": "max. updates is 100",
+      }),
     }),
   }),
 });

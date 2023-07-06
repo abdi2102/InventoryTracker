@@ -3,24 +3,23 @@ const form = require("./schema");
 function validateForm(req, res, next) {
   const { body, app } = req;
   try {
-    // if (queryCustomIsValid === false) {
-    //   throw { msg: "query options not valid", code: 400 };
-    // }
-
     const validatedForm = form.validate(body, { abortEarly: false });
+    const { error: errors } = validatedForm;
 
-    if (validatedForm.error) {
-      const valErrors = validatedForm.error.details.map((err) => {
-        return err.message;
-      });
-
-      throw { msg: valErrors.join(), code: 400 };
+    if (errors) {
+      throw {
+        msg: errors.details
+          .map((err) => {
+            return err.message;
+          })
+          .join(),
+        code: 400,
+      };
     }
 
-    req.validatedForm = validatedForm.value;
+    req.validatedForm = validateForm.value;
     next();
   } catch (err) {
-    console.log(err);
     app.get("io").emit("updatesComplete");
     next({ msg: err.msg, code: err.code });
   }
