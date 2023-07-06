@@ -44,7 +44,8 @@ async function updateProducts(io, googleService, validatedForm) {
         end - startRow + 1
       );
 
-      const updates = await fetchProducts(productIdsSubset, validatedForm);
+      // const updates = await fetchProducts(productIdsSubset, validatedForm);
+      const updates = [{}]
       await sendUpdates(googleService, sheet, updates, start);
 
       // send progress updates

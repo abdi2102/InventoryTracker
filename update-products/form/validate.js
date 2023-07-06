@@ -1,21 +1,30 @@
 const form = require("./schema");
 
 function validateForm(req, res, next) {
+  const { body, app } = req;
+
   try {
+    console.log(req.body);
     const formToValidate = {
-      sheetLink: req.body.sheetLink,
-      sheetName: req.body.sheetName || undefined,
-      // TODO: VALIDATE CUSTOM OBJECT
-      updateOptions: JSON.parse(req.body.updateOptions),
-      merchant: req.body.merchant,
-      template: req.body.template,
+      sheetLink: body.sheetLink,
+      sheetName: body.sheetName || undefined,
+      // TODO: VALIDATE UPDATE OPTIONS
+      updateOptions: JSON.parse(body.updateOptions),
+      merchant: body.merchant,
+      template: body.template,
+      productsToUpdate: {
+        numProducts: body.productsToUpdate.numProducts,
+        updateAll: body.productsToUpdate.updateAll,
+      },
     };
 
-    const allowedOptions = ["retries", "updateAll", "startRow", "numProducts"];
+    const allowedOptions = ["retries", "startRow"];
 
-    const queryCustomIsValid = Object.keys(formToValidate.updateOptions).every((_) => {
-      return allowedOptions.includes(_);
-    });
+    const queryCustomIsValid = Object.keys(formToValidate.updateOptions).every(
+      (_) => {
+        return allowedOptions.includes(_);
+      }
+    );
 
     if (queryCustomIsValid === false) {
       throw { msg: "query options not valid", code: 400 };
@@ -24,8 +33,8 @@ function validateForm(req, res, next) {
     const validatedForm = form.validate(formToValidate, { abortEarly: false });
 
     if (
-      validatedForm.value.numProducts <= 0 &&
-      validatedForm.value.custom["updateAll"] !== true
+      validatedForm.value.productsToUpdate.numProducts <= 0 &&
+      validatedForm.value.productsToUpdate.updateAll !== true
     ) {
       throw { msg: "at least one update required", code: 400 };
     }
@@ -41,7 +50,9 @@ function validateForm(req, res, next) {
     req.validatedForm = validatedForm.value;
     next();
   } catch (err) {
-    console.log(err)
+    console.log(err);
+    app.get("io").emit("updatesComplete");
+
     next({ msg: err.msg, code: err.code });
   }
 }

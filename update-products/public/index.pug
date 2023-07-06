@@ -19,9 +19,13 @@ html(lang="en")
                         div.labelInputDiv
                             label#startLabel Start
                             input#startRowInput(type="number" placeholder=2)
-                        div.labelInputDiv
-                            label#numProductsLabel Number of Products
-                            input#numProductsInput(type="number" placeholder="1" )
+                        div.labelInputDiv.productCountDiv 
+                            .productCountDiv-1 
+                                label#numProductsLabel Number of Products
+                                input#numProductsInput(type="number" placeholder="0" ) 
+                            .productCountDiv-2 
+                                label#updateAllLabel Update All
+                                input#updateAllInput(type="checkbox" )
                         div.labelInputDiv
                             label#sheetLinkLabel Spreadsheet Link
                             input#sheetLinkInput(type="text" placeholder="sheet link" )
@@ -32,9 +36,8 @@ html(lang="en")
                                     option(value="amazon" selected) Amazon 
                                 optgroup(label="Template" data-max-options="1") 
                                     option(value="fbShops" selected) Facebook Shops
-                                optgroup(label="Custom")
+                                optgroup(label="Options")
                                     option(value="retries") Allow Retries
-                                    option(value ="updateAll") Update All Products  
                         button#mainFormStartButton(type="submit" onclick="startProductUpdates(event)") Update
                         button#mainFormPauseButton(type="button" onclick="stopProductUpdates()") Pause
                         p#userMsg 
