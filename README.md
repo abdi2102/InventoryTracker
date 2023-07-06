@@ -3,7 +3,7 @@ Reads product ASIN from Google sheet, fetches Amazon data, updates Google sheet 
 Important!
 - grant read/write access to Google sheet if it is not owned by user executing code
 - A credentials.json file needs to be in the project root. Get credential access by going to console.google.cloud.com and requesting spreadsheet scope.
-- .env in project root to store express SESSION_SECRET, SCRAPINGANT_X_API_KEY
+- .env in project root to store express SESSION_SECRET, SCRAPING_ANT_X_API_KEY
 
 COMPLETED:
   - progress bar for updates
