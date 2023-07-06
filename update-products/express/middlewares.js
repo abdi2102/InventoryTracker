@@ -2,6 +2,7 @@ const { google } = require("googleapis");
 const readProducts = require("../read/products");
 const fetchProducts = require("../fetch/products");
 const sendUpdates = require("../send/updates");
+const validateUpdateForm = require("../form/validate");
 const path = require("path");
 let canUpdateProducts = true;
 
@@ -9,18 +10,18 @@ function renderUserSpreadsheet(_, res) {
   res.render(path.join(__dirname, "../public/index.pug"));
 }
 
-async function updateProducts(io, googleService, validatedForm) {
+async function updateProducts(io, googleService, body) {
   try {
     const {
       updateOptions: { updateAll, startRow, numProducts },
-    } = validatedForm;
+    } = body;
 
     const sheet = {
-      sheetLink: validatedForm.sheetLink,
-      sheetName: validatedForm.sheetName,
-      id: getSheetId(validatedForm.sheetLink),
-      template: validatedForm.template,
-      merchant: validatedForm.merchant,
+      sheetLink: body.sheetLink,
+      sheetName: body.sheetName,
+      id: getSheetId(body.sheetLink),
+      template: body.template,
+      merchant: body.merchant,
     };
 
     const productIds = await readProducts(
@@ -44,7 +45,7 @@ async function updateProducts(io, googleService, validatedForm) {
         end - startRow + 1
       );
 
-      const updates = await fetchProducts(productIdsSubset, validatedForm);
+      const updates = await fetchProducts(productIdsSubset, body);
       await sendUpdates(googleService, sheet, updates, start);
 
       // send progress updates
@@ -65,14 +66,15 @@ function getSheetId(sheetLink) {
 }
 
 async function submitUpdates(req, res, next) {
-  const { oAuth, validatedForm } = req;
-  const io = req.app.get("io");
+  const { oAuth, body, app } = req;
+  const io = app.get("io");
+  canUpdateProducts = true;
 
   try {
+    validateUpdateForm(body);
     res.status(200).json({ msg: "success" });
     const googleService = google.sheets({ version: "v4", auth: oAuth });
-    await updateProducts(io, googleService, validatedForm);
-    canUpdateProducts = true;
+    await updateProducts(io, googleService, body);
     io.emit("updatesComplete");
   } catch (error) {
     io.emit("updatesComplete");

@@ -1,7 +1,6 @@
 const form = require("./schema");
 
-function validateForm(req, res, next) {
-  const { body, app } = req;
+function validateUpdateForm(body) {
   try {
     const validatedForm = form.validate(body, { abortEarly: false });
     const { error: errors } = validatedForm;
@@ -16,13 +15,10 @@ function validateForm(req, res, next) {
         code: 400,
       };
     }
-
-    req.validatedForm = validateForm.value;
-    next();
+    return;
   } catch (err) {
-    app.get("io").emit("updatesComplete");
-    next({ msg: err.msg, code: err.code });
+    throw { msg: err.msg, code: err.code };
   }
 }
 
-module.exports = validateForm;
+module.exports = validateUpdateForm;

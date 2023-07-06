@@ -15,7 +15,10 @@ const Product = require("../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
-async function fetchProducts(productIds, validatedForm) {
+async function fetchProducts(
+  productIds,
+  { updateOptions: { retries }, template }
+) {
   // merchant pick
   let merchantUrl = "https://www.amazon.com/dp/";
 
@@ -25,11 +28,6 @@ async function fetchProducts(productIds, validatedForm) {
     throw { msg: "product id(s) not valid", code: 400 };
   }
 
-  // fetch
-  const {
-    updateOptions: { retries },
-    template,
-  } = validatedForm;
   let updates = [];
 
   try {
