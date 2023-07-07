@@ -1,5 +1,8 @@
 require("dotenv").config();
-const { getGmailUserInfoAndRedirect } = require("../auth/google");
+const {
+  getGmailUserInfoAndRedirect,
+  googleLogin,
+} = require("../auth/middlewares");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = require("express")();
@@ -36,7 +39,6 @@ app.use("/user/spreadsheet/", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
 
 // login //
-const { googleLogin } = require("../auth/google");
 
 app.get("/login", (req, res) =>
   res.render(path.join(__dirname, "../public/login/index.pug"))

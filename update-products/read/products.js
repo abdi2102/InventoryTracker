@@ -10,6 +10,7 @@ async function readProducts(googleService, sheet, start, end) {
     });
     return values || [];
   } catch (error) {
+    console.log(error)
     if (error.code) {
       switch (error.code) {
         case 404:
