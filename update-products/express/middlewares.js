@@ -17,7 +17,7 @@ async function submitUpdates(req, res, next) {
     validateUpdateForm(body);
     const googleService = google.sheets({ version: "v4", auth: oAuth });
     res.status(200).json({ msg: "success" });
-    await updateProducts(io, googleService, body);
+    await updateProducts(io, googleService, canUpdateProducts, body);
     io.emit("updatesComplete");
   } catch (error) {
     io.emit("updatesComplete");

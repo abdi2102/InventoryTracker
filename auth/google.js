@@ -70,6 +70,7 @@ async function refreshGoogleAccessToken(refresh_token, oAuth2Client) {
 }
 
 module.exports = {
+  requestGoogleAuth,
   googleAuth,
   getOAuth2Client,
 };

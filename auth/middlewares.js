@@ -1,4 +1,4 @@
-const { googleAuth, getOAuth2Client } = require("./google");
+const { requestGoogleAuth,googleAuth, getOAuth2Client } = require("./google");
 
 async function getGmailUserInfoAndRedirect(req, res) {
   try {

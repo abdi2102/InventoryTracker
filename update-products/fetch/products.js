@@ -30,7 +30,7 @@ async function fetchProducts(productIds, allowRetries) {
   try {
     const cookies = await fetchMerchantCookies(merchantUrl, config);
 
-    for (let i = 0; i < productIds.length; i++) {
+    for (let i = 0; i < productIds.length && canUpdateProducts == true; i++) {
       const productId = productIds[i][0];
       const content = await fetchMerchantProduct(
         merchantUrl,
@@ -128,7 +128,6 @@ async function fetchMerchantProduct(merchantUrl, productId, config, cookies) {
 
     return content;
   } catch (error) {
-    console.log(error);
     if (error.response) {
       const status = error.response.status;
       if (status === 423 || status === 403) {
