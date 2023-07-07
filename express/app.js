@@ -34,7 +34,7 @@ app.use(
   })
 );
 const { auth } = require("../auth/middlewares");
-app.use("/user/spreadsheet/", auth);
+// app.use("/user/spreadsheet/", auth);
 app.use("/user/spreadsheet/", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
 
@@ -53,7 +53,6 @@ app.get("*", (req, res) =>
 
 // global err handling
 app.use((err, req, res, next) => {
-  console.log(err);
   try {
     if (err.msg) {
       res.status(err.code).json({ msg: err.msg });
@@ -61,7 +60,7 @@ app.use((err, req, res, next) => {
       res.status(500).json({ msg: err });
     }
   } catch (error) {
-    res.status(500).end({ msg: error });
+    res.status(500).end({ msg: "Unexpected server error." });
   }
 });
 module.exports = server;

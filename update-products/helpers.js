@@ -63,7 +63,7 @@ async function updateProducts(io, googleService, canUpdateProducts, body) {
     );
 
     const productCount = updateAll ? productIds.length : numProducts;
-    const setCount = 1;
+    const setCount = 25;
     const updateIterations = productCount / setCount;
 
     for (let x = updateIterations; x > 0 && canUpdateProducts == true; x--) {
@@ -87,8 +87,7 @@ async function updateProducts(io, googleService, canUpdateProducts, body) {
       io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
     }
   } catch (error) {
-    console.log(error);
-    throw { msg: "unable to update products", code: 500 };
+    throw error
   }
 }
 

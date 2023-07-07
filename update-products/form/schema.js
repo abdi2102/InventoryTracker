@@ -6,10 +6,7 @@ const updateOptionsSchema = Joi.object().keys({
 });
 
 const form = Joi.object({
-  // sheetName: Joi.string().optional().allow(""),
-  // sheetLink: Joi.string().required().uri(),
   merchant: Joi.string().valid("amazon").required(),
-  // template: Joi.string().valid("fbShops").required(),
   sheet: Joi.object({
     name: Joi.string().optional().allow(""),
     link: Joi.string().required().uri(),
@@ -17,7 +14,7 @@ const form = Joi.object({
   }).required(),
   updateOptions: updateOptionsSchema,
   productsToUpdate: Joi.object({
-    updateAll: Joi.bool().required(),
+    updateAll: Joi.bool().default(false),
     numProducts: Joi.when("updateAll", {
       is: false,
       then: Joi.number().required().min(1).max(100).messages({
