@@ -11,43 +11,53 @@ html(lang="en")
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css"> 
     body 
         div.mainDiv
-                div.formDiv            
-                    form#mainForm(action="#")
-                        div.formTitleHeader
-                            h3.mainHeader Updating 
-                            input#sheetNameInput(type="text" placeholder="UNSPECIFIED" )
-                        div.labelInputDiv
-                            label#startLabel Start
-                            input#startRowInput(type="number" placeholder=2)
-                        div.labelInputDiv.productCountDiv 
-                            .productCountDiv-1 
-                                label#numProductsLabel Number of Products
-                                input#numProductsInput(type="number" placeholder="0" ) 
-                            .productCountDiv-2 
-                                label#updateAllLabel Update All
+            div.formTitleHeader
+                h3.mainHeader Update Spreadsheet 
+            form#mainForm(action="#")
+                .col-1 
+                    div.labelInputDiv
+                        label#formLabel Start
+                        input#startRowInput.formInput(type="number" placeholder=2)
+                    div.productCountDiv 
+                        .productCountDiv-1.labelInputDiv
+                            label#formLabel Number of Products
+                            input#numProductsInput.formInput(type="number" placeholder="0" ) 
+                        .productCountDiv-2 
+                            #spacer-div 
+                            #updateAllCheckboxDiv
+                                label Update All
                                 input#updateAllInput(type="checkbox" )
-                        div.labelInputDiv
-                            label#sheetLinkLabel Spreadsheet Link
-                            input#sheetLinkInput(type="text" placeholder="sheet link" )
-                        div.labelInputDiv 
-                            label#updateOptions Options
-                            select.selectPicker#optionsSelectPicker(name="optionsSelectPicker" multiple title="Query Options")
-                                optgroup(label="Merchant" data-max-options="1")               
-                                    option(value="amazon" selected) Amazon 
-                                optgroup(label="Template" data-max-options="1") 
-                                    option(value="fbShops" selected) Facebook Shops
-                                optgroup(label="Options")
-                                    option(value="retries") Allow Retries
+                .col-2 
+                    div.labelInputDiv
+                        label#formLabel Sheet Link
+                        input#sheetLinkInput.formInput(type="text" placeholder="sheet link" )
+                    div.labelInputDiv
+                        label#formLabel Sheet Name
+                        input#sheetNameInput.formInput(type="text" placeholder="sheet name" )
+                    div.labelInputDiv
+                        label#formLabel(for="merchantPicker") Merchant
+                        select.selectPicker(id="merchantPicker")
+                            option(value="amazon" selected) Amazon 
+                    div.labelInputDiv
+                        label#formLabel(for="templatePicker") Template
+                        select.selectPicker(id="templatePicker")
+                            option(value="fbShops" selected) Facebook Shops
+                    div.labelInputDiv
+                        label#formLabel(for="optionsPicker") Options
+                        select.selectPicker(id="optionsPicker" multiple)
+                            option(value="retries" ) Allow Retries
+                            option(value="retgsdfes" ) Allow Retries
+                    div.formButtonDiv 
                         button#mainFormStartButton(type="submit" onclick="startProductUpdates(event)") Update
                         button#mainFormPauseButton(type="button" onclick="stopProductUpdates()") Pause
-                        p#userMsg 
-                        div.progress#progress-div
-                            div.progress-bar#progress-bar(role="progressbar"  aria-valuemin="0" aria-valuemax="100")
-                    table#googleSheetsLinksTable
-                        thead 
-                            th Saved Sheets
-                        tbody 
-                            tr
+            p#userMsg 
+            div.progress#progress-div
+                div.progress-bar#progress-bar(role="progressbar"  aria-valuemin="0" aria-valuemax="100")
+            table#googleSheetsLinksTable
+                thead 
+                    th Saved Sheets
+                tbody 
+                    tr
         <script src="/socket.io/socket.io.js"></script>
         script
             include index.js

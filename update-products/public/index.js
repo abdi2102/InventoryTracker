@@ -14,12 +14,12 @@ socket.on("updateProgress", (progress) => {
 socket.on("updatesComplete", async () => {
   $(".progress-bar").css("width", 0 + "%");
   $("#progress-div").css({ display: "none" });
-
   $("#mainFormStartButton").show();
   $("#mainFormPauseButton").hide();
 });
 
 // -----RUN UPDATES ---- //
+
 
 async function startProductUpdates(event) {
   event.preventDefault();
@@ -29,36 +29,31 @@ async function startProductUpdates(event) {
   $("#mainFormPauseButton").show();
 
   try {
-    const merchant = $(
-      '#optionsSelectPicker optgroup[label="Merchant"] option:selected'
-    ).val();
-    const template = $(
-      '#optionsSelectPicker optgroup[label="Template"] option:selected'
-    ).val();
-
-    let updateOptions = { startRow: $("#startRowInput").val() || 2 };
-    const _ = $(
-      '#optionsSelectPicker optgroup[label="Options"] option:selected'
-    )
+    const startRow = $("#startRowInput").val();
+    const numProducts = $("#numProductsInput").val()
+    const merchant = $("#merchantPicker").find(":selected").val();
+    const template = $("#templatePicker").find(":selected").val();
+    const options = $("#optionsPicker option:selected")
       .toArray()
-      .forEach((_, opt) => {
-        updateOptions[_.value] = true;
-      });
-
-    const response = await axios.patch(
+      .map((item) => item.value);
+  
+      const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
       {
         merchant,
         sheet: {
           link: sheetLinkInput.value,
           name: sheetNameInput.value,
-          template
+          template,
         },
         productsToUpdate: {
           updateAll: $("#updateAllInput").is(":checked"),
-          numProducts: $("#numProductsInput").val() || 0,
+          numProducts: numProducts || 0,
         },
-        updateOptions,
+        updateOptions: {
+          startRow: startRow || 2,
+          retries: options.includes("retries"),
+        },
       }
     );
 

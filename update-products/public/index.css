@@ -1,46 +1,36 @@
 
 .mainDiv {
-    min-width: 260px;
     width: fit-content;
-    margin: 20px auto;
+    margin: auto;
     display: flex;
     flex-direction: column;
-}
-
-.formDiv {
-    min-width: 260px;
-    width: 100%;
-    background-color: white;
     border: 1px solid black;
 }
 
-.labelInputDiv {
-    width: 100%;
-    min-height: 40px;
-    font-size: 16px;
-    padding: 3px;
-    margin: 5px 0px;
-}
-.productCountDiv{
+#mainForm {
     display: flex;
-    align-items: center;
+    padding: 5px;
 }
 
-.productCountDiv-1, .productCountDiv-2 {
+.labelInputDiv {
+    font-size: 16px;
+    padding: 3px;
+}
+
+.productCountDiv{
+    display: flex;
+    flex-direction: column;
+}
+.productCountDiv-2{
+    display: flex;
+}
+
+#spacer-div, #updateAllCheckboxDiv{
     flex: 1;
 }
 
 
-#startRowInput, #numProductsInput {
-    width: 15%;
-}
-
-#updateAllLabel {
-    text-align: left;
-    width:90px;
-}
-
-.labelInputDiv label, .productCountDiv-1 label{
+#formLabel{
     width:180px;
     float: left;
     clear: left;
@@ -49,52 +39,24 @@
 }
 
 .formTitleHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 250px;
-    height: 75px;
-    margin: auto;
+    align-self: center;
 }
 
 #mainFormPauseButton {
     display: none;
 }
 
-
-.mainHeader {
-    margin: 0px;
+.formButtonDiv  {
+    padding: 10px;
+    width: fit-content;
+    margin: auto;
 }
 
-
-#sheetNameInput {
-    width: 150px;
-    height: 30px;
-    border: none;
-    font-size: 22px;
-    padding-left: 4px;
-
-}
-
-#sheetNameInput:focus {
-    outline: none;
-    border-bottom: 1px black solid;
-    background-color: white;
-}
-
-#sheetNameInput::placeholder {
-    color: gray
-}
-
-#sheetNameInput:focus::placeholder {
-    color: transparent;
-}
 
 
 #mainFormStartButton, #mainFormPauseButton {
     min-width: 150px;
     height: 35px;
-    margin: 10px 5px;
     background-color: white;
 }
 
@@ -103,9 +65,6 @@
     font-size: 16px;
     max-width: 100%;
     color: red;
-    padding: 0px 5px;
-    word-wrap: break-word;
-
 }
 
 #googleSheetsLinksTable {
@@ -147,9 +106,8 @@ tr, th {
 }
 
 
-
-
 @media screen and (max-width: 1024px) {
+
 
 .labelInputDiv {
     display: flex;
@@ -158,8 +116,21 @@ tr, th {
     margin: 0px auto;
 }
 
-.labelInputDiv label, .labelInputDiv input {
+#formLabel, .formInput {
     text-align: center;
 }
+
+#mainForm {
+   flex-direction: column;
+}
+
+.productCountDiv-2 {
+    align-self: center;
+}
+
+#spacer-div {
+    display: none;
+}
+
 }
 
