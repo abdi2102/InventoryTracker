@@ -20,7 +20,6 @@ socket.on("updatesComplete", async () => {
 
 // -----RUN UPDATES ---- //
 
-
 async function startProductUpdates(event) {
   event.preventDefault();
   $("#progress-div").css({ display: "block" });
@@ -30,14 +29,14 @@ async function startProductUpdates(event) {
 
   try {
     const startRow = $("#startRowInput").val();
-    const numProducts = $("#numProductsInput").val()
+    const numProducts = $("#numProductsInput").val();
     const merchant = $("#merchantPicker").find(":selected").val();
     const template = $("#templatePicker").find(":selected").val();
     const options = $("#optionsPicker option:selected")
       .toArray()
       .map((item) => item.value);
-  
-      const response = await axios.patch(
+
+    const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
       {
         merchant,

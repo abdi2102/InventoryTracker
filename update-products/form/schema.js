@@ -23,6 +23,7 @@ const form = Joi.object({
       }),
     }),
   }),
+  attributes: Joi.array().allow("price", "quantity", "availability").optional()
 });
 
 module.exports = form;

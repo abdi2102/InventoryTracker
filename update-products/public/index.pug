@@ -26,7 +26,32 @@ html(lang="en")
                             #spacer-div 
                             #updateAllCheckboxDiv
                                 label Update All
-                                input#updateAllInput(type="checkbox" )
+                                input#updateAllInput.checkboxInput(type="checkbox" )
+                    table#parametersTable 
+                        thead 
+                            .labelInputDiv
+                                label Select All
+                                input#checkAll.formInput(type="checkbox" onclick="selectAllAttributes()") 
+                        tbody#attributeTableBody
+                            tr 
+                                td
+                                    .labelInputDiv 
+                                        label Title
+                                        input.atrributeCheckbox(type="checkbox") 
+                                td 
+                                    .labelInputDiv
+                                        label Description
+                                        input.atrributeCheckbox(type="checkbox") 
+                                td
+                                    .labelInputDiv 
+                                        label Quantity
+                                        input.atrributeCheckbox(type="checkbox") 
+                            tr 
+                                td
+                                    .labelInputDiv 
+                                        label Quantity
+                                        input.atrributeCheckbox(type="checkbox") 
+
                 .col-2 
                     div.labelInputDiv
                         label#formLabel Sheet Link

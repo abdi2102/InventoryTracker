@@ -85,30 +85,62 @@ async function fetchProducts(productIds, allowRetries) {
   }
 }
 
+// function scrapeMerchantProduct(content) {
+//   const $ = load(content || "");
+//   let quantity;
+//   let price;
+//   let productIsInStock;
+//   const amazonQuantity1 = $("select#quantity");
+//   const amazonQuantity2 = $("select#rcxsubsQuan");
+//   const amazonPrice = $("div#corePrice_feature_div span.a-offscreen").html();
+//   const amazonAvailability =
+//     $("div#availability span").html() === null
+//       ? ""
+//       : $("div#availability span").html().trim();
+
+//   quantity =
+//     amazonQuantity1.length != 0
+//       ? amazonQuantity1.children().length
+//       : amazonQuantity2.children().length;
+
+//   price = amazonPrice;
+
+//   productIsInStock =
+//     quantity < 5 || amazonAvailability != "In Stock" || price == null
+//       ? false
+//       : true;
+
+//   const amazonCheerioSelectors = {
+//     price: $("div#corePrice_feature_div span.a-offscreen").html(),
+//     amazonAvailability:
+//       $("div#availability span").html() === null
+//         ? ""
+//         : $("div#availability span").html().trim(),
+
+//   };
+//   console.log(price, quantity, productIsInStock);
+//   return { productIsInStock, quantity, price };
+// }
+
 function scrapeMerchantProduct(content) {
   const $ = load(content || "");
-  let quantity;
-  let price;
-  let productIsInStock;
-  const amazonQuantity1 = $("select#quantity");
-  const amazonQuantity2 = $("select#rcxsubsQuan");
-  const amazonPrice = $("div#corePrice_feature_div span.a-offscreen").html();
-  const amazonAvailability =
-    $("div#availability span").html() === null
-      ? ""
-      : $("div#availability span").html().trim();
 
-  quantity =
-    amazonQuantity1.length != 0
-      ? amazonQuantity1.children().length
-      : amazonQuantity2.children().length;
+  const amazonSelectors = {
+    price: $("div#corePrice_feature_div span.a-offscreen").html(),
+    availability:
+      $("div#availability span").html() === null
+        ? ""
+        : $("div#availability span").html().trim(),
+    quantity:
+      $("select#quantity").length != 0
+        ? $("select#quantity").children().length
+        : $("select#rcxsubsQuan").children().length,
+  };
 
-  price = amazonPrice;
+  const { price, quantity, availability } = amazonSelectors;
 
-  productIsInStock =
-    quantity < 5 || amazonAvailability != "In Stock" || price == null
-      ? false
-      : true;
+  const productIsInStock =
+    quantity < 5 || availability != "In Stock" || price == null ? false : true;
 
   console.log(price, quantity, productIsInStock);
   return { productIsInStock, quantity, price };

@@ -25,6 +25,13 @@
     display: flex;
 }
 
+
+#parametersTable {
+    width: 100%;
+    background-color: aqua;
+}
+
+
 #spacer-div, #updateAllCheckboxDiv{
     flex: 1;
 }
