@@ -41,8 +41,12 @@ async function fetchProducts(productIds, properties, allowRetries) {
       );
 
       let productInfo = scrapeMerchantProduct(content, merchant, properties);
+      const inStock =
+        productInfo.quantity < 5 ||
+        (productInfo.quantity < 10 && productInfo.availability != "In Stock") ||
+        productInfo.price == null;
 
-      if (productInfo.inStock === false && allowRetries === true) {
+      if (inStock === false && allowRetries === true) {
         console.log("i", i, productInfo, "retrying");
         const content = await fetchMerchantProduct(
           merchantUrl,
@@ -53,13 +57,15 @@ async function fetchProducts(productIds, properties, allowRetries) {
 
         await timer(Math.random());
 
-        let productInfo = scrapeMerchantProduct(content, merchant, properties);
+        productInfo = scrapeMerchantProduct(content, merchant, properties);
       }
 
       let product = new Product();
 
-      if (productInfo.inStock === true) {
-        productInfo.keys().forEach((key) => (product[key] = productInfo[key]));
+      if (inStock === true) {
+        Object.keys(productInfo).forEach(
+          (key) => (product[key] = productInfo[key])
+        );
         product.markupPrice();
       }
 
@@ -85,7 +91,6 @@ async function fetchProducts(productIds, properties, allowRetries) {
 function scrapeMerchantProduct(content, merchant, properties) {
   const $ = load(content || "");
   let product = {};
-
   switch (merchant) {
     case "amazon":
       const amazonSelectors = {
@@ -98,14 +103,10 @@ function scrapeMerchantProduct(content, merchant, properties) {
           $("select#quantity").length != 0
             ? $("select#quantity").children().length
             : $("select#rcxsubsQuan").children().length,
-        inStock:
-          this.quantity < 5 ||
-          this.availability != "In Stock" ||
-          this.price == null
-            ? false
-            : true,
       };
+
       properties.forEach((prop) => (product[prop] = amazonSelectors[prop]));
+      product.availability = amazonSelectors.availability;
       break;
     default:
       throw { msg: "merchant not recognized", code: 400 };
@@ -120,7 +121,6 @@ async function fetchMerchantProduct(merchantUrl, productId, config, cookies) {
   if (cookies) {
     url += `&cookies=${cookies}`;
   }
-
   try {
     const {
       data: { content },

@@ -23,7 +23,19 @@ const form = Joi.object({
       }),
     }),
   }),
-  properties: Joi.array().allow("price", "quantity", "availability").optional()
+  properties: Joi.array()
+    .items(
+      Joi.string().valid(
+        "title",
+        "description",
+        "photos",
+        "price",
+        "quantity",
+        "availability"
+      )
+    )
+    .min(1)
+    .messages({ "array.min": "at least one property must be selected" }),
 });
 
 module.exports = form;

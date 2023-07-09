@@ -32,12 +32,6 @@ function selectAllAttributes() {
       .toArray()
       .forEach((checkbox) => (checkbox.checked = false));
   }
-  // $("#attributeTableBody")
-  //   .find("input.atrributecheckbox")
-  //   .toArray()
-  //   .forEach((checkbox) => (checkbox.checked = true));
-  // .toArray())
-  // .forEach((checkbox) => checkbox.prop("checked", true));
 }
 
 async function startProductUpdates(event) {
@@ -56,6 +50,11 @@ async function startProductUpdates(event) {
       .toArray()
       .map((item) => item.value);
 
+    const properties = $("#attributeTableBody")
+      .find("input.atrributecheckbox:checked")
+      .toArray()
+      .map((checkbox) => $(checkbox).val());
+
     const response = await axios.patch(
       "http://localhost:3000/user/spreadsheet/update",
       {
@@ -73,7 +72,7 @@ async function startProductUpdates(event) {
           startRow: startRow || 2,
           retries: options.includes("retries"),
         },
-        properties: ["quantity", "price", "availability"],
+        properties,
       }
     );
 
@@ -88,6 +87,7 @@ async function startProductUpdates(event) {
       sheetLink: sheetLinkInput.value,
     });
   } catch (error) {
+    console.log(error);
     if (error.response) {
       $("#userMsg").text(error.response.data.msg);
     } else {

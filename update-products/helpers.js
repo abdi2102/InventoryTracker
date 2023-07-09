@@ -15,7 +15,7 @@ async function updateProducts(io, googleService, body, canUpdateProducts) {
       googleService,
       sheet,
       startRow,
-      updateAll == true ? 500 : startRow + numProducts - 1
+      updateAll === true ? 500 : numProducts
     );
 
     const productCount = updateAll ? productIds.length : numProducts;
@@ -37,6 +37,7 @@ async function updateProducts(io, googleService, body, canUpdateProducts) {
         properties,
         (allowRetries = retries)
       );
+
       await sendUpdates(googleService, sheet, updates, start);
 
       // send progress updates

@@ -1,4 +1,4 @@
-async function readProducts(googleService, sheet, start, end) {
+async function readProducts(googleService, sheet, start, numProducts) {
   const sheetName = sheet.name !== undefined ? `${sheet.name}!` : "";
   let productIdColumn = "J";
   try {
@@ -6,10 +6,13 @@ async function readProducts(googleService, sheet, start, end) {
       data: { values },
     } = await googleService.spreadsheets.values.get({
       spreadsheetId: sheet.id,
-      range: `${sheetName}${productIdColumn}${start}:${productIdColumn}${end}`,
+      range: `${sheetName}${productIdColumn}${start}:${productIdColumn}${
+        start + (numProducts - 1)
+      }`,
     });
     return values || [];
   } catch (error) {
+    console.log(error);
     if (error.code) {
       switch (error.code) {
         case 404:

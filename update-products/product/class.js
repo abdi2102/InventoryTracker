@@ -11,15 +11,15 @@ class Product {
 
   markupPrice() {
     try {
-      let intPrice = parseFloat(this.price.slice(1));
-
+      let intPrice = this.price.replace("$", "");
       let higherPrice =
         intPrice < 20
           ? Math.max(10, (intPrice *= lowPriceMarkup))
           : intPrice * highPriceMarkup;
 
       this.markup = Math.trunc(higherPrice * 100) / 100;
-    } catch {
+    } catch(error) {
+      console.log(error);
       return undefined;
     }
   }

@@ -1,6 +1,7 @@
 
 .mainDiv {
     width: fit-content;
+    height: fit-content;
     margin: auto;
     display: flex;
     flex-direction: column;
@@ -47,6 +48,10 @@
     clear: left;
     text-align:right;
     padding-right: 10px;
+}
+
+#parametersTable  {
+    width: 100%;
 }
 
 .formTitleHeader {
@@ -130,9 +135,12 @@ tr, th {
 #formLabel, .formInput {
     text-align: center;
 }
-
+.mainDiv {
+    min-width: 50%;
+}
 #mainForm {
    flex-direction: column;
+
 }
 
 .productCountDiv-2 {
