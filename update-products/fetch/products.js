@@ -42,9 +42,8 @@ async function fetchProducts(productIds, properties, allowRetries) {
 
       let productInfo = scrapeMerchantProduct(content, merchant, properties);
       const inStock =
-        productInfo.quantity < 5 ||
-        (productInfo.quantity < 10 && productInfo.availability != "In Stock") ||
-        productInfo.price == null;
+        productInfo.quantity > 5 ||
+        (productInfo.quantity > 10 && productInfo.availability != "In Stock");
 
       if (inStock === false && allowRetries === true) {
         console.log("i", i, productInfo, "retrying");
