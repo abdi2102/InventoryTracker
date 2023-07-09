@@ -20,6 +20,26 @@ socket.on("updatesComplete", async () => {
 
 // -----RUN UPDATES ---- //
 
+function selectAllAttributes() {
+  if ($("#checkAll").prop("checked") === true) {
+    $("#attributeTableBody")
+      .find("input.atrributecheckbox")
+      .toArray()
+      .forEach((checkbox) => (checkbox.checked = true));
+  } else {
+    $("#attributeTableBody")
+      .find("input.atrributecheckbox")
+      .toArray()
+      .forEach((checkbox) => (checkbox.checked = false));
+  }
+  // $("#attributeTableBody")
+  //   .find("input.atrributecheckbox")
+  //   .toArray()
+  //   .forEach((checkbox) => (checkbox.checked = true));
+  // .toArray())
+  // .forEach((checkbox) => checkbox.prop("checked", true));
+}
+
 async function startProductUpdates(event) {
   event.preventDefault();
   $("#progress-div").css({ display: "block" });
@@ -53,6 +73,7 @@ async function startProductUpdates(event) {
           startRow: startRow || 2,
           retries: options.includes("retries"),
         },
+        properties: ["quantity", "price", "availability"],
       }
     );
 

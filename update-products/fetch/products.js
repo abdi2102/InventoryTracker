@@ -15,9 +15,10 @@ const Product = require("../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
-async function fetchProducts(productIds, allowRetries) {
+async function fetchProducts(productIds, properties, allowRetries) {
   // merchant pick
   let merchantUrl = "https://www.amazon.com/dp/";
+  let merchant = "amazon";
 
   // validate
   const productIdsValid = validateProductIds(productIds);
@@ -30,7 +31,7 @@ async function fetchProducts(productIds, allowRetries) {
   try {
     const cookies = await fetchMerchantCookies(merchantUrl, config);
 
-    for (let i = 0; i < productIds.length && canUpdateProducts == true; i++) {
+    for (let i = 0; i < productIds.length; i++) {
       const productId = productIds[i][0];
       const content = await fetchMerchantProduct(
         merchantUrl,
@@ -39,9 +40,9 @@ async function fetchProducts(productIds, allowRetries) {
         cookies
       );
 
-      let productInfo = scrapeMerchantProduct(content);
+      let productInfo = scrapeMerchantProduct(content, merchant, properties);
 
-      if (productInfo.productIsInStock === false && allowRetries === true) {
+      if (productInfo.inStock === false && allowRetries === true) {
         console.log("i", i, productInfo, "retrying");
         const content = await fetchMerchantProduct(
           merchantUrl,
@@ -52,17 +53,13 @@ async function fetchProducts(productIds, allowRetries) {
 
         await timer(Math.random());
 
-        productInfo = scrapeMerchantProduct(content);
+        let productInfo = scrapeMerchantProduct(content, merchant, properties);
       }
-
-      const { quantity, price } = productInfo;
 
       let product = new Product();
 
-      if (productInfo.productIsInStock === true) {
-        product.availability = "in stock";
-        product.quantity = quantity;
-        product.price = price;
+      if (productInfo.inStock === true) {
+        productInfo.keys().forEach((key) => (product[key] = productInfo[key]));
         product.markupPrice();
       }
 
@@ -85,65 +82,36 @@ async function fetchProducts(productIds, allowRetries) {
   }
 }
 
-// function scrapeMerchantProduct(content) {
-//   const $ = load(content || "");
-//   let quantity;
-//   let price;
-//   let productIsInStock;
-//   const amazonQuantity1 = $("select#quantity");
-//   const amazonQuantity2 = $("select#rcxsubsQuan");
-//   const amazonPrice = $("div#corePrice_feature_div span.a-offscreen").html();
-//   const amazonAvailability =
-//     $("div#availability span").html() === null
-//       ? ""
-//       : $("div#availability span").html().trim();
-
-//   quantity =
-//     amazonQuantity1.length != 0
-//       ? amazonQuantity1.children().length
-//       : amazonQuantity2.children().length;
-
-//   price = amazonPrice;
-
-//   productIsInStock =
-//     quantity < 5 || amazonAvailability != "In Stock" || price == null
-//       ? false
-//       : true;
-
-//   const amazonCheerioSelectors = {
-//     price: $("div#corePrice_feature_div span.a-offscreen").html(),
-//     amazonAvailability:
-//       $("div#availability span").html() === null
-//         ? ""
-//         : $("div#availability span").html().trim(),
-
-//   };
-//   console.log(price, quantity, productIsInStock);
-//   return { productIsInStock, quantity, price };
-// }
-
-function scrapeMerchantProduct(content) {
+function scrapeMerchantProduct(content, merchant, properties) {
   const $ = load(content || "");
+  let product = {};
 
-  const amazonSelectors = {
-    price: $("div#corePrice_feature_div span.a-offscreen").html(),
-    availability:
-      $("div#availability span").html() === null
-        ? ""
-        : $("div#availability span").html().trim(),
-    quantity:
-      $("select#quantity").length != 0
-        ? $("select#quantity").children().length
-        : $("select#rcxsubsQuan").children().length,
-  };
+  switch (merchant) {
+    case "amazon":
+      const amazonSelectors = {
+        price: $("div#corePrice_feature_div span.a-offscreen").html(),
+        availability:
+          $("div#availability span").html() === null
+            ? ""
+            : $("div#availability span").html().trim(),
+        quantity:
+          $("select#quantity").length != 0
+            ? $("select#quantity").children().length
+            : $("select#rcxsubsQuan").children().length,
+        inStock:
+          this.quantity < 5 ||
+          this.availability != "In Stock" ||
+          this.price == null
+            ? false
+            : true,
+      };
+      properties.forEach((prop) => (product[prop] = amazonSelectors[prop]));
+      break;
+    default:
+      throw { msg: "merchant not recognized", code: 400 };
+  }
 
-  const { price, quantity, availability } = amazonSelectors;
-
-  const productIsInStock =
-    quantity < 5 || availability != "In Stock" || price == null ? false : true;
-
-  console.log(price, quantity, productIsInStock);
-  return { productIsInStock, quantity, price };
+  return product;
 }
 
 async function fetchMerchantProduct(merchantUrl, productId, config, cookies) {

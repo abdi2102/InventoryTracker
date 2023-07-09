@@ -14,8 +14,13 @@
 
 .labelInputDiv {
     font-size: 16px;
-    padding: 3px;
+    padding: 5px;
 }
+
+.checkboxLabel {
+    padding: 5px;
+}
+
 
 .productCountDiv{
     display: flex;
@@ -28,7 +33,6 @@
 
 #parametersTable {
     width: 100%;
-    background-color: aqua;
 }
 
 

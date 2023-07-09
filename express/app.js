@@ -34,7 +34,7 @@ app.use(
   })
 );
 const { auth } = require("../auth/middlewares");
-// app.use("/user/spreadsheet/", auth);
+app.use("/user/spreadsheet/", auth);
 app.use("/user/spreadsheet/", userSpreadsheetsRouter);
 app.get("/gmail/user", getGmailUserInfoAndRedirect);
 

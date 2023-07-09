@@ -2,11 +2,12 @@ const readProducts = require("../update-products/read/products");
 const fetchProducts = require("../update-products/fetch/products");
 const sendUpdates = require("../update-products/send/updates");
 
-async function updateProducts(io, googleService, body) {
+async function updateProducts(io, googleService, body, canUpdateProducts) {
   try {
     const {
       updateOptions: { startRow, retries },
       productsToUpdate: { updateAll, numProducts },
+      properties,
     } = body;
 
     const sheet = { ...body.sheet, id: getSheetId(body.sheet.link) };
@@ -33,6 +34,7 @@ async function updateProducts(io, googleService, body) {
 
       const updates = await fetchProducts(
         productIdsSubset,
+        properties,
         (allowRetries = retries)
       );
       await sendUpdates(googleService, sheet, updates, start);
@@ -46,8 +48,6 @@ async function updateProducts(io, googleService, body) {
     throw { msg: "unable to update products", code: 500 };
   }
 }
-
-
 
 function getSheetId(sheetLink) {
   try {
