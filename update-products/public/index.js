@@ -20,19 +20,16 @@ socket.on("updatesComplete", async () => {
 
 // -----RUN UPDATES ---- //
 
-function selectAllAttributes() {
-  if ($("#checkAll").prop("checked") === true) {
-    $("#attributeTableBody")
-      .find("input.atrributecheckbox")
-      .toArray()
-      .forEach((checkbox) => (checkbox.checked = true));
-  } else {
-    $("#attributeTableBody")
-      .find("input.atrributecheckbox")
-      .toArray()
-      .forEach((checkbox) => (checkbox.checked = false));
-  }
-}
+$("#checkAll").click(function () {
+  var checkedStatus = this.checked;
+  $("#attributeTableBody")
+    .find("input.atrributecheckbox")
+    .each(function (x) {
+      $(this).prop("checked", checkedStatus);
+    });
+});
+
+
 
 async function startProductUpdates(event) {
   event.preventDefault();

@@ -1,10 +1,6 @@
-const form = require("./schema");
-
-function validateUpdateForm(body) {
+function joiErrorHandler(valForm) {
   try {
-    const validatedForm = form.validate(body, { abortEarly: false });
-    const { error: errors } = validatedForm;
-
+    const { error: errors } = valForm;
     if (errors) {
       throw {
         msg: errors.details
@@ -21,4 +17,4 @@ function validateUpdateForm(body) {
   }
 }
 
-module.exports = validateUpdateForm;
+module.exports = joiErrorHandler ;

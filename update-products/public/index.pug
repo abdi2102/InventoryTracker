@@ -9,6 +9,7 @@ html(lang="en")
             include index.css
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/css/bootstrap-select.css"> 
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")    
     body 
         div.mainDiv
             div.formTitleHeader
@@ -31,7 +32,7 @@ html(lang="en")
                         thead 
                             .labelInputDiv
                                 label.checkboxLabel Select All
-                                input#checkAll.formInput(type="checkbox" onclick="selectAllAttributes(event)") 
+                                input#checkAll.formInput(type="checkbox" ) 
                         tbody#attributeTableBody
                             tr 
                                 td
@@ -85,7 +86,6 @@ html(lang="en")
         script
             include index.js
         script(src="https://unpkg.com/axios/dist/axios.min.js")
-        script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js")    
         script(src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.8.1/js/bootstrap-select.js")
         script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js")
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>

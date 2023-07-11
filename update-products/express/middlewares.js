@@ -1,5 +1,6 @@
 const { google } = require("googleapis");
-const validateUpdateForm = require("../form/validate");
+const joiErrorHandler = require("../joi/error");
+const form = require("../joi/form");
 const { updateProducts } = require("../helpers");
 const path = require("path");
 let canUpdateProducts = true;
@@ -14,7 +15,7 @@ async function submitUpdates(req, res, next) {
   canUpdateProducts = true;
 
   try {
-    validateUpdateForm(body);
+    joiErrorHandler(form.validate(body, { abortEarly: false }));
     const googleService = google.sheets({ version: "v4", auth: oAuth });
     await updateProducts(io, googleService, body, canUpdateProducts);
     res.status(200).json({ msg: "success" });

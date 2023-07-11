@@ -45,8 +45,12 @@ async function updateProducts(io, googleService, body, canUpdateProducts) {
       io.emit("updateProgress", (updatedProductsCount / productCount) * 100);
     }
   } catch (error) {
-    console.log(error);
-    throw { msg: "unable to update products", code: 500 };
+    console.log(error)
+    if (error.msg) {
+      throw error;
+    } else {
+      throw { msg: "unable to update products", code: 500 };
+    }
   }
 }
 

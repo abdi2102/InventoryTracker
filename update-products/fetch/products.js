@@ -6,12 +6,14 @@ const config = {
     useQueryString: true,
   },
 };
+const productIdsSchema = require("../joi/product");
+const joiErrorHandler = require("../joi/error");
+const Product = require("../product/class");
 const timer = function (ms) {
   return new Promise(function (res) {
     return setTimeout(res, ms);
   });
 };
-const Product = require("../product/class");
 const scrapingAntUrl =
   "https://api.scrapingant.com/v1/general?browser=false&proxy_country=US&url=";
 
@@ -19,16 +21,15 @@ async function fetchProducts(productIds, properties, allowRetries) {
   // merchant pick
   let merchantUrl = "https://www.amazon.com/dp/";
   let merchant = "amazon";
-
-  // validate
-  const productIdsValid = validateProductIds(productIds);
-  if (productIdsValid === false) {
-    throw { msg: "product id(s) not valid", code: 400 };
-  }
-
   let updates = [];
 
   try {
+    joiErrorHandler(
+      productIdsSchema.validate(productIds, {
+        abortEarly: false,
+      })
+    );
+
     const cookies = await fetchMerchantCookies(merchantUrl, config);
 
     for (let i = 0; i < productIds.length; i++) {
@@ -78,6 +79,10 @@ async function fetchProducts(productIds, properties, allowRetries) {
     console.log(error);
     if (updates.length > 0) {
       return updates;
+    }
+
+    if (error.msg) {
+      throw error;
     } else {
       throw {
         msg: "could not fetch products. try again later.",
@@ -156,13 +161,5 @@ async function fetchMerchantCookies(merchantUrl, config) {
   }
 }
 
-function validateProductIds(productIds) {
-  // validate productIds
-  const productIdsValid = productIds.every((id) => {
-    return Array.isArray(id) === false || id[0] == undefined ? false : true;
-  });
-
-  return productIdsValid;
-}
 
 module.exports = fetchProducts;

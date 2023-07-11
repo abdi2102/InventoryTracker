@@ -1,6 +1,7 @@
 const lowPriceMarkup = 1.9;
 const highPriceMarkup = 1.7;
 
+
 class Product {
   constructor(availability, quantity, price) {
     this.availability = availability || "out of stock";
@@ -18,7 +19,7 @@ class Product {
           : intPrice * highPriceMarkup;
 
       this.markup = Math.trunc(higherPrice * 100) / 100;
-    } catch(error) {
+    } catch (error) {
       console.log(error);
       return undefined;
     }
