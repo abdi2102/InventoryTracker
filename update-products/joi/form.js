@@ -1,18 +1,30 @@
 const Joi = require("@hapi/joi");
 
-const updateOptionsSchema = Joi.object().keys({
-  startRow: Joi.number().required().min(2),
-  retries: Joi.bool().optional(),
-});
+const properties = Joi.array()
+  .items(
+    Joi.string().valid(
+      "title",
+      "description",
+      "photos",
+      "price",
+      "quantity",
+      "availability"
+    )
+  )
+  .min(1)
+  .messages({ "array.min": "at least one property must be selected" });
 
-const form = Joi.object({
+const updateForm = Joi.object({
   merchant: Joi.string().valid("amazon").required(),
   sheet: Joi.object({
     name: Joi.string().optional().allow(""),
     link: Joi.string().required().uri(),
     template: Joi.string().valid("fbShops").required(),
   }).required(),
-  updateOptions: updateOptionsSchema,
+  updateOptions: Joi.object().keys({
+    startRow: Joi.number().required().min(2),
+    retries: Joi.bool().optional(),
+  }),
   productsToUpdate: Joi.object({
     updateAll: Joi.bool().default(false),
     numProducts: Joi.when("updateAll", {
@@ -23,19 +35,12 @@ const form = Joi.object({
       }),
     }),
   }),
-  properties: Joi.array()
-    .items(
-      Joi.string().valid(
-        "title",
-        "description",
-        "photos",
-        "price",
-        "quantity",
-        "availability"
-      )
-    )
-    .min(1)
-    .messages({ "array.min": "at least one property must be selected" }),
+  properties,
 });
 
-module.exports = form;
+const addForm = Joi.object({
+  productIds: Joi.array().items(Joi.string().min(1)),
+  properties,
+});
+
+module.exports = { addForm, updateForm };

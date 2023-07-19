@@ -1,6 +1,6 @@
 const { google } = require("googleapis");
 const joiErrorHandler = require("../joi/error");
-const form = require("../joi/form");
+const { updateForm } = require("../joi/form");
 const { updateProducts } = require("../helpers");
 const path = require("path");
 let canUpdateProducts = true;
@@ -15,7 +15,7 @@ async function submitUpdates(req, res, next) {
   canUpdateProducts = true;
 
   try {
-    joiErrorHandler(form.validate(body, { abortEarly: false }));
+    joiErrorHandler(updateForm.validate(body, { abortEarly: false }));
     const googleService = google.sheets({ version: "v4", auth: oAuth });
     await updateProducts(io, googleService, body, canUpdateProducts);
     res.status(200).json({ msg: "success" });
@@ -25,11 +25,11 @@ async function submitUpdates(req, res, next) {
     next(error);
   }
 }
-
 function stopUpdates(req, res, next) {
   try {
     canUpdateProducts = false;
     res.status(200).json({ msg: "stopped updates" });
+    io.emit("updatesComplete");
   } catch (error) {
     next({ msg: "Oops. ran into error.", code: 500 });
   }

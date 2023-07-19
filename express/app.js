@@ -57,7 +57,8 @@ app.use((err, req, res, next) => {
     if (err.msg) {
       res.status(err.code).json({ msg: err.msg });
     } else {
-      res.status(500).json({ msg: err });
+      console.error(err)
+      res.status(500).json({ msg: "Server error."});
     }
   } catch (error) {
     res.status(500).end({ msg: "Unexpected server error." });
